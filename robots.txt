@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
-# Setelah domain produksi dipilih, tambahkan: Sitemap: https://DOMAIN-ANDA/sitemap.xml
+
+Sitemap: https://inabahijab.com/sitemap.xml

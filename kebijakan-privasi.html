@@ -1,13 +1,145 @@
 <!doctype html>
-<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f5f3ed"><meta name="description" content="Informasi penggunaan data pribadi pelanggan INABA HIJAB."><title>Kebijakan Privasi — INABA HIJAB</title><link rel="icon" type="image/svg+xml" href="./favicon.svg"><style>
-:root{--paper:#f5f3ed;--ink:#222520;--muted:#686b61;--line:#deded5;--olive:#414a35;--clay:#c87555}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.8 system-ui,-apple-system,sans-serif}.wrap{max-width:820px;width:calc(100% - 36px);margin:0 auto;padding:28px 0 64px}.top{display:flex;justify-content:space-between;gap:20px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:18px}.brand{font-weight:800;letter-spacing:.16em}.back{font-size:13px;color:var(--olive)}.eyebrow{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-top:38px}h1{font:clamp(38px,8vw,60px)/1 Georgia,serif;letter-spacing:-.04em;margin:12px 0 16px}h2{font:26px/1.15 Georgia,serif;margin:30px 0 8px}p,li{font-size:15px;color:#4f524a}ul{padding-left:22px}.note{margin:24px 0;padding:14px 16px;border-left:3px solid var(--clay);background:#e8e6db;font-size:13px;line-height:1.7}.contact{margin-top:32px;padding-top:20px;border-top:1px solid var(--line)}a{color:inherit}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
-</style></head><body><main class="wrap"><header class="top"><a class="brand" href="./index.html">INABA HIJAB</a><a class="back" href="./index.html">← Kembali ke toko</a></header><div class="eyebrow">Informasi pelanggan</div><h1>Kebijakan Privasi</h1><p>INABA HIJAB menggunakan informasi yang diberikan pelanggan untuk menanggapi pertanyaan, memproses pesanan, dan mengirim kabar koleksi hanya kepada orang yang mendaftar newsletter.</p>
-<div class="note"><strong>Catatan sebelum peluncuran:</strong> pemilik toko harus memastikan isi halaman ini sesuai dengan praktik operasional dan konfigurasi Supabase yang benar-benar digunakan. Perbarui dokumen setiap kali proses pengelolaan data berubah.</div>
-<h2>Data yang dapat dikumpulkan</h2><ul><li>Data akun seperti alamat email dan nama yang diisi saat membuat akun.</li><li>Informasi pesanan seperti nama penerima, nomor WhatsApp, alamat pengiriman, barang, ukuran, dan catatan yang disampaikan pelanggan.</li><li>Alamat email yang dikirimkan secara sukarela untuk newsletter.</li></ul>
-<h2>Tujuan penggunaan</h2><p>Informasi digunakan untuk mengelola akun dan pesanan, menghubungi pelanggan tentang ongkir atau pembayaran, menindaklanjuti konsultasi, menangani pertanyaan, menjaga catatan transaksi, serta mengirim pembaruan newsletter kepada pelanggan yang mendaftarkan emailnya.</p>
-<h2>Penyimpanan dan akses</h2><p>Website ini menggunakan layanan Supabase untuk autentikasi, database, dan penyimpanan gambar. Akses ke data pesanan dan data administrasi dibatasi melalui akun dan kebijakan database. Pemilik toko harus menjaga akses admin, kata sandi, serta konfigurasi akses tersebut.</p>
-<h2>Pembagian data</h2><p>Data pelanggan tidak boleh dijual. Data hanya boleh dibagikan jika diperlukan untuk menjalankan layanan yang diminta pelanggan, memenuhi kewajiban hukum, atau menangani masalah keamanan dan penyalahgunaan. Pemilik toko perlu memastikan pihak layanan yang digunakan dan praktik berbagi data aktual tercermin dengan benar di sini.</p>
-<h2>Penyimpanan dan penghapusan</h2><p>Informasi disimpan selama masih diperlukan untuk tujuan layanan, pencatatan transaksi, penyelesaian sengketa, atau kewajiban yang berlaku. Untuk bertanya, memperbarui, atau meminta penghapusan data, hubungi INABA HIJAB melalui WhatsApp yang tercantum di situs. Permintaan tertentu mungkin perlu diverifikasi dan tidak selalu dapat dipenuhi jika catatan harus disimpan berdasarkan kewajiban yang berlaku.</p>
-<h2>Keamanan</h2><p>INABA HIJAB harus menjaga akses admin dengan kata sandi yang kuat, membatasi izin database, memakai HTTPS pada domain produksi, serta tidak pernah menaruh secret/service-role key dalam kode browser. Tidak ada sistem online yang dapat menjamin keamanan absolut.</p>
-<h2>Perubahan kebijakan</h2><p>Kebijakan dapat diperbarui saat proses layanan berubah. Versi terbaru akan tersedia pada halaman ini. Periksa isi halaman ini dan sesuaikan sebelum domain produksi dipublikasikan.</p>
-<div class="contact"><strong>Kontak privasi</strong><p>WhatsApp INABA HIJAB: <a href="https://wa.me/6285735144904?text=Halo%20INABA%20HIJAB%2C%20saya%20ingin%20bertanya%20tentang%20data%20pribadi." target="_blank" rel="noopener noreferrer">0857-3514-4904 ↗</a></p><p><a href="./index.html">Kembali ke INABA HIJAB</a></p></div></main></body></html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#f6f5ef" />
+  <meta name="description" content="Kebijakan privasi dan perlindungan data pribadi pelanggan INABA STORE." />
+  <title>Kebijakan Privasi — INABA STORE</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <style>
+    :root {
+      --paper: #f6f5ef;
+      --ink: #1e221b;
+      --muted: #686b61;
+      --line: #dedcd1;
+      --olive: #4f5a3e;
+      --clay: #c56545;
+      --wash: #eceae0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 16px/1.8 system-ui, -apple-system, sans-serif;
+    }
+    .wrap {
+      max-width: 820px;
+      width: calc(100% - 36px);
+      margin: 0 auto;
+      padding: 32px 0 68px;
+    }
+    .top {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 20px;
+    }
+    .brand {
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      font-size: 18px;
+      text-decoration: none;
+      color: var(--ink);
+    }
+    .brand span { color: var(--clay); }
+    .back {
+      font-size: 13px;
+      color: var(--olive);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--olive);
+      margin-top: 36px;
+      font-weight: 700;
+    }
+    h1 {
+      font: clamp(34px, 7vw, 52px)/1.08 Georgia, serif;
+      letter-spacing: -0.03em;
+      margin: 12px 0 16px;
+    }
+    h2 {
+      font: 24px/1.2 Georgia, serif;
+      margin: 32px 0 10px;
+      color: var(--ink);
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 6px;
+    }
+    p, li {
+      font-size: 15px;
+      color: #3f423b;
+      line-height: 1.75;
+    }
+    ul { padding-left: 22px; }
+    .note {
+      margin: 24px 0;
+      padding: 16px 18px;
+      border-left: 4px solid var(--clay);
+      background: var(--wash);
+      font-size: 14px;
+      line-height: 1.7;
+      border-radius: 0 8px 8px 0;
+    }
+    .contact {
+      margin-top: 36px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+    }
+    a { color: var(--clay); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="top">
+      <a class="brand" href="./index.html">INABA<span>STORE</span></a>
+      <a class="back" href="./index.html" style="display:inline-flex;align-items:center;gap:6px">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7M5 12h14"/></svg>
+        <span>Kembali ke Beranda Toko</span>
+      </a>
+    </header>
+
+    <div class="eyebrow">Perlindungan Data Pelanggan</div>
+    <h1>Kebijakan Privasi</h1>
+    <p>Di <strong>INABA STORE</strong>, kami menghargai privasi dan kepercayaan para pelanggan. Dokumen ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi data pribadi Anda saat menggunakan layanan toko online kami.</p>
+
+    <div class="note">
+      <strong>Komitmen Privasi:</strong> Data pelanggan hanya digunakan semata-mata untuk memproses pemesanan barang, mengoordinasikan pengiriman dengan ekspedisi, serta mengirimkan kabar berkala bagi pelanggan yang secara sukarela mendaftar newsletter. Kami tidak pernah memperjualbelikan data Anda kepada pihak ketiga.
+    </div>
+
+    <h2>1. Data yang Kami Kumpulkan</h2>
+    <ul>
+      <li><strong>Data Akun:</strong> Alamat email dan nama yang didaftarkan pelanggan saat membuat akun di website.</li>
+      <li><strong>Data Transaksi &amp; Pengiriman:</strong> Nama penerima, nomor WhatsApp/telepon, alamat tujuan pengiriman, catatan ukuran seragam, dan riwayat belanja.</li>
+      <li><strong>Data Komunikasi:</strong> Pesan konfirmasi dan bukti transfer pembayaran yang dikirimkan melalui saluran resmi WhatsApp toko.</li>
+    </ul>
+
+    <h2>2. Penggunaan Data Pribadi</h2>
+    <p>Data pribadi Anda digunakan untuk tujuan operasional berikut:</p>
+    <ul>
+      <li>Mencatat pesanan pelanggan dan mengunci stok ready stock atau mengalokasikan slot pre-order seragam sekolah.</li>
+      <li>Menghubungi pelanggan untuk konfirmasi ketersediaan, perhitungan tarif ongkir ekspedisi, dan pengiriman nomor resi.</li>
+      <li>Mengelola rekam jejak pesanan dan layanan purna jual atau penukaran barang bila terjadi cacat produksi.</li>
+    </ul>
+
+    <h2>3. Keamanan Penyimpanan &amp; Sistem Backend</h2>
+    <p>Situs ini menggunakan arsitektur backend Supabase dengan standar keamanan Row-Level Security (RLS). Hanya akun berhak admin resmi yang diizinkan mengelola katalog dan data administrasi. Tidak ada service role key rahasia yang ditanamkan pada kode frontend.</p>
+
+    <h2>4. Hak Pelanggan &amp; Penghapusan Data</h2>
+    <p>Pelanggan berhak memeriksa riwayat pesanan mereka, memperbarui informasi kontak, atau meminta penonaktifan akun dengan menghubungi admin resmi melalui WhatsApp toko.</p>
+
+    <div class="contact">
+      <strong>Kontak Layanan Privasi</strong>
+      <p>WhatsApp INABA STORE: <a href="https://wa.me/6285735144904?text=Halo%20INABA%20STORE%2C%20saya%20ingin%20bertanya%20tentang%20kebijakan%20privasi." target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:4px"><span>0857-3514-4904</span><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M7 7h10v10"/></svg></a></p>
+      <p><a href="./ketentuan-pemesanan.html">Ketentuan Pemesanan</a> · <a href="./index.html">Kembali ke Beranda INABA STORE</a></p>
+    </div>
+  </main>
+</body>
+</html>

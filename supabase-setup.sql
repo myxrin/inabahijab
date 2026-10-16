@@ -21,13 +21,24 @@ create table if not exists public.products (
   id uuid primary key default gen_random_uuid(),
   name text not null check (char_length(name) between 1 and 100),
   slug text not null unique,
-  category text not null check (category in ('Gamis Wanita','Gamis Pria','Koko & Kurta','Hijab & Khimar')),
+  category text not null check (char_length(category) between 1 and 80),
   description text not null default '',
   price bigint not null check (price >= 0),
   image_url text,
   badge text,
   featured boolean not null default false,
   is_active boolean not null default true,
+  stock integer not null default 0 check (stock >= 0),
+  is_preorder boolean not null default false,
+  preorder_status text not null default 'open' check (preorder_status in ('open','closed','completed')),
+  preorder_start timestamptz,
+  preorder_end timestamptz,
+  estimated_delivery text default '',
+  school_institution text default '',
+  min_order integer not null default 1 check (min_order >= 1),
+  size_guide text default '',
+  specifications jsonb default '{}'::jsonb,
+  gallery_urls jsonb default '[]'::jsonb,
   created_at timestamptz not null default now()
 );
 
@@ -48,10 +59,32 @@ create table if not exists public.order_items (
   order_id uuid not null references public.orders(id) on delete cascade,
   product_id uuid references public.products(id) on delete set null,
   product_name text not null,
-  quantity integer not null check (quantity between 1 and 20),
-  variant_size text not null default 'M' check (variant_size in ('S','M','L','XL','XXL','Custom')),
-  unit_price bigint not null check (unit_price >= 0)
+  quantity integer not null check (quantity between 1 and 50),
+  variant_size text not null default 'M',
+  unit_price bigint not null check (unit_price >= 0),
+  is_preorder boolean not null default false,
+  school_institution text default ''
 );
+
+-- Kategori produk dinamis
+create table if not exists public.categories (
+  id uuid primary key default gen_random_uuid(),
+  name text not null unique check (char_length(name) between 1 and 80),
+  slug text not null unique,
+  description text not null default '',
+  icon text not null default 'package',
+  display_order integer not null default 0,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now()
+);
+
+-- Pengaturan toko dinamis (kontak WA, pengumuman, rekening)
+create table if not exists public.store_settings (
+  key text primary key,
+  value jsonb not null,
+  updated_at timestamptz not null default now()
+);
+
 
 create table if not exists public.tailoring_requests (
   id uuid primary key default gen_random_uuid(),
@@ -73,21 +106,40 @@ create table if not exists public.newsletter_subscribers (
   created_at timestamptz not null default now()
 );
 
--- Homepage / editorial imagery can be replaced from the admin dashboard.
+-- Homepage / editorial / multi-category imagery can be replaced from the admin dashboard.
 create table if not exists public.site_images (
-  key text primary key check (key in ('hero','atelier','journal_style','journal_fabric','journal_tailor')),
+  key text primary key,
   label text not null,
   image_url text not null,
   updated_at timestamptz not null default now()
 );
 
--- Initial homepage images are defaults only, not sample product rows. Preserve any admin edits on reruns.
+-- Initial site images & banners
 insert into public.site_images (key,label,image_url) values
-  ('hero','Foto utama halaman depan','https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1400&q=85'),
-  ('atelier','Foto bagian jasa jahit','https://images.unsplash.com/photo-1590736969955-71cc94901144?auto=format&fit=crop&w=1200&q=85'),
-  ('journal_style','Foto artikel gaya','https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=600&q=80'),
-  ('journal_fabric','Foto artikel bahan','https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600&q=80'),
-  ('journal_tailor','Foto artikel penjahit','https://images.unsplash.com/photo-1452860606245-08befc0ff44b?auto=format&fit=crop&w=600&q=80')
+  ('hero','Foto utama beranda multikategori','https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1400&q=85'),
+  ('preorder_banner','Banner Pre-Order Seragam Sekolah','https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=1200&q=85'),
+  ('farmer_banner','Banner Perlengkapan Petani & Capel','https://images.unsplash.com/photo-1592417817098-8f3d69109853?auto=format&fit=crop&w=1200&q=85'),
+  ('table_banner','Banner Meja Lipat & Perabot','https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?auto=format&fit=crop&w=1200&q=85'),
+  ('journal_style','Foto panduan gaya','https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=600&q=80'),
+  ('journal_fabric','Foto panduan bahan tekstil','https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600&q=80'),
+  ('journal_tailor','Foto panduan ukuran & jahitan','https://images.unsplash.com/photo-1452860606245-08befc0ff44b?auto=format&fit=crop&w=600&q=80')
+on conflict (key) do nothing;
+
+-- Initial categories seed
+insert into public.categories (name, slug, description, icon, display_order, is_active) values
+  ('Hijab & Pakaian', 'hijab-pakaian', 'Koleksi busana muslim gamis wanita, gamis pria, koko, kurta, hijab dan khimar', 'sparkles', 1, true),
+  ('Seragam Sekolah — Pre-Order', 'seragam-sekolah', 'Pre-order seragam sekolah SDIT, TPQ, dan Madrasah Diniyah Sirimbit Keluarga', 'graduation-cap', 2, true),
+  ('Perlengkapan Petani', 'perlengkapan-petani', 'Topi capel petani tradisional, pelindung terik matahari dan alat berkebun', 'sun', 3, true),
+  ('Meja & Perabot', 'meja-perabot', 'Meja lipat portable belajar, laptop, ngaji dan perabot serbaguna', 'table', 4, true),
+  ('Produk Lainnya', 'produk-lainnya', 'Produk kebutuhan harian pilihan toko lainnya', 'package', 5, true)
+on conflict (slug) do nothing;
+
+-- Initial store settings
+insert into public.store_settings (key, value) values
+  ('store_title', '"INABA STORE — Toko Multikategori"'::jsonb),
+  ('contact_whatsapp', '"6285735144904"'::jsonb),
+  ('announcement_text', '"Toko Multikategori INABA: Ready Stock Busana Muslim, Pre-Order Seragam Sekolah (SDIT, TPQ, Madin), Capel Petani & Meja Lipat."'::jsonb),
+  ('payment_accounts', '[{"label":"Konfirmasi Pembayaran","detail":"Nomor rekening transfer resmi (BCA/BRI/Mandiri/QRIS) akan diinformasikan langsung oleh admin via WhatsApp setelah total pesanan dan ongkir dihitung."}]'::jsonb)
 on conflict (key) do nothing;
 
 -- Drop prototype policies BEFORE changing ID column types. PostgreSQL blocks column type changes
@@ -163,7 +215,7 @@ alter table public.orders alter column user_id type text using user_id::text;
 alter table public.tailoring_requests drop constraint if exists tailoring_requests_user_id_fkey;
 alter table public.tailoring_requests alter column user_id type text using user_id::text;
 
--- Bring forward older category/size schemas without adding any demo product rows.
+-- Buka batasan kategori kaku agar toko menjadi multikategori
 alter table public.products drop constraint if exists products_category_check;
 update public.products set category = case
   when category = 'Atasan' then 'Koko & Kurta'
@@ -171,17 +223,28 @@ update public.products set category = case
   when category = 'Outerwear' then 'Gamis Wanita'
   when category = 'Made to order' then 'Gamis Wanita'
   else category end
-where category not in ('Gamis Wanita','Gamis Pria','Koko & Kurta','Hijab & Khimar');
-alter table public.products add constraint products_category_check
-  check (category in ('Gamis Wanita','Gamis Pria','Koko & Kurta','Hijab & Khimar'));
+where category in ('Atasan','Bawahan','Outerwear','Made to order');
 
--- Stok ready: dikurangi otomatis oleh create_order().
+-- Kolom stok dan pre-order pada produk
 alter table public.products add column if not exists stock integer not null default 0 check (stock >= 0);
+alter table public.products add column if not exists is_preorder boolean not null default false;
+alter table public.products add column if not exists preorder_status text not null default 'open';
+alter table public.products drop constraint if exists products_preorder_status_check;
+alter table public.products add constraint products_preorder_status_check check (preorder_status in ('open','closed','completed'));
+alter table public.products add column if not exists preorder_start timestamptz;
+alter table public.products add column if not exists preorder_end timestamptz;
+alter table public.products add column if not exists estimated_delivery text default '';
+alter table public.products add column if not exists school_institution text default '';
+alter table public.products add column if not exists min_order integer not null default 1 check (min_order >= 1);
+alter table public.products add column if not exists size_guide text default '';
+alter table public.products add column if not exists specifications jsonb default '{}'::jsonb;
+alter table public.products add column if not exists gallery_urls jsonb default '[]'::jsonb;
 
+-- Ukuran item pesanan fleksibel (bisa pakaian, seragam anak/dewasa, capel, maupun meja lipat)
 alter table public.order_items add column if not exists variant_size text not null default 'M';
 alter table public.order_items drop constraint if exists order_items_variant_size_check;
-alter table public.order_items add constraint order_items_variant_size_check
-  check (variant_size in ('S','M','L','XL','XXL','Custom'));
+alter table public.order_items add column if not exists is_preorder boolean not null default false;
+alter table public.order_items add column if not exists school_institution text default '';
 
 create index if not exists products_active_featured_idx on public.products (is_active, featured desc, created_at desc);
 create index if not exists orders_user_created_idx on public.orders (user_id, created_at desc);
@@ -262,6 +325,7 @@ declare
   v_product public.products%rowtype;
   v_total bigint := 0;
   v_count integer := 0;
+  v_size text;
 begin
   if v_user is null then raise exception 'Login diperlukan untuk membuat pesanan.'; end if;
   if char_length(trim(coalesce(p_customer_name,''))) not between 1 and 120 then raise exception 'Nama penerima tidak valid.'; end if;
@@ -271,20 +335,32 @@ begin
   insert into public.orders(user_id, customer_name, phone, address, notes, subtotal)
   values (v_user, trim(p_customer_name), trim(p_phone), trim(p_address), left(coalesce(p_notes,''),2000), 0)
   returning id into v_order;
-  for v_item in select * from jsonb_to_recordset(p_items) as x(product_id uuid, quantity integer, size text) loop
+  for v_item in select * from jsonb_to_recordset(p_items) as x(product_id uuid, quantity integer, size text, is_preorder boolean, school_institution text) loop
     v_count := v_count + 1;
     if v_count > 30 then raise exception 'Terlalu banyak jenis barang.'; end if;
-    if v_item.quantity is null or v_item.quantity < 1 or v_item.quantity > 20 then raise exception 'Jumlah barang tidak valid.'; end if;
+    if v_item.quantity is null or v_item.quantity < 1 or v_item.quantity > 50 then raise exception 'Jumlah barang tidak valid.'; end if;
     select * into v_product from public.products where id = v_item.product_id and is_active = true for update;
     if not found then raise exception 'Salah satu produk tidak tersedia lagi.'; end if;
-    if v_product.stock <= 0 then raise exception '% sudah habis.', v_product.name; end if;
-    if v_product.stock < v_item.quantity then raise exception 'Stok % tinggal % pcs.', v_product.name, v_product.stock; end if;
+
+    -- Validasi tipe pesanan: pre-order vs ready stock
+    if coalesce(v_product.is_preorder, false) = true then
+      if coalesce(v_product.preorder_status, 'open') <> 'open' then
+        raise exception 'Pre-order untuk % saat ini sedang ditutup.', v_product.name;
+      end if;
+      if v_product.min_order > 1 and v_item.quantity < v_product.min_order then
+        raise exception 'Minimal pemesanan pre-order % adalah % pcs.', v_product.name, v_product.min_order;
+      end if;
+    else
+      if v_product.stock <= 0 then raise exception '% sudah habis.', v_product.name; end if;
+      if v_product.stock < v_item.quantity then raise exception 'Stok % tinggal % pcs.', v_product.name, v_product.stock; end if;
+      update public.products set stock = stock - v_item.quantity where id = v_product.id;
+    end if;
+
     v_total := v_total + (v_product.price * v_item.quantity);
     if v_total > 100000000000 then raise exception 'Nilai pesanan melebihi batas.'; end if;
-    if coalesce(v_item.size, 'M') not in ('S','M','L','XL','XXL') then raise exception 'Ukuran produk tidak valid.'; end if;
-    insert into public.order_items(order_id, product_id, product_name, quantity, variant_size, unit_price)
-    values (v_order, v_product.id, v_product.name, v_item.quantity, coalesce(v_item.size, 'M'), v_product.price);
-    update public.products set stock = stock - v_item.quantity where id = v_product.id;
+    v_size := left(trim(coalesce(v_item.size, 'Standar')), 60);
+    insert into public.order_items(order_id, product_id, product_name, quantity, variant_size, unit_price, is_preorder, school_institution)
+    values (v_order, v_product.id, v_product.name, v_item.quantity, v_size, v_product.price, coalesce(v_product.is_preorder, false), coalesce(v_product.school_institution, ''));
   end loop;
   update public.orders set subtotal = v_total where id = v_order;
   return v_order;
@@ -292,6 +368,29 @@ end;
 $$;
 revoke all on function public.create_order(jsonb,text,text,text,text) from public, anon, authenticated;
 grant execute on function public.create_order(jsonb,text,text,text,text) to authenticated;
+
+-- Restore ready-stock inventory when an order is cancelled
+create or replace function public.handle_order_cancellation()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  if new.status = 'cancelled' and old.status <> 'cancelled' then
+    update public.products p
+    set stock = p.stock + oi.quantity
+    from public.order_items oi
+    where oi.order_id = new.id
+      and oi.product_id = p.id
+      and coalesce(oi.is_preorder, false) = false;
+  elsif old.status = 'cancelled' and new.status <> 'cancelled' then
+    raise exception 'Pesanan yang telah dibatalkan tidak dapat diaktifkan kembali secara otomatis.';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_order_status_cancelled on public.orders;
+create trigger on_order_status_cancelled
+  before update of status on public.orders
+  for each row execute function public.handle_order_cancellation();
 
 -- Remove policy names used by both the old Firebase prototype and the earlier Supabase prototype.
 -- RLS policies are OR-combined; dropping old policies is important for not leaving an old permissive rule active.
@@ -340,7 +439,11 @@ create policy "Users update own profile name only" on public.profiles for update
 revoke all on public.products from public, anon, authenticated;
 grant select on public.products to anon, authenticated;
 grant insert, delete on public.products to authenticated;
-grant update (name, slug, category, description, price, image_url, badge, featured, is_active, stock) on public.products to authenticated;
+grant update (
+  name, slug, category, description, price, image_url, badge, featured,
+  is_active, stock, is_preorder, preorder_status, preorder_start, preorder_end,
+  estimated_delivery, school_institution, min_order, size_guide, specifications, gallery_urls
+) on public.products to authenticated;
 create policy "Public can read active products" on public.products for select to anon, authenticated
   using (is_active = true or (select public.is_admin()));
 create policy "Admins insert products" on public.products for insert to authenticated
@@ -349,6 +452,30 @@ create policy "Admins update products" on public.products for update to authenti
   using ((select public.is_admin())) with check ((select public.is_admin()));
 create policy "Admins delete products" on public.products for delete to authenticated
   using ((select public.is_admin()));
+
+-- RLS & Grants untuk categories
+alter table public.categories enable row level security;
+revoke all on public.categories from public, anon, authenticated;
+grant select on public.categories to anon, authenticated;
+grant insert, update, delete on public.categories to authenticated;
+create policy "Public can read active categories" on public.categories for select to anon, authenticated
+  using (is_active = true or (select public.is_admin()));
+create policy "Admins insert categories" on public.categories for insert to authenticated
+  with check ((select public.is_admin()));
+create policy "Admins update categories" on public.categories for update to authenticated
+  using ((select public.is_admin())) with check ((select public.is_admin()));
+create policy "Admins delete categories" on public.categories for delete to authenticated
+  using ((select public.is_admin()));
+
+-- RLS & Grants untuk store_settings
+alter table public.store_settings enable row level security;
+revoke all on public.store_settings from public, anon, authenticated;
+grant select on public.store_settings to anon, authenticated;
+grant insert, update on public.store_settings to authenticated;
+create policy "Public can read store settings" on public.store_settings for select to anon, authenticated
+  using (true);
+create policy "Admins modify store settings" on public.store_settings for all to authenticated
+  using ((select public.is_admin())) with check ((select public.is_admin()));
 
 revoke all on public.orders from public, anon, authenticated;
 revoke all on public.order_items from public, anon, authenticated;
@@ -438,3 +565,106 @@ end $$;
 -- numanalmuqorrin@gmail.com, inabahijab@gmail.com
 -- Once reserved, both emails receive the admin role; every other email receives customer role.
 -- Public signup must not be used to create the initial admin accounts if their email addresses are not reserved yet.
+
+-- Produk katalog awal untuk toko multikategori (Pre-Order Seragam SDIT/TPQ/Madin, Capel Petani & Meja Lipat)
+insert into public.products (
+  name, slug, category, description, price, stock, badge, featured, is_active,
+  is_preorder, preorder_status, school_institution, estimated_delivery, min_order, size_guide, specifications, image_url
+) values
+(
+  'Baju Seragam SDIT Al-Hidayah (Pre-Order)',
+  'seragam-sdit-al-hidayah-po',
+  'Seragam Sekolah — Pre-Order',
+  'Seragam resmi SDIT Al-Hidayah putra dan putri. Menggunakan bahan Oxford Super tebal dan adem, tidak mudah kusut, jahitan dobel rapi, lengkap dengan emblem bordir sekolah.',
+  125000,
+  0,
+  'PRE-ORDER SDIT',
+  true,
+  true,
+  true,
+  'open',
+  'SDIT Al-Hidayah',
+  '14 hari kerja setelah tutup PO',
+  1,
+  'Panduan Ukuran: Anak-1 (LD 72 PB 48), Anak-2 (LD 76 PB 52), Anak-3 (LD 80 PB 56), Anak-4 (LD 84 PB 60), Anak-5 (LD 88 PB 64), S (LD 92 PB 68), M (LD 96 PB 70), L (LD 102 PB 72), XL (LD 108 PB 74)',
+  '{"bahan": "Oxford Super & Katun Twill", "model": "Setelan Putra & Putri", "kelengkapan": "Kemeja + Celana/Rok + Dasi/Jilbab", "warna": "Putih Hijau / Khaki"}'::jsonb,
+  'https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=800&q=80'
+),
+(
+  'Seragam Santri TPQ / TPA Binaan (Pre-Order)',
+  'seragam-santri-tpq-po',
+  'Seragam Sekolah — Pre-Order',
+  'Seragam santri mengaji TPQ model gamis / setelan koko kurta anak. Bahan Toyobo Fodu adem dan menyerap keringat, nyaman digunakan untuk aktivitas mengaji harian.',
+  95000,
+  0,
+  'PRE-ORDER TPQ',
+  true,
+  true,
+  true,
+  'open',
+  'TPQ & Madrasah Binaan',
+  '10-14 hari kerja',
+  1,
+  'Panduan Ukuran: S (Usia 4-6 th, LD 70 PB 75), M (Usia 7-9 th, LD 78 PB 90), L (Usia 10-12 th, LD 86 PB 105), XL (Usia 13-15 th, LD 92 PB 118)',
+  '{"bahan": "Katun Toyobo Fodu Import", "model": "Gamis Santri Putri & Koko Kurta Putra", "warna": "Hijau Sage, Putih Bersih, Biru Wardah"}'::jsonb,
+  'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80'
+),
+(
+  'Seragam Madrasah Diniyah Sirimbit Keluarga (Pre-Order)',
+  'seragam-madin-sirimbit-keluarga-po',
+  'Seragam Sekolah — Pre-Order',
+  'Setelan seragam Madrasah Diniyah kombinasi sirimbit keluarga (serasi santri dan orang tua). Desain syari rapi, aksen lis elegan, bahan lembut dan adem saat dipakai.',
+  145000,
+  0,
+  'PRE-ORDER MADIN',
+  true,
+  true,
+  true,
+  'open',
+  'Madrasah Diniyah Sirimbit Keluarga',
+  '14-21 hari kerja',
+  1,
+  'Panduan Ukuran: Tersedia ukuran santri (S-XL) dan ukuran dewasa sirimbit orang tua (S, M, L, XL, XXL).',
+  '{"bahan": "Katun Madinah Premium kombinasi Linen", "model": "Sirimbit Santri & Keluarga", "warna": "Navy Abu, Mocca Khaki, Emerald Gold"}'::jsonb,
+  'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80'
+),
+(
+  'Capel Petani Anyaman Bambu Tradisional',
+  'capel-petani-anyaman-bambu-tradisional',
+  'Perlengkapan Petani',
+  'Topi capel petani tradisional terbuat dari anyaman bambu pilihan dengan lapisan kain anti-air di bagian dalam. Menahan terik panas matahari secara maksimal dan tahan gerimis ringan saat bekerja di sawah atau kebun.',
+  35000,
+  45,
+  'READY STOCK',
+  true,
+  true,
+  false,
+  'open',
+  '',
+  '',
+  1,
+  'Diameter luar 48 cm, lingkar kepala dalam fleksibel dengan tali dagu kain.',
+  '{"bahan": "Anyaman bambu alami + furing kain anti-air", "diameter": "48 cm", "fitur": "Tali dagu pengikat, ventilasi sejuk, ringan hanya 180 gram"}'::jsonb,
+  'https://images.unsplash.com/photo-1592417817098-8f3d69109853?auto=format&fit=crop&w=800&q=80'
+),
+(
+  'Meja Lipat Serbaguna Portable 60x40 cm',
+  'meja-lipat-serbaguna-portable-60x40',
+  'Meja & Perabot',
+  'Meja lipat portable multifungsi ukuran 60x40 cm dengan kaki aluminium kokoh berbalut busa anti-slip. Dilengkapi slot penyimpanan tablet/buku dan tempat cangkir minum. Sangat cocok untuk meja belajar anak, meja laptop, meja ngaji TPQ, atau meja dagang lesehan.',
+  68000,
+  30,
+  'READY STOCK',
+  true,
+  true,
+  false,
+  'open',
+  '',
+  '',
+  1,
+  'Dimensi permukaan: 60 cm x 40 cm, Tinggi kaki: 28 cm. Dilipat: 60 x 40 x 5 cm.',
+  '{"bahan": "Papan MDF High Density tebal 12mm + Rangka pipa paduan aluminium", "kapasitas": "Maksimal beban 25 kg", "fitur": "Slot tablet 27 cm, cup holder, busa kaki anti-slip"}'::jsonb,
+  'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?auto=format&fit=crop&w=800&q=80'
+)
+on conflict (slug) do nothing;
+
