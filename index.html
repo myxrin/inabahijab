@@ -21,8 +21,7 @@
     "@type": "OnlineStore",
     "name": "INABA HIJAB",
     "url": "https://inabahijab.com/",
-    "description": "INABA Hijab menyediakan busana muslim, seragam sekolah pre-order, perlengkapan petani, meja lipat, dan kebutuhan harian pilihan.",
-    "telephone": "+6285735144904"
+    "description": "INABA Hijab menyediakan busana muslim, seragam sekolah pre-order, perlengkapan petani, meja lipat, dan kebutuhan harian pilihan."
   }
   </script>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" />
@@ -1082,80 +1081,20 @@
       flex-wrap: wrap;
     }
 
-    /* Mobile Bottom Navigation (Navbar Aktif & Transparan Saat Tidak Terpilih) */
-    .bottom-nav {
-      position: fixed;
-      z-index: 35;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
-      background: rgba(255, 255, 255, 0.98);
-      border-top: 1px solid var(--line);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.04);
+    /* Mobile-first list readability */
+    main ul:not([class]), .sheet ul:not([class]), .notice ul, .footer-col ul {
+      margin: .75rem 0;
+      padding-inline-start: 1.35rem;
+      list-style: disc;
     }
-    .bottom-nav a, .bottom-nav button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 3px;
-      border: 0;
-      background: transparent;
-      color: var(--ink);
-      opacity: 0.42; /* Transparan dikit saat tidak dipilih */
-      font-size: 11px;
-      font-weight: 600;
-      min-height: 48px;
-      position: relative;
-      cursor: pointer;
-      transition: opacity 0.25s ease, transform 0.25s ease, color 0.25s ease;
-      -webkit-tap-highlight-color: transparent;
-      text-decoration: none;
+    main li, .sheet li, .notice li, .footer-col li {
+      margin-block: .38rem;
+      padding-inline-start: .2rem;
+      line-height: 1.65;
+      overflow-wrap: anywhere;
     }
-    .bottom-nav svg {
-      width: 22px;
-      height: 22px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 1.8;
-      transition: stroke 0.25s ease, stroke-width 0.25s ease, filter 0.25s ease;
-    }
-    .bottom-nav a.current,
-    .bottom-nav a.active,
-    .bottom-nav button.current,
-    .bottom-nav button.active {
-      opacity: 1 !important; /* Terang saat dipilih */
-      color: var(--clay) !important; /* Lebih berwarna (Terracotta Clay) */
-      font-weight: 700 !important;
-      transform: translateY(-2px);
-    }
-    .bottom-nav a.current svg,
-    .bottom-nav a.active svg,
-    .bottom-nav button.current svg,
-    .bottom-nav button.active svg {
-      stroke: var(--clay) !important;
-      stroke-width: 2.3;
-      filter: drop-shadow(0 2px 5px rgba(197, 101, 69, 0.45));
-    }
-    .bottom-nav-badge {
-      position: absolute;
-      top: 4px;
-      right: 18%;
-      background: var(--clay);
-      color: #fff;
-      font-size: 9px;
-      font-weight: 700;
-      min-width: 16px;
-      height: 16px;
-      border-radius: var(--radius-full);
-      display: grid;
-      place-items: center;
-      padding: 0 3px;
+    main li::marker, .sheet li::marker, .notice li::marker, .footer-col li::marker {
+      color: var(--clay);
     }
 
     /* Placeholders Foto Resmi & Styling Admin Dashboard Mudah Dipahami */
@@ -1648,7 +1587,6 @@
       .steps-container { grid-template-columns: repeat(3, 1fr); }
       .spotlight-grid { grid-template-columns: repeat(2, 1fr); }
       .footer-top { grid-template-columns: 2fr 1fr 1fr 1.2fr; }
-      .bottom-nav { display: none; }
       .overlay { align-items: center; padding: 24px; }
       .sheet { border-radius: var(--radius-lg); padding: 30px; max-height: 88dvh; }
       .form-grid { grid-template-columns: 1fr 1fr; gap: 0 16px; }
@@ -1734,8 +1672,8 @@
     <a href="#cara-pesan">Cara Pemesanan <span>→</span></a>
     <a href="#cerita">Tentang Toko <span>→</span></a>
     <div style="display:grid;gap:8px;margin-top:10px">
-      <button class="btn btn-ghost" id="mobileAccountBtn">Masuk / Akun Saya</button>
-      <a class="btn btn-clay" href="https://wa.me/6285735144904?text=Halo%20INABA%20HIJAB%2C%20saya%20ingin%20konsultasi%20pemesanan." data-whatsapp-link="general" target="_blank" rel="noopener noreferrer">Hubungi WhatsApp</a>
+      <button class="btn btn-ghost" id="mobileAccountBtn">Akun Saya</button>
+      <a class="btn btn-clay" href="#bantuan" data-whatsapp-link="general" target="_blank" rel="noopener noreferrer">Hubungi WhatsApp</a>
     </div>
   </nav>
 
@@ -1843,7 +1781,7 @@
           </div>
           <div class="button-row">
             <button class="btn btn-clay" id="openSizeGuideGlobal">Lihat Panduan Tabel Ukuran ↗</button>
-            <a class="btn btn-ghost" style="color:#fff;border-color:rgba(255,255,255,0.4)" href="https://wa.me/6285735144904?text=Halo%20INABA%20HIJAB%2C%20saya%20ingin%20konsultasi%20pre-order%20seragam%20sekolah." data-whatsapp-link="preorder" target="_blank" rel="noopener noreferrer">Konsultasi Seragam Rombongan (WA)</a>
+            <a class="btn btn-ghost" style="color:#fff;border-color:rgba(255,255,255,0.4)" href="#bantuan" data-whatsapp-link="preorder" target="_blank" rel="noopener noreferrer">Konsultasi Seragam Rombongan (WA)</a>
           </div>
         </div>
 
@@ -2092,7 +2030,7 @@
 
         <div class="footer-col">
           <h4>Hubungi Kami</h4>
-          <a href="https://wa.me/6285735144904?text=Halo%20INABA%20HIJAB%2C%20saya%20ingin%20bertanya%20tentang%20produk." id="footerWhatsApp" data-whatsapp-link="general" target="_blank" rel="noopener noreferrer">WhatsApp: 0857-3514-4904 <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg-arrow" aria-hidden="true"><path d="M7 17L17 7M7 7h10v10"/></svg></a>
+          <a href="#bantuan" id="footerWhatsApp" data-whatsapp-link="general" target="_blank" rel="noopener noreferrer">WhatsApp Toko <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg-arrow" aria-hidden="true"><path d="M7 17L17 7M7 7h10v10"/></svg></a>
           <p style="font-size:12px;color:#9da195;margin-top:6px;line-height:1.6">Layanan chat aktif setiap hari untuk konfirmasi pesanan, jadwal batch PO, dan cek ongkir.</p>
         </div>
       </div>
@@ -2103,31 +2041,6 @@
       </div>
     </div>
   </footer>
-
-  <!-- Mobile Bottom Navigation Bar -->
-  <nav class="bottom-nav" id="bottomNav" aria-label="Navigasi Bawah">
-    <a href="#home" class="current active" data-nav="home" aria-label="Beranda">
-      <svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-6h6v6"/></svg>
-      <span>Beranda</span>
-    </a>
-    <a href="#preorder-section" data-nav="preorder" aria-label="Pre-Order">
-      <svg viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10"/></svg>
-      <span>Pre-Order</span>
-    </a>
-    <a href="#shop" data-nav="shop" aria-label="Belanja">
-      <svg viewBox="0 0 24 24"><path d="M4 8h16l-1.2 12H5.2L4 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>
-      <span>Belanja</span>
-    </a>
-    <button type="button" id="bottomCartBtn" data-nav="cart" aria-label="Keranjang">
-      <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-      <span>Keranjang</span>
-      <span class="bottom-nav-badge" id="bottomCartCount">0</span>
-    </button>
-    <button type="button" id="bottomAccountBtn" data-nav="account" aria-label="Akun">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.6-3.4 3.1-5.2 7-5.2s6.4 1.8 7 5.2"/></svg>
-      <span>Akun</span>
-    </button>
-  </nav>
 
   <!-- ================= OVERLAYS & MODALS ================= -->
 
@@ -2143,28 +2056,17 @@
         <button class="close-btn" data-close="authOverlay" aria-label="Tutup modal"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       </div>
 
-      <div id="authNotice" class="notice">Masuk sebagai pelanggan untuk membuat pesanan, atau masuk sebagai admin pengelola.</div>
+      <div id="authNotice" class="notice">Akses akun memakai tautan verifikasi satu kali. Dashboard pengelolaan hanya terbuka untuk akun admin yang disahkan di Supabase.</div>
 
       <div id="authFormWrap">
-        <form id="authForm">
+        <form id="authForm" autocomplete="on">
           <div class="field" id="authEmailField">
             <label for="authEmail">Alamat Email</label>
-            <input id="authEmail" type="email" autocomplete="email" placeholder="nama@email.com" required />
+            <input id="authEmail" name="email" type="email" inputmode="email" autocomplete="email" autocapitalize="none" spellcheck="false" placeholder="nama@email.com" maxlength="254" required />
           </div>
-          <div class="field">
-            <label for="authPassword">Kata Sandi (Password)</label>
-            <input id="authPassword" type="password" autocomplete="current-password" minlength="8" placeholder="Minimal 8 karakter" required />
-          </div>
-          <div id="nameField" class="field hide">
-            <label for="authName">Nama Lengkap</label>
-            <input id="authName" type="text" autocomplete="name" placeholder="Nama lengkap kamu" />
-          </div>
-          <button class="btn btn-full btn-clay" id="authSubmit" type="submit">Masuk ke Akun <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg-arrow" aria-hidden="true"><path d="M7 17L17 7M7 7h10v10"/></svg></button>
+          <button class="btn btn-full btn-clay" id="authSubmit" type="submit">Kirim Tautan Akses <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg-arrow" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7"/></svg></button>
+          <p class="field-hint" style="text-align:center;margin-top:14px">Periksa email dan buka tautan untuk memverifikasi akses. Peran admin ditentukan oleh server, bukan oleh isian di halaman ini.</p>
         </form>
-        <button type="button" id="forgotPasswordBtn" class="text-link" style="margin-top:12px">Lupa kata sandi?</button>
-        <p class="field-hint" style="text-align:center;margin-top:18px" id="authSwitch">
-          Belum punya akun? <button type="button" id="switchAuthMode" class="text-link" style="font-size:inherit">Daftar sekarang</button>
-        </p>
       </div>
 
       <div id="signedInWrap" class="hide">
@@ -2192,82 +2094,18 @@
     </section>
   </div>
 
-  <!-- 3. Size Guide Modal (Panduan Ukuran Terstandar) -->
+  <!-- 3. Size Guide Modal (Konten dinamis dari data produk Supabase) -->
   <div class="overlay" id="sizeGuideOverlay" role="dialog" aria-modal="true" aria-labelledby="sizeGuideTitle">
     <section class="sheet sheet-wide">
       <div class="sheet-handle" aria-hidden="true"></div>
       <div class="sheet-head">
         <div>
-          <div class="eyebrow"><span class="eyebrow-dot"></span> Panduan Konveksi</div>
-          <h2 id="sizeGuideTitle" class="serif">Tabel Ukuran Standar</h2>
+          <div class="eyebrow"><span class="eyebrow-dot"></span> Panduan Produk</div>
+          <h2 id="sizeGuideTitle" class="serif">Panduan Ukuran Produk</h2>
         </div>
-        <button class="close-btn" data-close="sizeGuideOverlay" aria-label="Tutup modal"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+        <button class="close-btn" data-close="sizeGuideOverlay" aria-label="Tutup panduan"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       </div>
-      <div class="policy-content" id="sizeGuideContent">
-        <p>Perhatikan tabel acuan di bawah ini sebelum memesan seragam sekolah atau busana muslim agar pas dan nyaman saat dikenakan.</p>
-
-        <h3 style="font:22px var(--serif);margin:20px 0 8px;color:var(--ink)">1. Seragam SDIT (Putra &amp; Putri)</h3>
-        <table class="spec-table" style="font-size:13px;border:1px solid var(--line)">
-          <thead>
-            <tr style="background:var(--wash)">
-              <th>Ukuran</th>
-              <th>Lingkar Dada</th>
-              <th>Panjang Baju</th>
-              <th>Panjang Celana / Rok</th>
-              <th>Perkiraan Kelas</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>Anak-1</td><td>72 cm</td><td>48 cm</td><td>64 cm</td><td>Kelas 1 SD</td></tr>
-            <tr><td>Anak-2</td><td>76 cm</td><td>52 cm</td><td>68 cm</td><td>Kelas 2 SD</td></tr>
-            <tr><td>Anak-3</td><td>80 cm</td><td>56 cm</td><td>72 cm</td><td>Kelas 3 SD</td></tr>
-            <tr><td>Anak-4</td><td>84 cm</td><td>60 cm</td><td>76 cm</td><td>Kelas 4 SD</td></tr>
-            <tr><td>Anak-5</td><td>88 cm</td><td>64 cm</td><td>80 cm</td><td>Kelas 5 SD</td></tr>
-            <tr><td>Anak-6 / S</td><td>92 cm</td><td>68 cm</td><td>84 cm</td><td>Kelas 6 SD</td></tr>
-          </tbody>
-        </table>
-
-        <h3 style="font:22px var(--serif);margin:24px 0 8px;color:var(--ink)">2. Seragam Santri TPQ / TPA Binaan</h3>
-        <table class="spec-table" style="font-size:13px;border:1px solid var(--line)">
-          <thead>
-            <tr style="background:var(--wash)">
-              <th>Ukuran</th>
-              <th>Usia Acuan</th>
-              <th>Lingkar Dada</th>
-              <th>Panjang Gamis/Koko</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>S (Kecil)</td><td>4 – 6 Tahun</td><td>70 cm</td><td>75 cm</td></tr>
-            <tr><td>M (Sedang)</td><td>7 – 9 Tahun</td><td>78 cm</td><td>90 cm</td></tr>
-            <tr><td>L (Besar)</td><td>10 – 12 Tahun</td><td>86 cm</td><td>105 cm</td></tr>
-            <tr><td>XL (Remaja)</td><td>13 – 15 Tahun</td><td>92 cm</td><td>118 cm</td></tr>
-          </tbody>
-        </table>
-
-        <h3 style="font:22px var(--serif);margin:24px 0 8px;color:var(--ink)">3. Busana Muslim Dewasa &amp; Sirimbit Keluarga</h3>
-        <table class="spec-table" style="font-size:13px;border:1px solid var(--line)">
-          <thead>
-            <tr style="background:var(--wash)">
-              <th>Ukuran</th>
-              <th>Lingkar Dada (LD)</th>
-              <th>Panjang Baju Gamis</th>
-              <th>Panjang Koko</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>S</td><td>94 – 96 cm</td><td>135 cm</td><td>72 cm</td></tr>
-            <tr><td>M</td><td>98 – 102 cm</td><td>138 cm</td><td>74 cm</td></tr>
-            <tr><td>L</td><td>104 – 108 cm</td><td>140 cm</td><td>76 cm</td></tr>
-            <tr><td>XL</td><td>110 – 114 cm</td><td>142 cm</td><td>78 cm</td></tr>
-            <tr><td>XXL</td><td>116 – 122 cm</td><td>144 cm</td><td>80 cm</td></tr>
-          </tbody>
-        </table>
-
-        <div class="notice" style="margin-top:20px">
-          <strong>Catatan:</strong> Toleransi jahitan konveksi kurang lebih 1-2 cm. Untuk seragam sekolah yang dipakai jangka panjang, disarankan memilih satu nomor lebih longgar.
-        </div>
-      </div>
+      <div class="policy-content" id="sizeGuideContent"><p class="field-hint">Panduan ukuran akan ditampilkan berdasarkan data produk yang dikelola admin di Supabase.</p></div>
     </section>
   </div>
 
@@ -2515,13 +2353,7 @@
     products: [],
     categories: [],
     siteImages: [...DEFAULT_SITE_IMAGES],
-    storeSettings: {
-      store_title: 'INABA HIJAB',
-      contact_whatsapp: '6285735144904',
-      payment_accounts: [
-        { label: 'Konfirmasi Pembayaran', detail: 'Nomor rekening resmi akan diberikan langsung oleh admin melalui WhatsApp' }
-      ]
-    },
+    storeSettings: { store_title: '', contact_whatsapp: '', payment_accounts: [] },
     filter: 'Semua',
     poFilter: 'Semua',
     searchText: '',
@@ -2529,7 +2361,6 @@
     cart: [], // Keranjang tersimpan aman di database Supabase (public.cart_items) untuk pengguna login
     user: null,
     profile: null,
-    authMode: 'login',
     adminTab: 'products',
     adminIntent: false,
     detailProductId: null,
@@ -2646,27 +2477,32 @@
     try {
       const { data, error } = await sb
         .from('cart_items')
-        .select('id, product_id, quantity, size, is_preorder, school_institution, products(id, name, price, stock, is_active, preorder_status, image_url)')
+        .select('id, product_id, quantity, size, products!inner(id, name, price, stock, is_active, is_preorder, school_institution, preorder_status, min_order, image_url, variants, size_guide)')
         .eq('user_id', state.user.id)
+        .eq('products.is_active', true)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
 
-      state.cart = (data || []).map(row => {
-        const prod = row.products || {};
+      state.cart = (data || []).filter(row => row.products && row.products.is_active === true).map(row => {
+        const prod = row.products;
         return {
           cart_item_id: row.id,
           id: row.product_id,
-          name: prod.name || 'Produk',
-          price: Number(prod.price) || 0,
+          name: prod.name,
+          price: Number(prod.price),
           stock: prod.stock ?? 0,
           image_url: prod.image_url || '',
           quantity: row.quantity,
-          size: row.size || 'Standar',
-          is_preorder: !!row.is_preorder,
-          school_institution: row.school_institution || '',
+          size: typeof row.size === 'string' ? row.size : '',
+          variant_invalid: !Array.isArray(prod.variants) || !prod.variants.some(value => typeof value === 'string' && value.trim() === String(row.size || '').trim()),
+          min_order: Number(prod.min_order || 1),
+          is_preorder: !!prod.is_preorder,
+          school_institution: prod.school_institution || '',
           is_active: prod.is_active !== false,
-          preorder_status: prod.preorder_status || 'open'
+          preorder_status: prod.preorder_status || 'open',
+          variants: Array.isArray(prod.variants) ? prod.variants : [],
+          size_guide: typeof prod.size_guide === 'string' ? prod.size_guide : ''
         };
       });
     } catch (err) {
@@ -2681,8 +2517,6 @@
     const count = state.cart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
     const hCount = $('#cartCount');
     if (hCount) hCount.textContent = count;
-    const bCount = $('#bottomCartCount');
-    if (bCount) bCount.textContent = count;
     if ($('#cartOverlay') && $('#cartOverlay').classList.contains('open')) {
       renderCart();
     }
@@ -2814,7 +2648,7 @@
 
   // Template Kartu Produk
   function renderProductCardHtml(p, isPoContext = false) {
-    const isPo = !!p.is_preorder || p.category?.toLowerCase().includes('pre-order');
+    const isPo = p.is_preorder === true;
     const isSold = !isPo && (p.stock != null && Number(p.stock) <= 0);
     const stockDisplay = isPo
       ? (p.preorder_status === 'closed' ? '<span class="product-stock-tag po">PO Ditutup</span>' : '<span class="product-stock-tag po">Pre-Order Buka</span>')
@@ -2846,7 +2680,7 @@
         </div>
         <div class="product-card-body">
           <div>
-            <div class="product-category-text">${esc(p.category || 'INABA')}</div>
+            <div class="product-category-text">${esc(p.category)}</div>
             <button type="button" class="product-name-btn" data-open-detail="${esc(p.id)}">${esc(p.name)}</button>
             ${specSnippet ? `<div class="product-specs-snippet">${specSnippet}</div>` : ''}
           </div>
@@ -2870,14 +2704,14 @@
     const p = state.products.find(x => String(x.id) === String(idOrSlug) || x.slug === String(idOrSlug));
     if (!p) return;
     state.detailProductId = p.id;
-    const isPo = !!p.is_preorder || p.category?.toLowerCase().includes('pre-order');
+    const isPo = p.is_preorder === true;
 
     try {
       history.replaceState(null, '', '#' + encodeURIComponent('produk=' + (p.slug || p.id)));
     } catch (_) {}
 
     $('#productDetailTitle').textContent = p.name;
-    $('#productDetailEyebrow').innerHTML = `<span class="eyebrow-dot"></span> ${esc(p.category || 'Detail Produk')}`;
+    $('#productDetailEyebrow').innerHTML = `<span class="eyebrow-dot"></span> ${esc(p.category)}`;
 
     // Bangun spesifikasi bila ada
     let specTableHtml = '';
@@ -2889,23 +2723,15 @@
       `;
     }
 
-    // Opsi Ukuran & Varian
-    let sizeOptions = ['S', 'M', 'L', 'XL', 'XXL'];
-    if (isPo) {
-      if (p.school_institution?.includes('SDIT') || p.name?.includes('SDIT')) {
-        sizeOptions = ['Anak-1 (Kelas 1)', 'Anak-2 (Kelas 2)', 'Anak-3 (Kelas 3)', 'Anak-4 (Kelas 4)', 'Anak-5 (Kelas 5)', 'Anak-6 / S', 'M Dewasa', 'L Dewasa'];
-      } else if (p.school_institution?.includes('TPQ') || p.name?.includes('TPQ')) {
-        sizeOptions = ['S (Usia 4-6 th)', 'M (Usia 7-9 th)', 'L (Usia 10-12 th)', 'XL (Usia 13-15 th)', 'Custom Ukuran'];
-      } else {
-        sizeOptions = ['S Santri', 'M Santri', 'L Santri', 'XL Santri', 'S Dewasa', 'M Dewasa', 'L Dewasa', 'XL Dewasa', 'XXL Dewasa', 'Custom'];
-      }
-    } else if (p.category === 'Perlengkapan Petani') {
-      sizeOptions = ['Diameter 48 cm (Standar)', 'Diameter 52 cm (Lebar)'];
-    } else if (p.category === 'Meja & Perabot') {
-      sizeOptions = ['60 x 40 cm (Standar)'];
-    }
-
-    const minQty = isPo && p.min_order ? Math.max(1, Number(p.min_order)) : 1;
+    // Ukuran/varian merupakan data produk yang ditetapkan admin di Supabase.
+    const sizeOptions = Array.isArray(p.variants)
+      ? [...new Set(p.variants.filter(value => typeof value === 'string' && value.trim().length > 0 && value.length <= 60).map(value => value.trim()))]
+      : [];
+    const hasVariants = sizeOptions.length > 0;
+    const sizeGuideText = typeof p.size_guide === 'string' ? p.size_guide.trim() : '';
+    const rawMinQty = isPo ? Number(p.min_order || 1) : 1;
+    const invalidMinQty = !Number.isSafeInteger(rawMinQty) || rawMinQty < 1 || rawMinQty > 50;
+    const minQty = invalidMinQty ? 1 : rawMinQty;
     const maxQty = isPo ? 50 : Math.min(20, Math.max(1, Number(p.stock) || 1));
     const isSold = !isPo && Number(p.stock) <= 0;
 
@@ -2915,16 +2741,16 @@
           ${renderProductPhoto(p.image_url, p.name, 'detail')}
         </div>
         <div class="product-detail-copy">
-          <div class="eyebrow">${esc(p.category || 'INABA')}</div>
+          <div class="eyebrow">${esc(p.category)}</div>
           <h3>${esc(p.name)}</h3>
           <div class="product-detail-price">${rupiah(p.price)}</div>
 
           ${isPo ? `
             <div class="po-timeline-box">
               <strong>Informasi Pre-Order:</strong><br>
-              • Lembaga: <strong>${esc(p.school_institution || 'Umum / Pesantren')}</strong><br>
+              • Lembaga: <strong>${esc(p.school_institution || 'Belum ditentukan admin')}</strong><br>
               • Status PO: <strong>${p.preorder_status === 'closed' ? 'Tutup Sementara' : 'Dibuka'}</strong><br>
-              • Estimasi Selesai: <strong>${esc(p.estimated_delivery || '10-14 hari kerja')}</strong><br>
+              • Estimasi Selesai: <strong>${esc(p.estimated_delivery || 'Belum diatur admin')}</strong><br>
               • Minimal Pesan: <strong>${minQty} pcs</strong>
             </div>
           ` : `
@@ -2933,20 +2759,22 @@
             </div>
           `}
 
-          <div class="product-detail-desc">${esc(p.description || 'Kualitas terjamin dari INABA HIJAB.')}</div>
+          ${p.description ? `<div class="product-detail-desc">${esc(p.description)}</div>` : ''}
+          ${!hasVariants ? '<div class="notice error" role="status">Pilihan ukuran/varian belum diatur admin di database. Produk ini belum dapat dipesan.</div>' : ''}
+          ${invalidMinQty ? '<div class="notice error" role="status">Konfigurasi minimal pemesanan tidak valid di database. Hubungi admin; pemesanan dinonaktifkan.</div>' : ''}
 
           ${specTableHtml}
 
           <div class="field">
             <label for="detailVariantSize">Pilihan Ukuran / Varian</label>
-            <select id="detailVariantSize">
-              ${sizeOptions.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('')}
+            <select id="detailVariantSize" ${hasVariants ? 'required' : 'disabled'}>
+              ${hasVariants ? sizeOptions.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('') : '<option value="">Varian belum diatur</option>'}
             </select>
           </div>
 
-          ${isPo ? `
+          ${sizeGuideText ? `
             <button type="button" class="text-link" id="btnOpenSizeGuideModal" style="margin-bottom:14px">
-              Lihat Tabel Panduan Ukuran Seragam ↗
+              Lihat Panduan Ukuran Produk ↗
             </button>
           ` : ''}
 
@@ -2958,7 +2786,7 @@
           </div>
 
           <div style="margin-top:20px;display:grid;gap:8px">
-            <button type="button" class="btn btn-full btn-clay" id="detailAddToCartBtn" ${isSold || (isPo && p.preorder_status === 'closed') ? 'disabled' : ''}>
+            <button type="button" class="btn btn-full btn-clay" id="detailAddToCartBtn" ${!hasVariants || invalidMinQty || isSold || (isPo && p.preorder_status === 'closed') ? 'disabled' : ''}>
               ${isSold ? 'Stok Habis' : (isPo ? (p.preorder_status === 'closed' ? 'Pre-Order Ditutup' : 'Pesan Pre-Order Sekarang ↗') : 'Tambah ke Keranjang ↗')}
             </button>
             <button type="button" class="btn btn-full btn-ghost" id="shareProductBtn" style="font-size:13px">
@@ -2970,6 +2798,11 @@
     `;
 
     $('#btnOpenSizeGuideModal')?.addEventListener('click', () => {
+      $('#sizeGuideTitle').textContent = `Panduan Ukuran — ${p.name}`;
+      const chosenVariants = sizeOptions.length
+        ? `<p><strong>Pilihan ukuran/varian:</strong> ${sizeOptions.map(value => esc(value)).join(', ')}</p>`
+        : '';
+      $('#sizeGuideContent').innerHTML = `${chosenVariants}<div>${esc(sizeGuideText).replace(/\r?\n/g, '<br>')}</div>`;
       openOverlay('sizeGuideOverlay');
     });
 
@@ -2993,9 +2826,9 @@
   }
 
 // Tambah barang ke keranjang belanja di database (Khusus yang sudah login)
-  async function addItemToCart(product, size = 'Standar', quantity = 1) {
+  async function addItemToCart(product, size = '', quantity = 1) {
     if (!state.user) {
-      toast('Silakan masuk atau daftar akun terlebih dahulu untuk menggunakan keranjang belanja.');
+      toast('Verifikasi email terlebih dahulu untuk menggunakan keranjang belanja.');
       openAuthModal();
       return;
     }
@@ -3004,20 +2837,29 @@
       return;
     }
 
-    const isPo = !!product.is_preorder || String(product.category || '').toLowerCase().includes('pre-order');
+    const isPo = product.is_preorder === true;
     if (!isPo && Number(product.stock) <= 0) {
       toast('Maaf, produk ini sedang habis.');
       return;
     }
 
     try {
+      const validVariants = Array.isArray(product.variants) && product.variants.some(value => typeof value === 'string' && value.trim() === String(size || '').trim());
+      if (!validVariants) {
+        toast('Pilihan ukuran/varian belum valid di database. Buka ulang detail produk dan pilih varian yang tersedia.');
+        return;
+      }
+      if (isPo && (!Number.isSafeInteger(Number(product.min_order || 1)) || Number(product.min_order || 1) < 1 || Number(product.min_order || 1) > 50 || !Number.isSafeInteger(quantity) || quantity < Number(product.min_order || 1) || quantity > 50)) {
+        toast('Jumlah pre-order tidak sesuai batas minimum/maksimum yang ditetapkan database.');
+        return;
+      }
       const existing = state.cart.find(x => String(x.id) === String(product.id) && x.size === size);
       if (existing) {
         const maxLimit = isPo ? 50 : Math.min(20, Number(product.stock) || 20);
         const newQty = Math.min(existing.quantity + quantity, maxLimit);
         const { error } = await sb
           .from('cart_items')
-          .update({ quantity: newQty, updated_at: new Date().toISOString() })
+          .update({ quantity: newQty })
           .eq('id', existing.cart_item_id);
         if (error) throw error;
       } else {
@@ -3027,9 +2869,7 @@
             user_id: state.user.id,
             product_id: product.id,
             quantity: quantity,
-            size: size,
-            is_preorder: isPo,
-            school_institution: product.school_institution || ''
+            size: size
           });
         if (error) throw error;
       }
@@ -3048,6 +2888,10 @@
     const item = state.cart.find(x => x.cart_item_id === cartItemId);
     if (!item) return;
     const newQty = item.quantity + delta;
+    if (newQty > 0 && item.is_preorder && newQty < Number(item.min_order || 1)) {
+      toast(`Minimal pre-order untuk produk ini ${Number(item.min_order || 1)} pcs. Hapus item bila tidak ingin melanjutkan.`);
+      return;
+    }
     try {
       if (newQty <= 0) {
         const { error } = await sb.from('cart_items').delete().eq('id', cartItemId);
@@ -3058,7 +2902,7 @@
         const cappedQty = Math.min(newQty, maxLimit);
         const { error } = await sb
           .from('cart_items')
-          .update({ quantity: cappedQty, updated_at: new Date().toISOString() })
+          .update({ quantity: cappedQty })
           .eq('id', cartItemId);
         if (error) throw error;
       }
@@ -3084,7 +2928,7 @@
   // Buka keranjang belanja (Memastikan pengguna sudah login)
   function openCartDrawer() {
     if (!state.user) {
-      toast('Silakan masuk atau daftar akun terlebih dahulu untuk melihat keranjang belanja.');
+      toast('Verifikasi email terlebih dahulu untuk melihat keranjang belanja.');
       openAuthModal();
       return;
     }
@@ -3101,9 +2945,9 @@
       el.innerHTML = `
         <div class="empty-state" style="text-align:center;padding:40px 16px">
           <svg viewBox="0 0 24 24" style="width:48px;height:48px;stroke:var(--muted);fill:none;stroke-width:1.4;margin:0 auto 12px"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.6-3.4 3.1-5.2 7-5.2s6.4 1.8 7 5.2"/></svg>
-          <h3 class="serif" style="font-size:24px;margin:0 0 8px">Login Diperlukan</h3>
-          <p style="font-size:14px;color:var(--muted);margin:0 0 20px">Keranjang belanja tersimpan di akun Anda. Silakan masuk atau daftar akun untuk berbelanja.</p>
-          <button type="button" class="btn btn-clay" id="cartLoginBtn">Masuk / Daftar Akun ↗</button>
+          <h3 class="serif" style="font-size:24px;margin:0 0 8px">Verifikasi Email</h3>
+          <p style="font-size:14px;color:var(--muted);margin:0 0 20px">Keranjang belanja tersimpan dengan aman di akun Anda. Verifikasi email untuk melanjutkan berbelanja.</p>
+          <button type="button" class="btn btn-clay" id="cartLoginBtn">Verifikasi Email ↗</button>
         </div>
       `;
       $('#cartLoginBtn')?.addEventListener('click', () => {
@@ -3128,8 +2972,9 @@
 
     const subtotal = state.cart.reduce((sum, item) => sum + (Number(item.price) || 0) * item.quantity, 0);
     const hasPreorder = state.cart.some(x => x.is_preorder);
+    const hasInvalidVariant = state.cart.some(item => item.variant_invalid || !Array.isArray(item.variants) || !item.variants.some(value => typeof value === 'string' && value.trim() === String(item.size || '').trim()));
 
-    el.innerHTML = state.cart.map(item => `
+    el.innerHTML = (hasInvalidVariant ? '<div class="notice error" role="alert">Ada item keranjang dengan ukuran/varian lama yang tidak cocok dengan data produk saat ini. Hapus item tersebut lalu tambahkan kembali dari detail produk.</div>' : '') + state.cart.map(item => `
       <div class="cart-line">
         <div class="cart-thumb">
           ${renderProductPhoto(item.image_url, item.name, 'cart')}
@@ -3139,7 +2984,8 @@
             ${item.is_preorder ? 'PRE-ORDER' : 'READY STOCK'}
           </span>
           <h3>${esc(item.name)}</h3>
-          <p>${rupiah(item.price)} · Ukuran: <strong>${esc(item.size)}</strong></p>
+          <p>${rupiah(item.price)} · Ukuran/varian: <strong>${esc(item.size || 'Tidak valid')}</strong></p>
+          ${item.variant_invalid ? '<p class="notice error" role="status">Varian ini sudah tidak tersedia pada produk terbaru.</p>' : ''}
           ${item.school_institution ? `<p style="font-size:11px;color:var(--olive)">Lembaga: ${esc(item.school_institution)}</p>` : ''}
           <div class="qty-row">
             <button type="button" data-cart-qty="-1" data-cart-id="${esc(item.cart_item_id)}">−</button>
@@ -3165,7 +3011,7 @@
       </div>
 
       <div style="display:grid;gap:10px">
-        <button class="btn btn-full btn-clay" id="proceedCheckoutBtn">Lanjutkan Pemesanan ↗</button>
+        <button class="btn btn-full btn-clay" id="proceedCheckoutBtn" ${hasInvalidVariant ? 'disabled' : ''}>Lanjutkan Pemesanan ↗</button>
         <button class="btn btn-full btn-ghost" id="continueShopBtn">Tambah Produk Lain</button>
       </div>
     `;
@@ -3191,12 +3037,16 @@
 
   // Alur Checkout
   function startCheckoutFlow() {
-    closeOverlay('cartOverlay');
     if (!state.cart.length) return;
+    const invalidItem = state.cart.find(item => item.variant_invalid || !Array.isArray(item.variants) || !item.variants.some(value => typeof value === 'string' && value.trim() === String(item.size || '').trim()));
+    if (invalidItem) { toast('Perbarui keranjang: ukuran/varian salah satu produk tidak lagi tersedia.'); renderCart(); return; }
+    const invalidQuantity = state.cart.find(item => !Number.isSafeInteger(Number(item.quantity)) || Number(item.quantity) < (item.is_preorder ? Number(item.min_order || 1) : 1) || Number(item.quantity) > 50);
+    if (invalidQuantity) { toast('Jumlah salah satu item tidak sesuai batas pesanan. Periksa kembali keranjang.'); renderCart(); return; }
+    closeOverlay('cartOverlay');
 
     if (!state.user) {
       state.pendingCheckout = true;
-      toast('Silakan masuk atau daftar akun terlebih dahulu.');
+      toast('Verifikasi email terlebih dahulu untuk melanjutkan pemesanan.');
       openAuthModal();
       return;
     }
@@ -3235,6 +3085,11 @@
         throw new Error('Keranjang belanja kosong.');
       }
 
+      const waContactConfig = String(state.storeSettings.contact_whatsapp || '').replace(/\D/g, '');
+      if (!/^62[0-9]{8,13}$/.test(waContactConfig)) {
+        throw new Error('Pengaturan WhatsApp toko tidak tersedia di Supabase. Pesanan belum dibuat.');
+      }
+
       const customerName = $('#checkoutName').value.trim();
       const customerPhone = $('#checkoutPhone').value.trim();
       const customerAddress = $('#checkoutAddress').value.trim();
@@ -3255,7 +3110,7 @@
       const itemsPayload = cartSnapshot.map(x => ({
         product_id: x.id,
         quantity: Math.max(1, Number(x.quantity) || 1),
-        size: String(x.size || 'Standar').slice(0, 60),
+        size: String(x.size || '').trim().slice(0, 60),
         is_preorder: !!x.is_preorder,
         school_institution: String(x.school_institution || '').slice(0, 100)
       }));
@@ -3278,10 +3133,27 @@
 
       const orderId = String(data);
       const reference = orderId.slice(0, 8).toUpperCase();
-      const subtotal = cartSnapshot.reduce((s, x) => s + (Number(x.price) || 0) * x.quantity, 0);
 
-      // Susun pesan WhatsApp yang rapi dan detail
-      const itemLines = cartSnapshot.map(x => `• ${x.name} [${x.is_preorder ? 'PRE-ORDER' : 'READY'}]\n   Varian/Ukuran: ${x.size}\n   Jumlah: ${x.quantity} pcs × ${rupiah(x.price)} = ${rupiah(x.price * x.quantity)}`).join('\n\n');
+      // Gunakan nilai yang disimpan server, bukan harga dari state/browser, untuk ringkasan konfirmasi.
+      let subtotal = null;
+      let itemLines = 'Rincian barang tersimpan di database pesanan.';
+      try {
+        const [{ data: savedOrder, error: orderReadError }, { data: savedItems, error: itemsReadError }] = await Promise.all([
+          sb.from('orders').select('subtotal').eq('id', orderId).maybeSingle(),
+          sb.from('order_items').select('product_name, quantity, variant_size, unit_price, is_preorder').eq('order_id', orderId).order('created_at', { ascending: true })
+        ]);
+        if (!orderReadError && savedOrder && Number.isFinite(Number(savedOrder.subtotal))) subtotal = Number(savedOrder.subtotal);
+        if (!itemsReadError && Array.isArray(savedItems) && savedItems.length) {
+          itemLines = savedItems.map(item => {
+            const qty = Number(item.quantity) || 0;
+            const unitPrice = Number(item.unit_price) || 0;
+            const lineTotal = qty * unitPrice;
+            return `• ${item.product_name} [${item.is_preorder ? 'PRE-ORDER' : 'READY'}]\n   Varian/Ukuran: ${item.variant_size}\n   Jumlah: ${qty} pcs × ${rupiah(unitPrice)} = ${rupiah(lineTotal)}`;
+          }).join('\n\n');
+        }
+      } catch (summaryError) {
+        console.warn('Ringkasan pesanan tersimpan, tetapi detail konfirmasi gagal dibaca:', summaryError);
+      }
 
       const waMsgLines = [
         `*KONFIRMASI PESANAN INABA HIJAB #${reference}*`,
@@ -3298,14 +3170,13 @@
         `*Daftar Barang:*`,
         itemLines,
         ``,
-        `*Subtotal Produk:* ${rupiah(subtotal)}`,
+        `*Subtotal Produk:* ${subtotal === null ? 'sudah tersimpan di database' : rupiah(subtotal)}`,
         `*Status:* Menunggu konfirmasi ongkir & metode transfer.`,
         ``,
         `Mohon info biaya ongkir ke alamat di atas dan rekening pembayaran resmi. Terima kasih!`
       ].filter(Boolean).join('\n');
 
-      const waContact = state.storeSettings.contact_whatsapp || '6285735144904';
-      const waUrl = `https://wa.me/${waContact}?text=${encodeURIComponent(waMsgLines)}`;
+      const waUrl = `https://wa.me/${waContactConfig}?text=${encodeURIComponent(waMsgLines)}`;
 
       // KOSONGKAN KERANJANG HANYA SETELAH DATABASE MENGONFIRMASI PESANAN
       state.cart = [];
@@ -3328,7 +3199,7 @@
             <ul style="margin:0;padding-left:18px">
               ${paymentList.map(p => `<li><strong>${esc(p.label)}:</strong> ${esc(p.detail)}</li>`).join('')}
             </ul>
-          ` : '<span>Nomor rekening transfer resmi akan diberikan langsung oleh admin melalui WhatsApp setelah total ongkir dikonfirmasi.</span>'}
+          ` : '<span>Informasi pembayaran belum tersedia dari database toko. Konfirmasikan kepada admin melalui WhatsApp sebelum melakukan transfer.</span>'}
         </div>
 
         <div style="display:grid;gap:10px;margin-top:20px">
@@ -3364,110 +3235,70 @@
     }
   });
 
-  // Modal Autentikasi
+  // Akses akun passwordless lewat magic link Supabase. Role admin ditentukan oleh RPC/RLS di server.
   function openAuthModal() {
     closeOverlay('accountOverlay');
-    $('#mobileMenu').classList.remove('open');
+    $('#mobileMenu')?.classList.remove('open');
     $('#authNotice').className = 'notice';
-    $('#authNotice').textContent = supabaseReady
-      ? 'Masuk atau daftar dengan email & password. Email admin terdaftar akan membuka dashboard pengelolaan.'
-      : 'Supabase belum dikonfigurasi.';
-
     $('#authFormWrap').classList.toggle('hide', !!state.user);
     $('#signedInWrap').classList.toggle('hide', !state.user);
 
     if (state.user) {
-      $('#signedInText').textContent = `Kamu masuk sebagai ${state.user.email} (${state.profile?.role === 'admin' ? 'Admin Toko' : 'Pelanggan'}).`;
-      $('#authTitle').textContent = 'Sudah Masuk Akun';
+      $('#authTitle').textContent = 'Akses Terverifikasi';
+      $('#authNotice').textContent = 'Akun sudah terverifikasi. Akses pengelolaan hanya tersedia jika Supabase mengesahkan peran admin.';
+      $('#signedInText').textContent = `${state.user.email} · ${state.profile?.role === 'admin' ? 'Admin Toko' : 'Pelanggan'}`;
     } else {
-      setAuthMode('login');
+      $('#authTitle').textContent = 'Akses Akun';
+      $('#authNotice').textContent = supabaseReady
+        ? 'Masukkan email untuk menerima tautan verifikasi satu kali. Akun admin yang telah disahkan server akan diarahkan ke dashboard pengelolaan.'
+        : 'Layanan akun belum dikonfigurasi.';
+      $('#authEmail').value = '';
+      $('#authEmail').setCustomValidity('');
+      $('#authSubmit').disabled = false;
+      $('#authSubmit').innerHTML = 'Kirim Tautan Akses <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg-arrow" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7"/></svg>';
     }
     openOverlay('authOverlay');
   }
 
-  function setAuthMode(mode) {
-    state.authMode = mode;
-    const isReset = mode === 'reset';
-    $('#authTitle').textContent = isReset ? 'Atur Kata Sandi Baru' : (mode === 'login' ? 'Masuk ke Akun' : 'Daftar Akun Baru');
-    $('#authSubmit').innerHTML = isReset ? 'Simpan Password ↗' : (mode === 'login' ? 'Masuk ke Akun ↗' : 'Buat Akun ↗');
-    $('#authEmailField').classList.toggle('hide', isReset);
-    $('#nameField').classList.toggle('hide', mode !== 'signup');
-    $('#nameField input').required = (mode === 'signup');
-    $('#forgotPasswordBtn').classList.toggle('hide', mode !== 'login');
-    $('#authSwitch').classList.toggle('hide', isReset);
-    if (!isReset) {
-      $('#authSwitch').innerHTML = mode === 'login'
-        ? 'Belum punya akun? <button type="button" id="switchAuthMode" class="text-link" style="font-size:inherit">Daftar sekarang</button>'
-        : 'Sudah punya akun? <button type="button" id="switchAuthMode" class="text-link" style="font-size:inherit">Masuk di sini</button>';
-      $('#switchAuthMode').onclick = () => setAuthMode(state.authMode === 'login' ? 'signup' : 'login');
-    }
-  }
-
   $('#authForm').addEventListener('submit', async e => {
     e.preventDefault();
-    if (!sb) { toast('Supabase belum aktif.'); return; }
-    const email = $('#authEmail').value.trim().toLowerCase();
-    const password = $('#authPassword').value;
-    const btn = $('#authSubmit');
-    btn.disabled = true;
-    btn.textContent = 'Memproses…';
-    $('#authNotice').className = 'notice';
-    $('#authNotice').textContent = 'Memproses permintaan…';
-
-    try {
-      if (state.authMode === 'reset') {
-        const { data, error } = await sb.auth.updateUser({ password });
-        if (error) throw error;
-        toast('Kata sandi berhasil diperbarui.');
-        closeOverlay('authOverlay');
-        return;
-      }
-      if (state.authMode === 'signup') {
-        const fullName = $('#authName').value.trim();
-        const { data, error } = await sb.auth.signUp({ email, password, options: { data: { full_name: fullName } } });
-        if (error) throw error;
-        if (!data.session) {
-          $('#authNotice').className = 'notice error';
-          $('#authNotice').textContent = 'Akun terdaftar, namun sesi belum aktif. Pastikan verifikasi email dimatikan atau cek email konfirmasi.';
-          return;
-        }
-        await loadSession(data.user);
-        closeOverlay('authOverlay');
-        toast('Akun berhasil dibuat. Selamat datang!');
-        if (state.pendingCheckout) startCheckoutFlow();
-      } else {
-        const { data, error } = await sb.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        await loadSession(data.user);
-        closeOverlay('authOverlay');
-        toast(state.profile?.role === 'admin' ? 'Login Admin Berhasil.' : 'Berhasil masuk akun.');
-        if (state.profile?.role === 'admin') openAccountArea();
-        else if (state.pendingCheckout) startCheckoutFlow();
-      }
-    } catch (err) {
+    if (!sb) {
       $('#authNotice').className = 'notice error';
-      $('#authNotice').textContent = err.message || 'Autentikasi gagal.';
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = state.authMode === 'login' ? 'Masuk ke Akun ↗' : 'Buat Akun ↗';
-    }
-  });
-
-  $('#forgotPasswordBtn').addEventListener('click', async () => {
-    const email = $('#authEmail').value.trim().toLowerCase();
-    if (!email) {
-      $('#authNotice').className = 'notice error';
-      $('#authNotice').textContent = 'Ketikkan email terlebih dahulu untuk meminta tautan reset.';
+      $('#authNotice').textContent = 'Layanan akun tidak tersedia karena koneksi Supabase belum siap.';
       return;
     }
+
+    const email = String($('#authEmail').value || '').trim().toLowerCase();
+    if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      $('#authNotice').className = 'notice error';
+      $('#authNotice').textContent = 'Periksa kembali format email.';
+      return;
+    }
+
+    const btn = $('#authSubmit');
+    btn.disabled = true;
+    btn.textContent = 'Mengirim tautan…';
+    $('#authNotice').className = 'notice';
+    $('#authNotice').textContent = 'Memproses permintaan secara aman…';
+
     try {
-      const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: AUTH_REDIRECT_URL });
+      const { error } = await sb.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: AUTH_REDIRECT_URL,
+          shouldCreateUser: true
+        }
+      });
       if (error) throw error;
       $('#authNotice').className = 'notice success';
-      $('#authNotice').textContent = 'Tautan reset sandi sudah dikirim jika email terdaftar.';
+      $('#authNotice').textContent = 'Jika email dapat menerima tautan akses, pesan verifikasi akan dikirim. Buka tautan tersebut di perangkat ini untuk menyelesaikan akses. Demi keamanan, status email tidak diungkapkan oleh halaman ini.';
+      btn.textContent = 'Tautan Akses Dikirim';
     } catch (err) {
+      console.warn('Permintaan tautan akses gagal:', err);
       $('#authNotice').className = 'notice error';
-      $('#authNotice').textContent = err.message || 'Gagal mengirim email reset.';
+      $('#authNotice').textContent = 'Tautan akses tidak dapat dikirim saat ini. Periksa koneksi, konfigurasi email Supabase, atau coba lagi nanti.';
+      btn.disabled = false;
+      btn.innerHTML = 'Kirim Tautan Akses <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg-arrow" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7"/></svg>';
     }
   });
 
@@ -3525,6 +3356,18 @@
     }
   }
 
+  function openGlobalSizeGuide() {
+    const rows = state.products.filter(product => typeof product.size_guide === 'string' && product.size_guide.trim());
+    $('#sizeGuideTitle').textContent = 'Panduan Ukuran Produk';
+    $('#sizeGuideContent').innerHTML = rows.length
+      ? rows.map(product => {
+          const variants = Array.isArray(product.variants) ? product.variants.filter(value => typeof value === 'string' && value.trim()) : [];
+          return `<section style="margin-bottom:22px"><h3 style="font:20px var(--serif);margin:0 0 8px">${esc(product.name)}</h3>${variants.length ? `<p><strong>Ukuran/varian:</strong> ${variants.map(value => esc(value)).join(', ')}</p>` : ''}<div>${esc(product.size_guide).replace(/\r?\n/g, '<br>')}</div></section>`;
+        }).join('')
+      : '<p class="field-hint">Belum ada panduan ukuran yang diisi admin pada data produk Supabase.</p>';
+    openOverlay('sizeGuideOverlay');
+  }
+
   // Account Area / Admin Area
   async function openAccountArea() {
     if (!state.user) {
@@ -3545,7 +3388,7 @@
     $('#accountAreaEyebrow').innerHTML = '<span class="eyebrow-dot"></span> Area Pelanggan';
     $('#accountAreaTitle').textContent = 'Akun Saya';
     $('#accountAreaContent').innerHTML = `
-      <div class="notice">Masuk sebagai pelanggan toko. Di sini kamu dapat melihat riwayat pesanan yang pernah diajukan.</div>
+      <div class="notice">Akses pelanggan terverifikasi. Di sini kamu dapat melihat riwayat pesanan yang pernah diajukan.</div>
       <div class="admin-item" style="padding:16px 0">
         <div>
           <strong style="font-size:16px">${esc(state.profile?.full_name || state.user.email)}</strong>
@@ -3743,7 +3586,7 @@
           <div class="form-grid">
             <div class="field">
               <label for="apName">Nama Produk *</label>
-              <input id="apName" required maxlength="120" placeholder="Contoh: Seragam SDIT Putra Lengkap" />
+              <input id="apName" required maxlength="100" placeholder="Contoh: Seragam SDIT Putra Lengkap" />
             </div>
             <div class="field">
               <label for="apCategory">Kategori *</label>
@@ -3756,11 +3599,11 @@
           <div class="form-grid">
             <div class="field">
               <label for="apPrice">Harga (IDR) *</label>
-              <input type="number" min="0" id="apPrice" required placeholder="Contoh: 125000" />
+              <input type="number" min="0" id="apPrice" required min="0" max="100000000000" step="1" placeholder="Contoh: 125000" />
             </div>
             <div class="field">
               <label for="apStock">Jumlah Stok (Ready)</label>
-              <input type="number" min="0" id="apStock" value="0" />
+              <input type="number" min="0" id="apStock" value="0" max="2147483647" step="1" />
             </div>
           </div>
 
@@ -3777,7 +3620,7 @@
             <div class="form-grid">
               <div class="field">
                 <label for="apSchool">Nama Lembaga / Sekolah</label>
-                <input id="apSchool" placeholder="Contoh: SDIT Al-Hidayah / Santri TPQ Binaan" />
+                <input id="apSchool" maxlength="100" placeholder="Contoh: SDIT Al-Hidayah / Santri TPQ Binaan" />
               </div>
               <div class="field">
                 <label for="apPoStatus">Status Pre-Order</label>
@@ -3791,18 +3634,31 @@
             <div class="form-grid">
               <div class="field">
                 <label for="apDelivery">Estimasi Waktu Pengerjaan</label>
-                <input id="apDelivery" placeholder="Contoh: 14 hari kerja setelah tutup PO" />
+                <input id="apDelivery" maxlength="150" placeholder="Contoh: 14 hari kerja setelah tutup PO" />
               </div>
               <div class="field">
                 <label for="apMinOrder">Minimal Pemesanan (Pcs)</label>
-                <input type="number" min="1" id="apMinOrder" value="1" />
+                <input type="number" min="1" id="apMinOrder" value="1" max="50" step="1" />
               </div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="apVariants">Pilihan Ukuran / Varian dari Admin *</label>
+              <textarea id="apVariants" required maxlength="3100" rows="3" placeholder="S | M | L | XL"></textarea>
+              <p class="field-hint">Pisahkan pilihan dengan tanda | atau baris baru. Pilihan ini disimpan di database dan dipakai pada keranjang/checkout.</p>
+            </div>
+            <div class="field">
+              <label for="apSizeGuide">Panduan Ukuran Produk (Opsional)</label>
+              <textarea id="apSizeGuide" maxlength="2000" rows="3" placeholder="Masukkan panduan atau ukuran produk yang benar-benar berlaku."></textarea>
+              <p class="field-hint">Teks ini ditampilkan pada detail produk. Jangan masukkan data ukuran yang belum dikonfirmasi.</p>
             </div>
           </div>
 
           <div class="field">
             <label for="apDesc">Deskripsi Lengkap Produk</label>
-            <textarea id="apDesc" placeholder="Jelaskan detail bahan, kualitas, dan kegunaan produk."></textarea>
+            <textarea id="apDesc" maxlength="5000" placeholder="Jelaskan detail bahan, kualitas, dan kegunaan produk."></textarea>
           </div>
 
           <div class="form-grid">
@@ -3822,7 +3678,7 @@
             </div>
             <div class="field">
               <label for="apBadge">Badge Label (Opsional)</label>
-              <input id="apBadge" placeholder="Contoh: BESTSELLER, TERLARIS, BARU" />
+              <input id="apBadge" maxlength="40" placeholder="Contoh: BESTSELLER, TERLARIS, BARU" />
               <label style="display:flex;align-items:center;gap:6px;margin-top:12px;cursor:pointer">
                 <input type="checkbox" id="apFeatured" style="width:auto;min-height:auto" />
                 <span>Tampilkan sebagai Produk Unggulan</span>
@@ -3955,6 +3811,8 @@
     $('#apDelivery').value = p?.estimated_delivery || '';
     $('#apMinOrder').value = p?.min_order || 1;
     $('#apDesc').value = p?.description || '';
+    $('#apVariants').value = Array.isArray(p?.variants) ? p.variants.filter(v => typeof v === 'string').join(' | ') : '';
+    $('#apSizeGuide').value = p?.size_guide || '';
     $('#apCurrentImageUrl').value = getManagedStoragePath(p?.image_url, 'product-images') ? p.image_url : '';
     $('#apRemoveImage').checked = false;
     $('#apBadge').value = p?.badge || '';
@@ -3983,6 +3841,7 @@
     let previousProductImageUrl = null;
     try {
       const id = $('#apId').value;
+      const existingProduct = id ? adminProducts.find(item => String(item.id) === String(id)) : null;
       previousProductImageUrl = $('#apCurrentImageUrl').value || null;
       const removeImage = $('#apRemoveImage').checked;
       let imageUrl = removeImage ? null : previousProductImageUrl;
@@ -4000,25 +3859,46 @@
       }
 
       const name = $('#apName').value.trim();
+      const category = $('#apCategory').value;
+      const price = Number($('#apPrice').value);
+      const enteredStock = Number($('#apStock').value || 0);
+      const schoolInstitution = $('#apSchool').value.trim();
+      const estimatedDelivery = $('#apDelivery').value.trim();
+      const minOrder = Number($('#apMinOrder').value || 1);
+      const description = $('#apDesc').value.trim();
+      const variantsRaw = $('#apVariants').value.trim();
+      const variants = variantsRaw.split(/[|\r\n]+/).map(value => value.trim()).filter(Boolean);
+      const sizeGuide = $('#apSizeGuide').value.trim();
+      const badge = $('#apBadge').value.trim();
+      if (!name || name.length > 100) throw new Error('Nama produk wajib diisi dan maksimal 100 karakter.');
+      if (!adminCategories.some(item => item.name === category)) throw new Error('Pilih kategori yang tersimpan di Supabase.');
+      if (!Number.isSafeInteger(price) || price < 0 || price > 100000000000) throw new Error('Harga harus berupa bilangan bulat yang valid.');
+      if (!Number.isSafeInteger(enteredStock) || enteredStock < 0 || enteredStock > 2147483647) throw new Error('Stok harus berupa bilangan bulat non-negatif.');
+      if (schoolInstitution.length > 100 || estimatedDelivery.length > 150 || description.length > 5000 || sizeGuide.length > 2000 || badge.length > 40) throw new Error('Salah satu keterangan produk melampaui batas karakter.');
+      if (variants.length < 1 || variants.length > 50 || variants.some(value => value.length < 1 || value.length > 60)) throw new Error('Tambahkan 1–50 pilihan ukuran/varian dengan panjang maksimal 60 karakter per pilihan.');
+      if (new Set(variants.map(value => value.toLocaleLowerCase('id-ID'))).size !== variants.length) throw new Error('Pilihan ukuran/varian tidak boleh duplikat.');
+      if (!Number.isSafeInteger(minOrder) || minOrder < 1 || minOrder > 50) throw new Error('Minimal pemesanan harus berada di antara 1–50 pcs agar sesuai batas checkout.');
       const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + (id ? '' : '-' + Date.now().toString(36));
 
       const isPo = $('#apIsPreorder').checked;
       const productRow = {
         name,
         slug,
-        category: $('#apCategory').value,
-        price: Math.max(0, Number($('#apPrice').value) || 0),
-        stock: isPo ? 0 : Math.max(0, Number($('#apStock').value) || 0),
+        category,
+        price,
+        stock: isPo ? 0 : enteredStock,
         is_preorder: isPo,
         preorder_status: isPo ? $('#apPoStatus').value : 'open',
-        school_institution: isPo ? $('#apSchool').value.trim() : '',
-        estimated_delivery: isPo ? $('#apDelivery').value.trim() : '',
-        min_order: isPo ? Math.max(1, Number($('#apMinOrder').value) || 1) : 1,
-        description: $('#apDesc').value.trim(),
-        badge: $('#apBadge').value.trim() || null,
+        school_institution: isPo ? schoolInstitution : '',
+        estimated_delivery: isPo ? estimatedDelivery : '',
+        min_order: isPo ? minOrder : 1,
+        description,
+        variants,
+        size_guide: sizeGuide,
+        badge: badge || null,
         featured: $('#apFeatured').checked,
         image_url: imageUrl,
-        is_active: true
+        is_active: existingProduct ? !!existingProduct.is_active : true
       };
 
       const result = id
@@ -4087,7 +3967,7 @@
           </div>
           <div class="field">
             <label for="acDesc">Deskripsi Kategori</label>
-            <input id="acDesc" placeholder="Keterangan singkat tentang kelompok produk ini." />
+            <input id="acDesc" maxlength="500" placeholder="Keterangan singkat tentang kelompok produk ini." />
           </div>
           <div class="field">
             <label for="acOrder">Urutan Tampilan (Angka)</label>
@@ -4132,14 +4012,24 @@
       b.addEventListener('click', async () => {
         const cat = adminCategories.find(x => x.slug === b.dataset.catToggle);
         if (!cat) return;
-        cat.is_active = !cat.is_active;
-        if (sb && cat.id && !cat.id.startsWith('cat-')) {
-          await sb.from('categories').update({ is_active: cat.is_active }).eq('id', cat.id);
+        if (!sb || state.profile?.role !== 'admin') {
+          toast('Sesi admin dan koneksi Supabase diperlukan.');
+          return;
         }
-        state.categories = [...adminCategories];
-        renderCategoryFilters();
-        renderAdminDashboard();
-        toast('Status kategori diperbarui.');
+        b.disabled = true;
+        try {
+          const { error } = await sb.from('categories').update({ is_active: !cat.is_active }).eq('id', cat.id).select('id').single();
+          if (error) throw error;
+          await loadAdminDashboardData();
+          await refreshProducts();
+          renderAdminDashboard();
+          toast('Status kategori berhasil disimpan di database.');
+        } catch (err) {
+          console.error('Category status update failed:', err);
+          toast('Status kategori gagal disimpan. Data lokal tidak diubah.');
+        } finally {
+          b.disabled = false;
+        }
       });
     });
   }
@@ -4158,44 +4048,41 @@
   async function handleSaveCategory(e) {
     e.preventDefault();
     const btn = $('#saveCatBtn');
+    if (!sb || state.profile?.role !== 'admin') {
+      toast('Sesi admin dan koneksi Supabase diperlukan.');
+      return;
+    }
     btn.disabled = true;
     btn.textContent = 'Menyimpan…';
 
     try {
       const id = $('#acId').value;
       const name = $('#acName').value.trim();
-      const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      const icon = $('#acIcon').value.trim() || 'package';
+      if (!name || name.length > 80) throw new Error('Nama kategori wajib diisi dan maksimal 80 karakter.');
+      const slugBase = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      const slug = slugBase || `kategori-${crypto.randomUUID().slice(0, 8)}`;
+      const allowedIcons = new Set(['sparkles', 'graduation-cap', 'sun', 'table', 'shirt', 'wheat', 'package']);
+      const requestedIcon = $('#acIcon').value.trim();
+      const icon = allowedIcons.has(requestedIcon) ? requestedIcon : 'package';
       const description = $('#acDesc').value.trim();
-      const display_order = Number($('#acOrder').value) || 0;
+      if (description.length > 500) throw new Error('Deskripsi kategori maksimal 500 karakter.');
+      const display_order = Math.max(0, Math.floor(Number($('#acOrder').value) || 0));
+      const existing = id ? adminCategories.find(item => String(item.id) === String(id)) : null;
+      const catRow = { name, slug, icon, description, display_order, is_active: existing ? !!existing.is_active : true };
 
-      const catRow = { name, slug, icon, description, display_order, is_active: true };
+      const result = id
+        ? await sb.from('categories').update(catRow).eq('id', id).select('*').single()
+        : await sb.from('categories').insert(catRow).select('*').single();
+      if (result.error) throw result.error;
+      if (!result.data?.id) throw new Error('Database tidak mengembalikan kategori yang tersimpan.');
 
-      if (sb) {
-        try {
-          const res = id && !id.startsWith('cat-')
-            ? await sb.from('categories').update(catRow).eq('id', id)
-            : await sb.from('categories').insert(catRow);
-          if (res.error) throw res.error;
-        } catch (dbErr) {
-          console.warn('DB categories update note:', dbErr);
-        }
-      }
-
-      // Update in memory state
-      const existingIdx = adminCategories.findIndex(x => (id && x.id === id) || x.slug === slug);
-      if (existingIdx >= 0) {
-        adminCategories[existingIdx] = { ...adminCategories[existingIdx], ...catRow };
-      } else {
-        adminCategories.push({ id: 'cat-' + Date.now(), ...catRow });
-      }
-
-      state.categories = [...adminCategories];
-      renderCategoryFilters();
+      await loadAdminDashboardData();
+      await refreshProducts();
       renderAdminDashboard();
-      toast('Kategori berhasil disimpan.');
+      toast('Kategori berhasil disimpan di Supabase.');
     } catch (err) {
-      toast('Gagal simpan kategori: ' + err.message);
+      console.error('Category save failed:', err);
+      toast('Gagal menyimpan kategori: ' + (err.message || 'Periksa koneksi database.'));
     } finally {
       btn.disabled = false;
       btn.textContent = 'Simpan Kategori';
@@ -4235,7 +4122,7 @@
                 <strong>Rincian Barang:</strong>
                 <ul style="margin:4px 0 0;padding-left:20px">
                   ${(o.items || []).map(it => `
-                    <li>${esc(it.product_name)} ×${it.quantity} (Ukuran: <strong>${esc(it.variant_size || 'Standar')}</strong>) — ${rupiah(it.unit_price)}</li>
+                    <li>${esc(it.product_name)} ×${it.quantity} (Ukuran: <strong>${esc(it.variant_size || '—')}</strong>) — ${rupiah(it.unit_price)}</li>
                   `).join('') || '<li>Detail barang tercatat di database</li>'}
                 </ul>
               </div>
@@ -4429,7 +4316,7 @@
         <form id="adminSettingsForm">
           <div class="field">
             <label for="asWhatsapp">Nomor WhatsApp Toko (Awali 62)</label>
-            <input id="asWhatsapp" value="${esc(s.contact_whatsapp)}" required placeholder="Contoh: 6285735144904" />
+            <input id="asWhatsapp" value="${esc(s.contact_whatsapp)}" required placeholder="62xxxxxxxxxx" />
           </div>
           <div class="field">
             <label for="asPayment">Daftar Rekening Pembayaran (Format Baris: Label | Nomor &amp; Pemilik)</label>
@@ -4453,21 +4340,27 @@
         if (!/^62[0-9]{8,13}$/.test(wa)) throw new Error('Nomor WhatsApp harus diawali 62 dan berisi 10–15 digit.');
         if (!sb || state.profile?.role !== 'admin') throw new Error('Sesi admin atau koneksi database tidak tersedia.');
         const paymentRaw = $('#asPayment').value.trim();
-        const payments = paymentRaw.split('\n').filter(Boolean).map(line => {
+        const paymentLines = paymentRaw ? paymentRaw.split(/\r?\n/).map(line => line.trim()).filter(Boolean) : [];
+        if (paymentLines.length > 20) throw new Error('Maksimal 20 baris informasi pembayaran.');
+        const payments = paymentLines.map(line => {
           const parts = line.split('|');
-          return { label: (parts[0] || 'Bank').trim(), detail: (parts[1] || '').trim() };
+          const label = (parts.shift() || '').trim();
+          const detail = parts.join('|').trim();
+          if (!label || label.length > 80 || !detail || detail.length > 240) {
+            throw new Error('Setiap baris pembayaran harus berformat Label | Detail (Label maks. 80, detail maks. 240 karakter).');
+          }
+          return { label, detail };
         });
 
         const { error } = await sb.from('store_settings').upsert([
-          { key: 'contact_whatsapp', value: JSON.stringify(wa) },
-          { key: 'payment_accounts', value: JSON.stringify(payments) }
+          { key: 'contact_whatsapp', value: wa },
+          { key: 'payment_accounts', value: payments }
         ]);
         if (error) throw error;
 
-        // Simpan ke state & localStorage HANYA SETELAH database server mengonfirmasi
+        // Perbarui state hanya setelah database server mengonfirmasi
         state.storeSettings.contact_whatsapp = wa;
         state.storeSettings.payment_accounts = payments;
-        localStorage.setItem('inaba_store_settings', JSON.stringify(state.storeSettings));
         updateStoreViewSettings();
         toast('Pengaturan toko berhasil disimpan ke database!');
       } catch (err) {
@@ -4527,30 +4420,55 @@
   // Pengaturan kontak dibaca dari database dan diterapkan ke seluruh CTA WhatsApp.
   function updateStoreViewSettings() {
     const wa = String(state.storeSettings.contact_whatsapp || '').replace(/\D/g, '');
-    if (!/^62[0-9]{8,13}$/.test(wa)) return;
+    const validWa = /^62[0-9]{8,13}$/.test(wa);
     $$('[data-whatsapp-link]').forEach(anchor => {
+      if (!validWa) {
+        anchor.href = '#bantuan';
+        anchor.setAttribute('aria-disabled', 'true');
+        anchor.removeAttribute('target');
+        return;
+      }
       const isPreorder = anchor.dataset.whatsappLink === 'preorder';
       const message = isPreorder
         ? 'Halo INABA HIJAB, saya ingin konsultasi pre-order seragam sekolah.'
         : 'Halo INABA HIJAB, saya ingin bertanya tentang produk.';
       anchor.href = `https://wa.me/${wa}?text=${encodeURIComponent(message)}`;
+      anchor.setAttribute('target', '_blank');
+      anchor.setAttribute('rel', 'noopener noreferrer');
+      anchor.removeAttribute('aria-disabled');
     });
     const footer = $('#footerWhatsApp');
     if (footer && footer.firstChild && footer.firstChild.nodeType === Node.TEXT_NODE) {
-      footer.firstChild.nodeValue = `WhatsApp: +${wa} `;
+      footer.firstChild.nodeValue = validWa ? `WhatsApp: +${wa} ` : 'WhatsApp toko belum dikonfigurasi ';
     }
+    if (state.storeSettings.store_title) document.title = `${state.storeSettings.store_title} — Busana Muslim, Seragam & Kebutuhan Harian`;
   }
 
+  document.addEventListener('click', e => {
+    const disabledContact = e.target.closest('a[data-whatsapp-link][aria-disabled="true"]');
+    if (disabledContact) {
+      e.preventDefault();
+      toast('Kontak WhatsApp belum tersedia dari pengaturan Supabase.');
+    }
+  });
+
   async function loadStoreSettings() {
+    state.storeSettings = { store_title: '', contact_whatsapp: '', payment_accounts: [] };
+    updateStoreViewSettings();
     if (!sb) return;
     const { data, error } = await sb.from('store_settings').select('key,value').in('key', ['contact_whatsapp', 'payment_accounts', 'store_title']);
     if (error) throw error;
+    // Hanya nilai yang benar-benar tersimpan di Supabase yang dipakai; tidak ada fallback dari browser.
+    state.storeSettings = { store_title: '', contact_whatsapp: '', payment_accounts: [] };
     for (const row of data || []) {
-      // Supabase returns JSONB strings as JS strings and JSONB arrays as JS arrays.
       const value = row.value;
       if (row.key === 'contact_whatsapp' && typeof value === 'string') state.storeSettings.contact_whatsapp = value.replace(/\D/g, '');
-      if (row.key === 'payment_accounts' && Array.isArray(value)) state.storeSettings.payment_accounts = value;
-      if (row.key === 'store_title' && typeof value === 'string') state.storeSettings.store_title = value;
+      if (row.key === 'payment_accounts' && Array.isArray(value)) {
+        state.storeSettings.payment_accounts = value
+          .filter(item => item && typeof item.label === 'string' && typeof item.detail === 'string')
+          .map(item => ({ label: item.label.slice(0, 80), detail: item.detail.slice(0, 240) }));
+      }
+      if (row.key === 'store_title' && typeof value === 'string') state.storeSettings.store_title = value.slice(0, 120);
     }
     updateStoreViewSettings();
   }
@@ -4626,14 +4544,13 @@
     btn.disabled = true;
 
     try {
-      if (sb) {
-        const { error } = await sb.from('newsletter_subscribers').insert({ email });
-        if (error && error.code !== '23505') throw error;
-      }
-      toast('Terima kasih! Email kamu sudah terdaftar untuk kabar INABA.');
+      if (!sb) throw new Error('Koneksi Supabase belum tersedia. Email tidak disimpan.');
+      const { error } = await sb.from('newsletter_subscribers').insert({ email });
+      if (error && error.code !== '23505') throw error;
+      toast(error?.code === '23505' ? 'Email tersebut sudah terdaftar.' : 'Email berhasil disimpan untuk kabar INABA.');
       e.target.reset();
     } catch (err) {
-      toast('Pendaftaran email gagal: ' + err.message);
+      toast('Pendaftaran email gagal: ' + (err.message || 'Coba lagi nanti.'));
     } finally {
       btn.disabled = false;
     }
@@ -4711,71 +4628,10 @@
     setTimeout(() => $('#productSearch')?.focus(), 400);
   });
 
-  // Mobile Bottom Navigation Interaktif & Highlight Aktif
-  function initBottomNav() {
-    const navItems = $$('.bottom-nav a, .bottom-nav button');
-    if (!navItems.length) return;
-
-    function setActiveNav(targetEl) {
-      navItems.forEach(el => el.classList.remove('current', 'active'));
-      if (targetEl) targetEl.classList.add('current', 'active');
-    }
-
-    navItems.forEach(item => {
-      item.addEventListener('click', e => {
-        const navType = item.dataset.nav;
-        if (navType === 'cart') {
-          e.preventDefault();
-          openCartDrawer();
-          setActiveNav(item);
-        } else if (navType === 'account') {
-          e.preventDefault();
-          openAccountArea();
-          setActiveNav(item);
-        } else {
-          setActiveNav(item);
-          const href = item.getAttribute('href');
-          if (href && href.startsWith('#')) {
-            const targetSec = document.querySelector(href);
-            if (targetSec) {
-              e.preventDefault();
-              targetSec.scrollIntoView({ behavior: 'smooth' });
-            }
-          }
-        }
-      });
-    });
-
-    if ('IntersectionObserver' in window) {
-      const sections = [
-        { id: 'home', nav: 'home' },
-        { id: 'preorder-section', nav: 'preorder' },
-        { id: 'shop', nav: 'shop' }
-      ];
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const match = sections.find(s => s.id === entry.target.id);
-            if (match) {
-              const activeBtn = document.querySelector(`.bottom-nav [data-nav="${match.nav}"]`);
-              if (activeBtn) setActiveNav(activeBtn);
-            }
-          }
-        });
-      }, { threshold: 0.35 });
-
-      sections.forEach(s => {
-        const el = document.getElementById(s.id);
-        if (el) observer.observe(el);
-      });
-    }
-  }
-
   // Buttons Navigasi & Modal
   $('#cartBtn')?.addEventListener('click', openCartDrawer);
   $('#accountBtn')?.addEventListener('click', openAccountArea);
   $('#mobileAccountBtn')?.addEventListener('click', openAccountArea);
-  initBottomNav();
   $('#footerAccount')?.addEventListener('click', e => { e.preventDefault(); openAccountArea(); });
   $('#footerAdmin')?.addEventListener('click', e => {
     e.preventDefault();
@@ -4784,8 +4640,8 @@
   });
   $('#openAccountAreaBtn')?.addEventListener('click', () => { closeOverlay('authOverlay'); openAccountArea(); });
 
-  $('#openSizeGuideGlobal')?.addEventListener('click', () => openOverlay('sizeGuideOverlay'));
-  $('#footerSizeGuide')?.addEventListener('click', e => { e.preventDefault(); openOverlay('sizeGuideOverlay'); });
+  $('#openSizeGuideGlobal')?.addEventListener('click', openGlobalSizeGuide);
+  $('#footerSizeGuide')?.addEventListener('click', e => { e.preventDefault(); openGlobalSizeGuide(); });
 
   // Inisialisasi Auth State Change
   if (sb) {
@@ -4797,9 +4653,15 @@
             state.profile = null;
             state.backendError = null;
           }
-          if (event === 'PASSWORD_RECOVERY') {
-            openAuthModal();
-            setAuthMode('reset');
+          if (event === 'SIGNED_IN' && session?.user) {
+            closeOverlay('authOverlay');
+            if (state.profile?.role === 'admin') {
+              await openAccountArea();
+              toast('Akses admin diverifikasi oleh Supabase.');
+            } else {
+              toast('Email berhasil diverifikasi.');
+              if (state.cart.length) openCartDrawer();
+            }
           }
         } catch (err) {
           console.warn('Session event warning:', err);

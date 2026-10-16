@@ -2,7 +2,7 @@
 -- INABA HIJAB — UNIFIED PRODUCTION DATABASE SETUP (SUPABASE ONLY)
 -- Skrip Tunggal Lengkap untuk dijalankan di Supabase SQL Editor.
 -- Mendukung:
--- 1. Autentikasi Pengguna & Profil (allowlist + trusted app_metadata)
+-- 1. Autentikasi Pengguna & Profil (allowlist server-side + email terverifikasi)
 -- 2. Keranjang Belanja Berbasis Database (public.cart_items) untuk pengguna terdaftar
 -- 3. Katalog Multikategori Dinamis (categories, products, store_settings)
 -- 4. Pre-Order Seragam Sekolah & Ready Stock Inventori
@@ -43,7 +43,7 @@ create table if not exists public.products (
   slug text not null unique,
   category text not null check (char_length(category) between 1 and 80),
   description text not null default '',
-  price bigint not null check (price >= 0),
+  price bigint not null check (price between 0 and 100000000000),
   image_url text,
   badge text,
   featured boolean not null default false,
@@ -55,14 +55,23 @@ create table if not exists public.products (
   preorder_end timestamptz,
   estimated_delivery text default '',
   school_institution text default '',
-  min_order integer not null default 1 check (min_order >= 1),
+  min_order integer not null default 1 check (min_order between 1 and 50),
   size_guide text default '',
   specifications jsonb default '{}'::jsonb,
   gallery_urls jsonb default '[]'::jsonb,
+  variants jsonb not null default '[]'::jsonb,
   created_at timestamptz not null default now()
 );
 
--- Penyesuaian skema produk jika tabel lama sudah ada sebelumnya
+-- Penyesuaian skema produk jika tabel lama sudah ada sebelumnya.
+-- NOT VALID menjaga migrasi tidak langsung gagal bila data legacy berada di luar batas;
+-- constraint tetap diterapkan ke INSERT/UPDATE baru, dan checkout memvalidasi ulang nilai lama.
+alter table public.products drop constraint if exists products_price_check;
+alter table public.products drop constraint if exists products_price_bounds_check;
+alter table public.products add constraint products_price_bounds_check check (price between 0 and 100000000000) not valid;
+alter table public.products drop constraint if exists products_min_order_check;
+alter table public.products drop constraint if exists products_min_order_bounds_check;
+alter table public.products add constraint products_min_order_bounds_check check (min_order between 1 and 50) not valid;
 alter table public.products drop constraint if exists products_category_check;
 alter table public.products add column if not exists is_preorder boolean not null default false;
 alter table public.products add column if not exists preorder_status text not null default 'open';
@@ -76,6 +85,26 @@ alter table public.products add column if not exists min_order integer not null 
 alter table public.products add column if not exists size_guide text default '';
 alter table public.products add column if not exists specifications jsonb default '{}'::jsonb;
 alter table public.products add column if not exists gallery_urls jsonb default '[]'::jsonb;
+alter table public.products add column if not exists variants jsonb not null default '[]'::jsonb;
+alter table public.products drop constraint if exists products_variants_array_check;
+alter table public.products add constraint products_variants_array_check check (jsonb_typeof(variants) = 'array');
+
+-- Ganti nama kategori turut menyelaraskan products.category di transaksi yang sama.
+create or replace function public.sync_product_category_name()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  if new.name is distinct from old.name then
+    update public.products set category = new.name where category = old.name;
+  end if;
+  return new;
+end;
+$$;
+revoke all on function public.sync_product_category_name() from public, anon, authenticated;
+
+drop trigger if exists on_category_name_changed on public.categories;
+create trigger on_category_name_changed
+  after update of name on public.categories
+  for each row execute function public.sync_product_category_name();
 
 -- 4. TABEL PESANAN & ITEM PESANAN
 create table if not exists public.orders (
@@ -96,7 +125,7 @@ create table if not exists public.order_items (
   product_id uuid references public.products(id) on delete set null,
   product_name text not null,
   quantity integer not null check (quantity between 1 and 50),
-  variant_size text not null default 'Standar',
+  variant_size text not null,
   unit_price bigint not null check (unit_price >= 0),
   is_preorder boolean not null default false,
   school_institution text default '',
@@ -104,6 +133,7 @@ create table if not exists public.order_items (
 );
 
 alter table public.order_items drop constraint if exists order_items_variant_size_check;
+alter table public.order_items alter column variant_size drop default;
 alter table public.order_items add column if not exists is_preorder boolean not null default false;
 alter table public.order_items add column if not exists school_institution text default '';
 
@@ -122,8 +152,8 @@ create table if not exists public.cart_items (
   id uuid primary key default gen_random_uuid(),
   user_id text not null,
   product_id uuid not null references public.products(id) on delete cascade,
-  quantity integer not null default 1 check (quantity between 1 and 100),
-  size text not null default 'Standar',
+  quantity integer not null default 1 check (quantity between 1 and 50),
+  size text not null,
   is_preorder boolean not null default false,
   school_institution text default '',
   created_at timestamptz not null default now(),
@@ -131,7 +161,61 @@ create table if not exists public.cart_items (
   unique(user_id, product_id, size)
 );
 
+-- Hapus default varian statis lama dan batas lama yang terlalu longgar.
+alter table public.cart_items alter column size drop default;
+alter table public.cart_items drop constraint if exists cart_items_quantity_check;
+alter table public.cart_items drop constraint if exists cart_items_quantity_bounds_check;
+alter table public.cart_items add constraint cart_items_quantity_bounds_check check (quantity between 1 and 50) not valid;
+
 create index if not exists cart_items_user_idx on public.cart_items (user_id);
+
+-- Validasi sisi database agar item keranjang tidak dapat memakai varian palsu atau produk nonaktif.
+create or replace function public.validate_cart_item_variant()
+returns trigger language plpgsql security definer set search_path = '' as $$
+declare
+  v_product public.products%rowtype;
+  v_size text;
+begin
+  if new.user_id is distinct from (select auth.uid())::text then
+    raise exception 'Keranjang hanya dapat mengubah item milik akun yang sedang login.';
+  end if;
+  if new.quantity is null or new.quantity < 1 or new.quantity > 50 then
+    raise exception 'Jumlah keranjang harus berada pada rentang 1–50 pcs.';
+  end if;
+  select * into v_product from public.products p where p.id = new.product_id and p.is_active = true;
+  if not found then raise exception 'Produk tidak tersedia atau sudah dinonaktifkan.'; end if;
+  if v_product.variants is null or jsonb_typeof(v_product.variants) is distinct from 'array'
+     or jsonb_array_length(v_product.variants) < 1 then
+    raise exception 'Pilihan ukuran/varian produk belum diatur admin.';
+  end if;
+  v_size := btrim(coalesce(new.size, ''));
+  if v_size = '' or char_length(v_size) > 60 or not exists (
+    select 1 from jsonb_array_elements_text(v_product.variants) as variant_option(value)
+    where variant_option.value = v_size
+  ) then
+    raise exception 'Pilihan ukuran/varian tidak sesuai dengan data produk.';
+  end if;
+  if coalesce(v_product.is_preorder, false) then
+    if coalesce(v_product.preorder_status, 'open') <> 'open' then
+      raise exception 'Pre-order produk ini sedang ditutup.';
+    end if;
+    if v_product.min_order < 1 or v_product.min_order > 50 or new.quantity < v_product.min_order then
+      raise exception 'Jumlah belum memenuhi batas pre-order yang ditetapkan admin.';
+    end if;
+  else
+    if v_product.stock <= 0 or new.quantity > v_product.stock then
+      raise exception 'Jumlah melebihi stok produk yang tersedia.';
+    end if;
+  end if;
+  new.size := v_size;
+  return new;
+end;
+$$;
+revoke all on function public.validate_cart_item_variant() from public, anon, authenticated;
+drop trigger if exists on_cart_item_validate_variant on public.cart_items;
+create trigger on_cart_item_validate_variant
+  before insert or update of user_id, product_id, quantity, size on public.cart_items
+  for each row execute function public.validate_cart_item_variant();
 
 -- 6. TABEL PERMINTAAN JAHIT (CUSTOM/ALTERASI)
 create table if not exists public.tailoring_requests (
@@ -171,6 +255,18 @@ create table if not exists public.store_settings (
   updated_at timestamptz not null default now()
 );
 
+-- Satu sumber konfigurasi email admin. Tabel tidak dapat dibaca/diubah lewat API browser.
+create table if not exists public.admin_email_allowlist (
+  email text primary key check (email = lower(btrim(email)) and email ~ '^[^[:space:]@]+@[^[:space:]@]+[.][^[:space:]@]+$'),
+  created_at timestamptz not null default now()
+);
+alter table public.admin_email_allowlist enable row level security;
+revoke all on public.admin_email_allowlist from public, anon, authenticated;
+insert into public.admin_email_allowlist (email) values
+  ('numanalmuqorrin@gmail.com'),
+  ('inabahijab@gmail.com')
+on conflict (email) do nothing;
+
 -- ====================================================================
 -- FUNGSI & OTORISASI ADMIN
 -- ====================================================================
@@ -180,25 +276,27 @@ create or replace function public.is_admin()
 returns boolean language sql stable security definer set search_path = '' as $$
   select exists (
     select 1
-    from public.profiles p
-    join auth.users u on u.id::text = p.id
-    where p.id = (select auth.uid())::text
-      and p.role = 'admin'
-      and lower(coalesce(u.email,'')) in ('numanalmuqorrin@gmail.com','inabahijab@gmail.com')
-      and coalesce(u.raw_app_meta_data->>'inaba_admin', 'false') = 'true'
+    from auth.users u
+    where u.id = (select auth.uid())
+      and u.email_confirmed_at is not null
+      and exists (
+        select 1 from public.admin_email_allowlist a
+        where a.email = lower(coalesce(u.email, ''))
+      )
   );
 $$;
-revoke all on function public.is_admin() from public;
+revoke all on function public.is_admin() from public, anon, authenticated;
 grant execute on function public.is_admin() to anon, authenticated;
 
--- Trigger pembuatan profil otomatis saat user mendaftar di Supabase Auth
+-- Trigger pembuatan profil otomatis; admin hanya ditetapkan bila email terverifikasi dan ada di allowlist server
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = '' as $$
 declare
   v_role text := 'customer';
 begin
-  if lower(coalesce(new.email, '')) in ('numanalmuqorrin@gmail.com', 'inabahijab@gmail.com')
-     and coalesce(new.raw_app_meta_data->>'inaba_admin', 'false') = 'true' then
+  if new.email_confirmed_at is not null and exists (
+    select 1 from public.admin_email_allowlist a where a.email = lower(coalesce(new.email, ''))
+  ) then
     v_role := 'admin';
   end if;
 
@@ -218,15 +316,16 @@ begin
 end;
 $$;
 
--- Role hanya bisa dinaikkan melalui metadata aplikasi yang dikelola secara tepercaya,
--- bukan user_metadata yang dapat diubah oleh pemilik akun.
+-- Role admin hanya diberikan pada email allowlist setelah Supabase menandai email terverifikasi.
+-- User tidak bisa mengubah email_confirmed_at atau role profil melalui frontend/RLS.
 create or replace function public.sync_profile_role_from_app_metadata()
 returns trigger language plpgsql security definer set search_path = '' as $$
 declare
   v_role text := 'customer';
 begin
-  if lower(coalesce(new.email, '')) in ('numanalmuqorrin@gmail.com', 'inabahijab@gmail.com')
-     and coalesce(new.raw_app_meta_data->>'inaba_admin', 'false') = 'true' then
+  if new.email_confirmed_at is not null and exists (
+    select 1 from public.admin_email_allowlist a where a.email = lower(coalesce(new.email, ''))
+  ) then
     v_role := 'admin';
   end if;
 
@@ -237,26 +336,32 @@ begin
 end;
 $$;
 
+revoke all on function public.handle_new_user() from public, anon, authenticated;
+revoke all on function public.sync_profile_role_from_app_metadata() from public, anon, authenticated;
+
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
 
 drop trigger if exists on_auth_user_admin_metadata_updated on auth.users;
-create trigger on_auth_user_admin_metadata_updated
-  after update of raw_app_meta_data, email on auth.users
+drop trigger if exists on_auth_user_email_verified on auth.users;
+drop trigger if exists on_auth_user_role_sync on auth.users;
+create trigger on_auth_user_role_sync
+  after update of raw_app_meta_data, email, email_confirmed_at on auth.users
   for each row execute function public.sync_profile_role_from_app_metadata();
 
 -- Sinkronkan profil lama dan buat profil yang mungkin belum tercipta sebelumnya.
--- Tidak menghapus profil/data; role lama diverifikasi ulang dari metadata Auth tepercaya.
+-- Tidak menghapus profil/data; role admin ditetapkan hanya untuk email allowlist yang terverifikasi.
 insert into public.profiles (id, email, full_name, role)
 select
   u.id::text,
   coalesce(u.email, ''),
   coalesce(nullif(u.raw_user_meta_data->>'full_name', ''), split_part(coalesce(u.email, ''), '@', 1)),
   case
-    when lower(coalesce(u.email, '')) in ('numanalmuqorrin@gmail.com', 'inabahijab@gmail.com')
-     and coalesce(u.raw_app_meta_data->>'inaba_admin', 'false') = 'true' then 'admin'
+    when u.email_confirmed_at is not null and exists (
+      select 1 from public.admin_email_allowlist a where a.email = lower(coalesce(u.email, ''))
+    ) then 'admin'
     else 'customer'
   end
 from auth.users u
@@ -287,6 +392,8 @@ begin
 end;
 $$;
 
+revoke all on function public.handle_order_cancellation() from public, anon, authenticated;
+
 drop trigger if exists on_order_status_cancelled on public.orders;
 create trigger on_order_status_cancelled
   before update of status on public.orders
@@ -316,7 +423,12 @@ begin
   if char_length(trim(coalesce(p_customer_name,''))) not between 1 and 120 then raise exception 'Nama penerima tidak valid.'; end if;
   if char_length(trim(coalesce(p_phone,''))) not between 5 and 40 then raise exception 'Nomor telepon tidak valid.'; end if;
   if char_length(trim(coalesce(p_address,''))) not between 5 and 1500 then raise exception 'Alamat tidak valid.'; end if;
-  if jsonb_typeof(p_items) <> 'array' or jsonb_array_length(p_items) < 1 or jsonb_array_length(p_items) > 30 then raise exception 'Daftar barang tidak valid.'; end if;
+  if p_items is null or jsonb_typeof(p_items) is distinct from 'array' then
+    raise exception 'Daftar barang tidak valid.';
+  end if;
+  if jsonb_array_length(p_items) < 1 or jsonb_array_length(p_items) > 30 then
+    raise exception 'Daftar barang tidak valid.';
+  end if;
 
   insert into public.orders(user_id, customer_name, phone, address, notes, subtotal)
   values (v_user, trim(p_customer_name), trim(p_phone), trim(p_address), left(coalesce(p_notes,''),2000), 0)
@@ -329,6 +441,27 @@ begin
 
     select * into v_product from public.products where id = v_item.product_id and is_active = true for update;
     if not found then raise exception 'Salah satu produk tidak tersedia lagi.'; end if;
+    if v_product.price < 0 or v_product.price > 100000000000 then
+      raise exception 'Harga produk % tidak valid di database. Hubungi admin.', v_product.name;
+    end if;
+    if v_product.min_order < 1 or v_product.min_order > 50 then
+      raise exception 'Minimal pemesanan untuk % tidak valid di database. Hubungi admin.', v_product.name;
+    end if;
+
+    -- Pilihan ukuran/varian wajib ditetapkan admin di database dan diverifikasi server-side.
+    if v_product.variants is null or jsonb_typeof(v_product.variants) is distinct from 'array' then
+      raise exception 'Pilihan ukuran/varian untuk % belum dikonfigurasi.', v_product.name;
+    end if;
+    if jsonb_array_length(v_product.variants) < 1 then
+      raise exception 'Pilihan ukuran/varian untuk % belum dikonfigurasi admin.', v_product.name;
+    end if;
+    v_size := left(trim(coalesce(v_item.size, '')), 60);
+    if v_size = '' or not exists (
+      select 1 from jsonb_array_elements_text(v_product.variants) as variant_option(value)
+      where variant_option.value = v_size
+    ) then
+      raise exception 'Pilihan ukuran/varian untuk % tidak valid. Pilih ulang dari detail produk.', v_product.name;
+    end if;
 
     -- Validasi tipe pesanan: pre-order vs ready stock
     if coalesce(v_product.is_preorder, false) = true then
@@ -347,7 +480,6 @@ begin
     v_total := v_total + (v_product.price * v_item.quantity);
     if v_total > 100000000000 then raise exception 'Nilai pesanan melebihi batas wajar.'; end if;
 
-    v_size := left(trim(coalesce(v_item.size, 'Standar')), 60);
 
     insert into public.order_items(order_id, product_id, product_name, quantity, variant_size, unit_price, is_preorder, school_institution)
     values (v_order, v_product.id, v_product.name, v_item.quantity, v_size, v_product.price, coalesce(v_product.is_preorder, false), coalesce(v_product.school_institution, ''));
@@ -368,12 +500,32 @@ grant execute on function public.create_order(jsonb,text,text,text,text) to auth
 -- ====================================================================
 -- ROW-LEVEL SECURITY (RLS) & HAK AKSES LEAST-PRIVILEGE
 -- ====================================================================
+-- Penting: kebijakan RLS PostgreSQL yang permisif digabungkan dengan OR.
+-- Bersihkan kebijakan lama pada tabel milik situs ini sebelum membuat kebijakan final;
+-- data/bucket tidak dihapus. Semua policy storage.objects di-reset karena kebijakan broad
+-- yang tampak menyebut bucket_id pun bisa tetap membuka akses melalui OR antar-policy.
+DO $$
+DECLARE
+  policy_row record;
+BEGIN
+  FOR policy_row IN
+    SELECT schemaname, tablename, policyname
+    FROM pg_policies
+    WHERE (schemaname = 'public' AND tablename = ANY (ARRAY[
+      'profiles', 'categories', 'products', 'cart_items', 'orders', 'order_items',
+      'tailoring_requests', 'newsletter_subscribers', 'site_images', 'store_settings', 'admin_email_allowlist'
+    ]))
+       OR (schemaname = 'storage' AND tablename = 'objects')
+  LOOP
+    EXECUTE format('DROP POLICY IF EXISTS %I ON %I.%I',
+      policy_row.policyname, policy_row.schemaname, policy_row.tablename);
+  END LOOP;
+END $$;
 
 -- 1. Profiles
 alter table public.profiles enable row level security;
 revoke all on public.profiles from public, anon, authenticated;
-grant select on public.profiles to anon, authenticated;
-grant insert, update on public.profiles to authenticated;
+grant select on public.profiles to authenticated;
 
 drop policy if exists "Profiles readable by owner or admin" on public.profiles;
 drop policy if exists "Users update own profile" on public.profiles;
@@ -382,11 +534,7 @@ drop policy if exists "Read own profile or admin reads all" on public.profiles;
 create policy "Read own profile or admin reads all" on public.profiles
   for select to authenticated
   using (id = (select auth.uid())::text or (select public.is_admin()));
-
-create policy "Users update own profile" on public.profiles
-  for update to authenticated
-  using (id = (select auth.uid())::text)
-  with check (id = (select auth.uid())::text and role = 'customer');
+-- Profile role/email are managed only by trusted Auth triggers, never by a client update.
 
 -- 2. Categories
 alter table public.categories enable row level security;
@@ -445,7 +593,23 @@ create policy "Only admins delete products" on public.products
 -- 4. Cart Items (Khusus Pengguna Login)
 alter table public.cart_items enable row level security;
 revoke all on public.cart_items from public, anon, authenticated;
-grant select, insert, update, delete on public.cart_items to authenticated;
+grant select, delete on public.cart_items to authenticated;
+grant update (quantity, size) on public.cart_items to authenticated;
+grant insert (user_id, product_id, quantity, size) on public.cart_items to authenticated;
+
+-- Timestamp keranjang ditetapkan server, bukan dikirim atau dimanipulasi klien.
+create or replace function public.touch_cart_item_updated_at()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  new.updated_at := now();
+  return new;
+end;
+$$;
+revoke all on function public.touch_cart_item_updated_at() from public, anon, authenticated;
+drop trigger if exists on_cart_item_updated_at on public.cart_items;
+create trigger on_cart_item_updated_at
+  before update on public.cart_items
+  for each row execute function public.touch_cart_item_updated_at();
 
 drop policy if exists "Users can manage own cart" on public.cart_items;
 create policy "Users can manage own cart" on public.cart_items
@@ -487,7 +651,7 @@ create policy "Users read their order items" on public.order_items
 -- 6. Tailoring Requests
 alter table public.tailoring_requests enable row level security;
 revoke all on public.tailoring_requests from public, anon, authenticated;
-grant insert on public.tailoring_requests to anon, authenticated;
+grant insert (user_id, customer_name, phone, address, garment_type, fabric_source, target_date, notes) on public.tailoring_requests to anon, authenticated;
 grant select on public.tailoring_requests to authenticated;
 grant update (status) on public.tailoring_requests to authenticated;
 
@@ -510,14 +674,18 @@ create policy "Admins update tailoring status" on public.tailoring_requests
 -- 7. Newsletter Subscribers
 alter table public.newsletter_subscribers enable row level security;
 revoke all on public.newsletter_subscribers from public, anon, authenticated;
-grant insert on public.newsletter_subscribers to anon, authenticated;
+grant insert (email) on public.newsletter_subscribers to anon, authenticated;
 grant select on public.newsletter_subscribers to authenticated;
 
 drop policy if exists "Anyone can subscribe to INABA updates" on public.newsletter_subscribers;
 drop policy if exists "Only admins read newsletter subscribers" on public.newsletter_subscribers;
 
 create policy "Anyone can subscribe to INABA updates" on public.newsletter_subscribers
-  for insert to anon, authenticated with check (true);
+  for insert to anon, authenticated
+  with check (
+    char_length(email) between 6 and 254
+    and email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
+  );
 
 create policy "Only admins read newsletter subscribers" on public.newsletter_subscribers
   for select to authenticated
@@ -632,6 +800,6 @@ on conflict (key) do nothing;
 
 insert into public.store_settings (key, value) values
   ('store_title', '"INABA HIJAB"'::jsonb),
-  ('contact_whatsapp', '"6285735144904"'::jsonb),
-  ('payment_accounts', '[{"label":"Konfirmasi Pembayaran","detail":"Nomor rekening resmi akan diberikan langsung oleh admin melalui WhatsApp setelah total pesanan dan ongkir dihitung."}]'::jsonb)
+  ('contact_whatsapp', '""'::jsonb),
+  ('payment_accounts', '[]'::jsonb)
 on conflict (key) do nothing;
