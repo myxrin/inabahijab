@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Salin menjadi sitemap.xml hanya setelah mengganti semua URL dengan domain produksi HTTPS yang benar. -->
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://DOMAIN-ANDA/</loc></url>
-  <url><loc>https://DOMAIN-ANDA/kebijakan-privasi.html</loc></url>
-  <url><loc>https://DOMAIN-ANDA/ketentuan-pemesanan.html</loc></url>
-</urlset>
