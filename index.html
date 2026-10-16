@@ -9,7 +9,7 @@
   <meta property="og:site_name" content="INABA STORE" />
   <meta property="og:title" content="INABA STORE — Hijab, Seragam Pre-Order & Kebutuhan Harian" />
   <meta property="og:description" content="Pusat busana muslim, seragam sekolah pre-order (SDIT, TPQ, Madin), topi capel petani, dan meja lipat serbaguna. Praktis, terpercaya, dan amanah." />
-  <meta property="og:image" content="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&amp;fit=crop&amp;w=1200&amp;q=85" />
+  <meta property="og:image" content="./favicon.svg" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="INABA STORE — Toko Online Multikategori" />
   <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
@@ -25,7 +25,6 @@
     "telephone": "+6285735144904"
   }
   </script>
-  <link rel="preconnect" href="https://images.unsplash.com" />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -113,7 +112,7 @@
     }
     .skip-link:focus { left: 16px; }
 
-    /* Announcement Bar */
+    /* Announcement Bar (Disembunyikan di Mobile) */
     .announcement {
       background: var(--ink);
       color: #f7f6f0;
@@ -126,6 +125,11 @@
       gap: 8px;
       text-align: center;
       line-height: 1.4;
+    }
+    @media (max-width: 768px) {
+      .announcement, #topAnnouncement {
+        display: none !important;
+      }
     }
     .announcement-tag {
       background: var(--clay);
@@ -1095,7 +1099,7 @@
       flex-wrap: wrap;
     }
 
-    /* Mobile Bottom Navigation */
+    /* Mobile Bottom Navigation (Navbar Aktif & Transparan Saat Tidak Terpilih) */
     .bottom-nav {
       position: fixed;
       z-index: 35;
@@ -1104,10 +1108,12 @@
       right: 0;
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
-      background: rgba(255, 255, 255, 0.96);
+      padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+      background: rgba(255, 255, 255, 0.98);
       border-top: 1px solid var(--line);
-      backdrop-filter: blur(14px);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.04);
     }
     .bottom-nav a, .bottom-nav button {
       display: flex;
@@ -1117,21 +1123,41 @@
       gap: 3px;
       border: 0;
       background: transparent;
-      color: var(--muted);
+      color: var(--ink);
+      opacity: 0.42; /* Transparan dikit saat tidak dipilih */
       font-size: 11px;
       font-weight: 600;
       min-height: 48px;
       position: relative;
-    }
-    .bottom-nav a.current, .bottom-nav button:hover {
-      color: var(--ink);
+      cursor: pointer;
+      transition: opacity 0.25s ease, transform 0.25s ease, color 0.25s ease;
+      -webkit-tap-highlight-color: transparent;
+      text-decoration: none;
     }
     .bottom-nav svg {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       stroke: currentColor;
       fill: none;
-      stroke-width: 1.7;
+      stroke-width: 1.8;
+      transition: stroke 0.25s ease, stroke-width 0.25s ease, filter 0.25s ease;
+    }
+    .bottom-nav a.current,
+    .bottom-nav a.active,
+    .bottom-nav button.current,
+    .bottom-nav button.active {
+      opacity: 1 !important; /* Terang saat dipilih */
+      color: var(--clay) !important; /* Lebih berwarna (Terracotta Clay) */
+      font-weight: 700 !important;
+      transform: translateY(-2px);
+    }
+    .bottom-nav a.current svg,
+    .bottom-nav a.active svg,
+    .bottom-nav button.current svg,
+    .bottom-nav button.active svg {
+      stroke: var(--clay) !important;
+      stroke-width: 2.3;
+      filter: drop-shadow(0 2px 5px rgba(197, 101, 69, 0.45));
     }
     .bottom-nav-badge {
       position: absolute;
@@ -1148,6 +1174,103 @@
       place-items: center;
       padding: 0 3px;
     }
+
+    /* Placeholders Foto Resmi & Styling Admin Dashboard Mudah Dipahami */
+    .placeholder-banner {
+      width: 100%;
+      height: 100%;
+      min-height: 320px;
+      background: linear-gradient(135deg, #eeebe0 0%, #dedbd0 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: var(--muted);
+      text-align: center;
+      padding: 30px;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius-lg);
+    }
+    .placeholder-banner.banner-sm {
+      min-height: 180px;
+      padding: 20px;
+      border-radius: var(--radius-md);
+    }
+    .placeholder-banner svg {
+      color: var(--olive);
+      opacity: 0.8;
+    }
+    .placeholder-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .placeholder-sub {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+      max-width: 260px;
+    }
+    .product-placeholder-img {
+      width: 100%;
+      aspect-ratio: 1;
+      background: var(--wash);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      border-bottom: 1px solid var(--line-light);
+    }
+    .product-placeholder-img svg {
+      opacity: 0.6;
+      color: var(--olive);
+    }
+    .admin-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .admin-stat-card {
+      background: var(--wash);
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .admin-stat-num {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--clay);
+      line-height: 1.1;
+    }
+    .admin-stat-label {
+      font-size: 11.5px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .status-pill.pending { background: #fef3c7; color: #92400e; }
+    .status-pill.confirmed { background: #dbeafe; color: #1e40af; }
+    .status-pill.processing { background: #e0e7ff; color: #3730a3; }
+    .status-pill.shipped { background: #ede9fe; color: #5b21b6; }
+    .status-pill.completed { background: #dcfce7; color: #166534; }
+    .status-pill.cancelled { background: #fee2e2; color: #991b1b; }
 
     /* Sheets & Overlays */
     .overlay {
@@ -1674,8 +1797,13 @@
           </div>
         </div>
 
-        <div class="hero-visual">
-          <img data-site-image="hero" src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&amp;fit=crop&amp;w=1400&amp;q=85" alt="Koleksi Multikategori INABA STORE" fetchpriority="high" />
+        <div class="hero-visual" id="heroVisualWrap">
+          <img data-site-image="hero" id="heroImg" alt="Koleksi Multikategori INABA STORE" fetchpriority="high" style="display:none;" />
+          <div class="placeholder-banner" id="heroPlaceholder">
+            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+            <span class="placeholder-title">Banner Utama INABA STORE</span>
+            <span class="placeholder-sub">Foto resmi diatur melalui Dashboard Admin &gt; Tab Banner &amp; Gambar</span>
+          </div>
           <div class="hero-overlay">
             <span class="hero-pill-tag">INABA MULTIKATEGORI</span>
             <div class="hero-overlay-bottom">
@@ -1805,8 +1933,13 @@
 
         <div class="spotlight-grid">
           <article class="spotlight-card">
-            <div class="spotlight-photo">
-              <img data-site-image="farmer_banner" src="https://images.unsplash.com/photo-1592417817098-8f3d69109853?auto=format&amp;fit=crop&amp;w=1200&amp;q=85" alt="Topi Capel Petani Tradisional" loading="lazy" />
+            <div class="spotlight-photo" id="farmerPhotoWrap">
+              <img data-site-image="farmer_banner" id="farmerImg" alt="Topi Capel Petani Tradisional" loading="lazy" style="display:none;" />
+              <div class="placeholder-banner banner-sm" id="farmerPlaceholder">
+                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                <span class="placeholder-title">Banner Topi Capel Petani</span>
+                <span class="placeholder-sub">Diatur di Dashboard Admin</span>
+              </div>
             </div>
             <div class="spotlight-copy">
               <div class="eyebrow">Perlengkapan Petani &amp; Kebun</div>
@@ -1819,8 +1952,13 @@
           </article>
 
           <article class="spotlight-card">
-            <div class="spotlight-photo">
-              <img data-site-image="table_banner" src="https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?auto=format&amp;fit=crop&amp;w=1200&amp;q=85" alt="Meja Lipat Portable Serbaguna" loading="lazy" />
+            <div class="spotlight-photo" id="tablePhotoWrap">
+              <img data-site-image="table_banner" id="tableImg" alt="Meja Lipat Portable Serbaguna" loading="lazy" style="display:none;" />
+              <div class="placeholder-banner banner-sm" id="tablePlaceholder">
+                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v18M3 9h18M3 15h18"/></svg>
+                <span class="placeholder-title">Banner Meja Lipat &amp; Perabot</span>
+                <span class="placeholder-sub">Diatur di Dashboard Admin</span>
+              </div>
             </div>
             <div class="spotlight-copy">
               <div class="eyebrow">Perabot &amp; Kebutuhan Belajar</div>
@@ -1975,25 +2113,25 @@
   </footer>
 
   <!-- Mobile Bottom Navigation Bar -->
-  <nav class="bottom-nav" aria-label="Navigasi Bawah">
-    <a href="#home" class="current" aria-label="Beranda">
+  <nav class="bottom-nav" id="bottomNav" aria-label="Navigasi Bawah">
+    <a href="#home" class="current active" data-nav="home" aria-label="Beranda">
       <svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-6h6v6"/></svg>
       <span>Beranda</span>
     </a>
-    <a href="#preorder-section" aria-label="Pre-Order">
+    <a href="#preorder-section" data-nav="preorder" aria-label="Pre-Order">
       <svg viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10"/></svg>
       <span>Pre-Order</span>
     </a>
-    <a href="#shop" aria-label="Belanja">
+    <a href="#shop" data-nav="shop" aria-label="Belanja">
       <svg viewBox="0 0 24 24"><path d="M4 8h16l-1.2 12H5.2L4 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>
       <span>Belanja</span>
     </a>
-    <button type="button" id="bottomCartBtn" aria-label="Keranjang">
+    <button type="button" id="bottomCartBtn" data-nav="cart" aria-label="Keranjang">
       <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
       <span>Keranjang</span>
       <span class="bottom-nav-badge" id="bottomCartCount">0</span>
     </button>
-    <button type="button" id="bottomAccountBtn" aria-label="Akun">
+    <button type="button" id="bottomAccountBtn" data-nav="account" aria-label="Akun">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.6-3.4 3.1-5.2 7-5.2s6.4 1.8 7 5.2"/></svg>
       <span>Akun</span>
     </button>
@@ -2259,14 +2397,12 @@
   };
 
   // Konfigurasi Default Gambar Website
+  // Gambar resmi website (Dikelola penuh oleh Admin via Supabase Storage & site_images)
   const DEFAULT_SITE_IMAGES = [
-    { key: 'hero', label: 'Foto Utama Beranda', fallback: 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1400&q=85' },
-    { key: 'preorder_banner', label: 'Banner Pre-Order Seragam', fallback: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=1200&q=85' },
-    { key: 'farmer_banner', label: 'Banner Capel Petani', fallback: 'https://images.unsplash.com/photo-1592417817098-8f3d69109853?auto=format&fit=crop&w=1200&q=85' },
-    { key: 'table_banner', label: 'Banner Meja Lipat', fallback: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?auto=format&fit=crop&w=1200&q=85' },
-    { key: 'journal_style', label: 'Foto Panduan Gaya', fallback: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=600&q=80' },
-    { key: 'journal_fabric', label: 'Foto Panduan Bahan', fallback: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600&q=80' },
-    { key: 'journal_tailor', label: 'Foto Panduan Ukuran', fallback: 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?auto=format&fit=crop&w=600&q=80' }
+    { key: 'hero', label: 'Foto Utama Beranda (Desktop & Mobile)', fallback: '' },
+    { key: 'preorder_banner', label: 'Banner Pre-Order Seragam Sekolah', fallback: '' },
+    { key: 'farmer_banner', label: 'Banner Capel Petani Tradisional', fallback: '' },
+    { key: 'table_banner', label: 'Banner Meja Lipat & Perabot', fallback: '' }
   ];
 
   // Pustaka Ikon SVG Toko (Menggantikan seluruh emoji dengan SVG vektor presisi)
@@ -2311,108 +2447,8 @@
   ];
 
   // Produk Starter Multikategori (Bila DB masih kosong atau tabel belum di-seed)
-  const STARTER_PRODUCTS = [
-    {
-      id: 'po-sdit-1',
-      name: 'Baju Seragam SDIT Al-Hidayah (Pre-Order)',
-      slug: 'seragam-sdit-al-hidayah-po',
-      category: 'Seragam Sekolah — Pre-Order',
-      price: 125000,
-      stock: 0,
-      is_preorder: true,
-      preorder_status: 'open',
-      school_institution: 'SDIT Al-Hidayah',
-      estimated_delivery: '14 hari kerja setelah tutup PO',
-      min_order: 1,
-      size_guide: 'Anak-1 (LD 72), Anak-2 (LD 76), Anak-3 (LD 80), Anak-4 (LD 84), Anak-5 (LD 88), S (LD 92)',
-      badge: 'PRE-ORDER SDIT',
-      featured: true,
-      is_active: true,
-      description: 'Seragam resmi SDIT Al-Hidayah putra & putri. Bahan Oxford Super tebal, halus, dan adem. Tidak mudah kusut, jahitan rangkap rapi berstandar seragam sekolah unggulan.',
-      image_url: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=800&q=80',
-      specifications: { bahan: 'Oxford Super & Katun Twill', model: 'Setelan Kemeja + Celana / Rok', kelengkapan: 'Termasuk bordir logo SDIT' }
-    },
-    {
-      id: 'po-tpq-1',
-      name: 'Seragam Santri TPQ / TPA Binaan (Pre-Order)',
-      slug: 'seragam-santri-tpq-po',
-      category: 'Seragam Sekolah — Pre-Order',
-      price: 95000,
-      stock: 0,
-      is_preorder: true,
-      preorder_status: 'open',
-      school_institution: 'TPQ & Madrasah Binaan',
-      estimated_delivery: '10-14 hari kerja',
-      min_order: 1,
-      size_guide: 'S (Usia 4-6 th), M (Usia 7-9 th), L (Usia 10-12 th), XL (Usia 13-15 th)',
-      badge: 'PRE-ORDER TPQ',
-      featured: true,
-      is_active: true,
-      description: 'Seragam santri TPQ model gamis anak & koko kurta santriwan. Menggunakan Katun Toyobo Fodu import yang sejuk dan menyerap keringat.',
-      image_url: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80',
-      specifications: { bahan: 'Katun Toyobo Fodu Import', pilihan: 'Gamis Santri Putri & Setelan Koko Putra', warna: 'Hijau Sage / Putih / Biru' }
-    },
-    {
-      id: 'po-madin-1',
-      name: 'Seragam Madrasah Diniyah Sirimbit Keluarga (Pre-Order)',
-      slug: 'seragam-madin-sirimbit-keluarga-po',
-      category: 'Seragam Sekolah — Pre-Order',
-      price: 145000,
-      stock: 0,
-      is_preorder: true,
-      preorder_status: 'open',
-      school_institution: 'Madrasah Diniyah Sirimbit Keluarga',
-      estimated_delivery: '14-21 hari kerja',
-      min_order: 1,
-      size_guide: 'Tersedia ukuran santri (S-XL) dan ukuran dewasa orang tua (S, M, L, XL, XXL)',
-      badge: 'PRE-ORDER MADIN',
-      featured: true,
-      is_active: true,
-      description: 'Setelan seragam Madrasah Diniyah kombinasi sirimbit keluarga santri dan wali murid. Desain islami anggun dengan aksen lis elegan.',
-      image_url: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80',
-      specifications: { bahan: 'Katun Madinah Premium kombinasi Linen', model: 'Sirimbit Santri & Orang Tua', warna: 'Navy Abu, Mocca Khaki' }
-    },
-    {
-      id: 'capel-1',
-      name: 'Capel Petani Anyaman Bambu Tradisional',
-      slug: 'capel-petani-anyaman-bambu-tradisional',
-      category: 'Perlengkapan Petani',
-      price: 35000,
-      stock: 45,
-      is_preorder: false,
-      preorder_status: 'open',
-      school_institution: '',
-      estimated_delivery: '',
-      min_order: 1,
-      size_guide: 'Diameter luar 48 cm, lingkar kepala fleksibel dengan tali dagu kain',
-      badge: 'READY STOCK',
-      featured: true,
-      is_active: true,
-      description: 'Topi capel petani tradisional dari anyaman bambu pilihan dengan furing kain anti-air di bagian dalam. Menahan terik panas matahari secara maksimal dan tahan gerimis ringan saat bekerja di sawah atau kebun.',
-      image_url: 'https://images.unsplash.com/photo-1592417817098-8f3d69109853?auto=format&fit=crop&w=800&q=80',
-      specifications: { bahan: 'Anyaman bambu alami + lapisan anti-air', diameter: '48 cm', fitur: 'Tali pengikat dagu, ringan hanya 180 gram' }
-    },
-    {
-      id: 'meja-1',
-      name: 'Meja Lipat Serbaguna Portable 60x40 cm',
-      slug: 'meja-lipat-serbaguna-portable-60x40',
-      category: 'Meja & Perabot',
-      price: 68000,
-      stock: 30,
-      is_preorder: false,
-      preorder_status: 'open',
-      school_institution: '',
-      estimated_delivery: '',
-      min_order: 1,
-      size_guide: 'Ukuran terbuka: 60 x 40 x 28 cm. Ukuran lipat: 60 x 40 x 5 cm',
-      badge: 'READY STOCK',
-      featured: true,
-      is_active: true,
-      description: 'Meja lipat portable multifungsi ukuran 60x40 cm dengan kaki aluminium kokoh berbalut busa anti-slip. Dilengkapi slot penyimpanan tablet/buku dan tempat cangkir minum. Sangat cocok untuk meja belajar anak, meja laptop, meja ngaji TPQ, atau meja dagang lesehan.',
-      image_url: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?auto=format&fit=crop&w=800&q=80',
-      specifications: { bahan: 'Papan MDF High Density + Kaki pipa aluminium', kapasitas: 'Kekuatan beban hingga 25 kg', fitur: 'Slot tablet 27 cm & cup holder' }
-    }
-  ];
+  // Produk tidak disematkan di index; murni dimuat dari database produk resmi admin
+  const STARTER_PRODUCTS = [];
 
   // Global State
   const state = {
@@ -2431,11 +2467,7 @@
     poFilter: 'Semua',
     searchText: '',
     sort: 'featured',
-    cart: (() => {
-      try {
-        return JSON.parse(localStorage.getItem('inaba_multicart') || '[]');
-      } catch { return []; }
-    })(),
+    cart: [], // Keranjang tersimpan aman di database Supabase (public.cart_items) untuk pengguna login
     user: null,
     profile: null,
     authMode: 'login',
@@ -2544,17 +2576,65 @@
   $$('#mobileMenu a').forEach(a => a.addEventListener('click', () => $('#mobileMenu').classList.remove('open')));
 
   // Persist Cart
+  // ================= KERANJANG BELANJA BERBASIS DATABASE (public.cart_items) =================
+  // Memuat seluruh item keranjang belanja langsung dari database Supabase untuk akun terverifikasi
+  async function loadUserCart() {
+    if (!state.user || !sb) {
+      state.cart = [];
+      updateCartUI();
+      return;
+    }
+    try {
+      const { data, error } = await sb
+        .from('cart_items')
+        .select('id, product_id, quantity, size, is_preorder, school_institution, products(id, name, price, stock, is_active, preorder_status, image_url)')
+        .eq('user_id', state.user.id)
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+
+      state.cart = (data || []).map(row => {
+        const prod = row.products || {};
+        return {
+          cart_item_id: row.id,
+          id: row.product_id,
+          name: prod.name || 'Produk',
+          price: Number(prod.price) || 0,
+          stock: prod.stock ?? 0,
+          image_url: prod.image_url || '',
+          quantity: row.quantity,
+          size: row.size || 'Standar',
+          is_preorder: !!row.is_preorder,
+          school_institution: row.school_institution || '',
+          is_active: prod.is_active !== false,
+          preorder_status: prod.preorder_status || 'open'
+        };
+      });
+    } catch (err) {
+      console.warn('Gagal memuat keranjang database:', err);
+      state.cart = [];
+    } finally {
+      updateCartUI();
+    }
+  }
+
+  function updateCartUI() {
+    const count = state.cart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+    const hCount = $('#cartCount');
+    if (hCount) hCount.textContent = count;
+    const bCount = $('#bottomCartCount');
+    if (bCount) bCount.textContent = count;
+    if ($('#cartOverlay') && $('#cartOverlay').classList.contains('open')) {
+      renderCart();
+    }
+  }
+
   function persistCart() {
-    localStorage.setItem('inaba_multicart', JSON.stringify(state.cart));
-    renderCartCounters();
-    renderCart();
+    updateCartUI();
   }
 
   function renderCartCounters() {
-    const count = state.cart.reduce((sum, item) => sum + (Number(item.quantity) || 1), 0);
-    $('#cartCount').textContent = count;
-    const bCount = $('#bottomCartCount');
-    if (bCount) bCount.textContent = count;
+    updateCartUI();
   }
 
   // Render Kategori Navigasi Filter
@@ -2696,7 +2776,7 @@
     return `
       <article class="product-card ${isSold ? 'sold' : ''}">
         <div class="product-image">
-          ${p.image_url ? `<img src="${esc(p.image_url)}" alt="${esc(p.name)}" loading="lazy" />` : '<div class="product-image-placeholder">INABA</div>'}
+          ${p.image_url ? `<img src="${esc(p.image_url)}" alt="${esc(p.name)}" loading="lazy" />` : '<div class="product-placeholder-img"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg><span>Foto dari Admin</span></div>'}
           <div class="product-badges-container">
             <span class="product-badge-pill ${badgeClass}">${esc(badgeText)}</span>
             ${isPo && p.school_institution ? `<span class="product-badge-pill badge-custom">${esc(p.school_institution)}</span>` : ''}
@@ -2773,7 +2853,7 @@
     $('#productDetailContent').innerHTML = `
       <div class="product-detail-layout">
         <div class="product-detail-media">
-          ${p.image_url ? `<img src="${esc(p.image_url)}" alt="${esc(p.name)}" />` : '<div class="product-image-placeholder">INABA</div>'}
+          ${p.image_url ? `<img src="${esc(p.image_url)}" alt="${esc(p.name)}" />` : '<div class="product-placeholder-img" style="aspect-ratio:auto;height:100%"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.6"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg><span style="margin-top:6px;font-size:12px">Foto Produk dari Admin</span></div>'}
         </div>
         <div class="product-detail-copy">
           <div class="eyebrow">${esc(p.category || 'INABA')}</div>
@@ -2853,40 +2933,126 @@
     openOverlay('productOverlay');
   }
 
-  // Tambah Barang ke Keranjang
-  function addItemToCart(product, size = 'Standar', quantity = 1) {
-    const isPo = !!product.is_preorder || product.category?.toLowerCase().includes('pre-order');
+// Tambah barang ke keranjang belanja di database (Khusus yang sudah login)
+  async function addItemToCart(product, size = 'Standar', quantity = 1) {
+    if (!state.user) {
+      toast('Silakan masuk atau daftar akun terlebih dahulu untuk menggunakan keranjang belanja.');
+      openAuthModal();
+      return;
+    }
+    if (!sb) {
+      toast('Koneksi database toko belum aktif.');
+      return;
+    }
+
+    const isPo = !!product.is_preorder || String(product.category || '').toLowerCase().includes('pre-order');
     if (!isPo && Number(product.stock) <= 0) {
       toast('Maaf, produk ini sedang habis.');
       return;
     }
 
-    const existing = state.cart.find(x => String(x.id) === String(product.id) && x.size === size);
-    if (existing) {
-      const maxLimit = isPo ? 50 : Math.min(20, Number(product.stock) || 20);
-      existing.quantity = Math.min(existing.quantity + quantity, maxLimit);
-    } else {
-      state.cart.push({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image_url: product.image_url || '',
-        category: product.category || '',
-        size: size,
-        is_preorder: isPo,
-        school_institution: product.school_institution || '',
-        quantity: quantity
-      });
-    }
+    try {
+      const existing = state.cart.find(x => String(x.id) === String(product.id) && x.size === size);
+      if (existing) {
+        const maxLimit = isPo ? 50 : Math.min(20, Number(product.stock) || 20);
+        const newQty = Math.min(existing.quantity + quantity, maxLimit);
+        const { error } = await sb
+          .from('cart_items')
+          .update({ quantity: newQty, updated_at: new Date().toISOString() })
+          .eq('id', existing.cart_item_id);
+        if (error) throw error;
+      } else {
+        const { error } = await sb
+          .from('cart_items')
+          .insert({
+            user_id: state.user.id,
+            product_id: product.id,
+            quantity: quantity,
+            size: size,
+            is_preorder: isPo,
+            school_institution: product.school_institution || ''
+          });
+        if (error) throw error;
+      }
 
-    persistCart();
-    toast(`${product.name} (${size}) ditambahkan ke keranjang.`);
+      await loadUserCart();
+      toast(`"${product.name}" (${size}) ditambahkan ke keranjang.`);
+    } catch (err) {
+      console.error('Add cart item error:', err);
+      toast('Gagal menambahkan ke keranjang: ' + (err.message || 'Error'));
+    }
+  }
+
+  // Update kuantitas barang di keranjang database (+ / -)
+  async function updateCartItemQty(cartItemId, delta) {
+    if (!state.user || !sb) return;
+    const item = state.cart.find(x => x.cart_item_id === cartItemId);
+    if (!item) return;
+    const newQty = item.quantity + delta;
+    try {
+      if (newQty <= 0) {
+        const { error } = await sb.from('cart_items').delete().eq('id', cartItemId);
+        if (error) throw error;
+        toast('Item dihapus dari keranjang.');
+      } else {
+        const maxLimit = item.is_preorder ? 50 : Math.min(20, Number(item.stock) || 20);
+        const cappedQty = Math.min(newQty, maxLimit);
+        const { error } = await sb
+          .from('cart_items')
+          .update({ quantity: cappedQty, updated_at: new Date().toISOString() })
+          .eq('id', cartItemId);
+        if (error) throw error;
+      }
+      await loadUserCart();
+    } catch (err) {
+      toast('Gagal memperbarui jumlah: ' + err.message);
+    }
+  }
+
+  // Hapus item dari keranjang database
+  async function removeCartItem(cartItemId) {
+    if (!state.user || !sb) return;
+    try {
+      const { error } = await sb.from('cart_items').delete().eq('id', cartItemId);
+      if (error) throw error;
+      await loadUserCart();
+      toast('Item dihapus dari keranjang.');
+    } catch (err) {
+      toast('Gagal menghapus item: ' + err.message);
+    }
+  }
+
+  // Buka keranjang belanja (Memastikan pengguna sudah login)
+  function openCartDrawer() {
+    if (!state.user) {
+      toast('Silakan masuk atau daftar akun terlebih dahulu untuk melihat keranjang belanja.');
+      openAuthModal();
+      return;
+    }
+    renderCart();
+    openOverlay('cartOverlay');
   }
 
   // Render Keranjang Belanja
   function renderCart() {
     const el = $('#cartContents');
     if (!el) return;
+
+    if (!state.user) {
+      el.innerHTML = `
+        <div class="empty-state" style="text-align:center;padding:40px 16px">
+          <svg viewBox="0 0 24 24" style="width:48px;height:48px;stroke:var(--muted);fill:none;stroke-width:1.4;margin:0 auto 12px"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.6-3.4 3.1-5.2 7-5.2s6.4 1.8 7 5.2"/></svg>
+          <h3 class="serif" style="font-size:24px;margin:0 0 8px">Login Diperlukan</h3>
+          <p style="font-size:14px;color:var(--muted);margin:0 0 20px">Keranjang belanja tersimpan di akun Anda. Silakan masuk atau daftar akun untuk berbelanja.</p>
+          <button type="button" class="btn btn-clay" id="cartLoginBtn">Masuk / Daftar Akun ↗</button>
+        </div>
+      `;
+      $('#cartLoginBtn')?.addEventListener('click', () => {
+        closeOverlay('cartOverlay');
+        openAuthModal();
+      });
+      return;
+    }
 
     if (!state.cart.length) {
       el.innerHTML = `
@@ -2907,20 +3073,20 @@
     el.innerHTML = state.cart.map(item => `
       <div class="cart-line">
         <div class="cart-thumb">
-          ${item.image_url ? `<img src="${esc(item.image_url)}" alt="${esc(item.name)}" />` : '<div class="product-image-placeholder" style="font-size:13px">INABA</div>'}
+          ${item.image_url ? `<img src="${esc(item.image_url)}" alt="${esc(item.name)}" />` : '<div class="product-placeholder-img" style="aspect-ratio:auto;height:100%;font-size:9px"><span>Foto Admin</span></div>'}
         </div>
         <div>
           <span class="cart-item-tag ${item.is_preorder ? 'tag-po' : 'tag-ready'}">
             ${item.is_preorder ? 'PRE-ORDER' : 'READY STOCK'}
           </span>
           <h3>${esc(item.name)}</h3>
-          <p>${rupiah(item.price)} · Varian/Ukuran: <strong>${esc(item.size)}</strong></p>
+          <p>${rupiah(item.price)} · Ukuran: <strong>${esc(item.size)}</strong></p>
           ${item.school_institution ? `<p style="font-size:11px;color:var(--olive)">Lembaga: ${esc(item.school_institution)}</p>` : ''}
           <div class="qty-row">
-            <button type="button" data-cart-qty="-1" data-id="${esc(item.id)}" data-size="${esc(item.size)}">−</button>
+            <button type="button" data-cart-qty="-1" data-cart-id="${esc(item.cart_item_id)}">−</button>
             <span>${item.quantity}</span>
-            <button type="button" data-cart-qty="1" data-id="${esc(item.id)}" data-size="${esc(item.size)}">+</button>
-            <button type="button" class="btn-remove-item" data-cart-remove="${esc(item.id)}" data-size="${esc(item.size)}">Hapus</button>
+            <button type="button" data-cart-qty="1" data-cart-id="${esc(item.cart_item_id)}">+</button>
+            <button type="button" class="btn-remove-item" data-cart-remove="${esc(item.cart_item_id)}">Hapus</button>
           </div>
         </div>
         <div style="font-weight:800;font-size:14px;white-space:nowrap;text-align:right">
@@ -2934,8 +3100,8 @@
           <span>${rupiah(subtotal)}</span>
         </div>
         <div class="cart-total-note">
-          ${hasPreorder ? '• Memuat pesanan Pre-Order: Waktu pengerjaan mengikuti jadwal batch sekolah.<br>' : ''}
-          • Ongkos kirim dihitung berdasarkan alamat dan dikonfirmasi admin melalui WhatsApp sebelum kamu mentransfer.
+          ${hasPreorder ? '• Memuat pesanan Pre-Order: Waktu pengerjaan mengikuti jadwal batch seragam sekolah.<br>' : ''}
+          • Ongkos kirim dihitung berdasarkan alamat dan dikonfirmasi admin melalui WhatsApp sebelum Anda mentransfer.
         </div>
       </div>
 
@@ -2945,32 +3111,23 @@
       </div>
     `;
 
-    // Quantity events
     $$('[data-cart-qty]', el).forEach(btn => {
       btn.addEventListener('click', () => {
-        const id = btn.dataset.id;
-        const size = btn.dataset.size;
+        const cartId = btn.dataset.cartId;
         const delta = Number(btn.dataset.cartQty);
-        const item = state.cart.find(x => String(x.id) === String(id) && x.size === size);
-        if (item) {
-          item.quantity = Math.max(1, Math.min(50, item.quantity + delta));
-          persistCart();
-        }
+        updateCartItemQty(cartId, delta);
       });
     });
 
     $$('[data-cart-remove]', el).forEach(btn => {
       btn.addEventListener('click', () => {
-        const id = btn.dataset.id;
-        const size = btn.dataset.size;
-        state.cart = state.cart.filter(x => !(String(x.id) === String(id) && x.size === size));
-        persistCart();
-        toast('Item dihapus dari keranjang.');
+        const cartId = btn.dataset.cartRemove;
+        removeCartItem(cartId);
       });
     });
 
-    $('#proceedCheckoutBtn')?.addEventListener('click', startCheckoutFlow);
     $('#continueShopBtn')?.addEventListener('click', () => closeOverlay('cartOverlay'));
+    $('#proceedCheckoutBtn')?.addEventListener('click', startCheckoutFlow);
   }
 
   // Alur Checkout
@@ -3267,7 +3424,11 @@
   async function loadSession(user = null) {
     state.user = user || null;
     state.profile = null;
-    if (!state.user || !sb) return;
+    if (!state.user || !sb) {
+      state.cart = [];
+      updateCartUI();
+      return;
+    }
     const email = String(state.user.email || '').trim().toLowerCase();
 
     try {
@@ -3300,6 +3461,8 @@
     } catch (err) {
       console.warn('Profile load warning:', err);
       state.profile = { id: state.user.id, email, full_name: email.split('@')[0], role: 'customer' };
+    } finally {
+      await loadUserCart();
     }
   }
 
@@ -3402,20 +3565,56 @@
 
   function renderAdminDashboard() {
     $('#accountAreaEyebrow').innerHTML = '<span class="eyebrow-dot"></span> Panel Pengelola Toko';
-    $('#accountAreaTitle').textContent = 'Dashboard Admin INABA';
+    $('#accountAreaTitle').textContent = 'Dashboard Admin INABA STORE';
+
+    const poCount = adminProducts.filter(x => x.is_preorder).length;
+    const readyCount = adminProducts.filter(x => !x.is_preorder).length;
+    const pendingOrders = adminOrders.filter(x => x.status === 'pending').length;
 
     $('#accountAreaContent').innerHTML = `
-      <div class="notice success">
-        Admin aktif: <strong>${esc(state.user.email)}</strong>. Hak akses mutlak dilindungi oleh otorisasi database Supabase.
+      <div class="notice success" style="margin-bottom:16px">
+        Admin Aktif: <strong>${esc(state.user.email)}</strong>. Seluruh data tersimpan langsung ke database Supabase.
+      </div>
+
+      <!-- Quick Stats Ringkasan Cepat -->
+      <div class="admin-stats-grid">
+        <div class="admin-stat-card">
+          <span class="admin-stat-num">${adminProducts.length}</span>
+          <span class="admin-stat-label">Total Produk (${readyCount} Ready, ${poCount} PO)</span>
+        </div>
+        <div class="admin-stat-card">
+          <span class="admin-stat-num">${adminOrders.length}</span>
+          <span class="admin-stat-label">Pesanan Masuk (${pendingOrders} Menunggu)</span>
+        </div>
+        <div class="admin-stat-card">
+          <span class="admin-stat-num">${adminCategories.length}</span>
+          <span class="admin-stat-label">Kategori Toko Aktif</span>
+        </div>
+        <div class="admin-stat-card">
+          <span class="admin-stat-num">${adminNewsletter.length}</span>
+          <span class="admin-stat-label">Pendaftar Newsletter</span>
+        </div>
       </div>
 
       <div class="admin-tabs" id="adminDashboardTabs">
-        <button class="admin-tab ${state.adminTab === 'products' ? 'active' : ''}" data-tab="products">Produk (${adminProducts.length})</button>
-        <button class="admin-tab ${state.adminTab === 'categories' ? 'active' : ''}" data-tab="categories">Kategori (${adminCategories.length})</button>
-        <button class="admin-tab ${state.adminTab === 'orders' ? 'active' : ''}" data-tab="orders">Pesanan (${adminOrders.length})</button>
-        <button class="admin-tab ${state.adminTab === 'images' ? 'active' : ''}" data-tab="images">Banner &amp; Gambar</button>
-        <button class="admin-tab ${state.adminTab === 'settings' ? 'active' : ''}" data-tab="settings">Pengaturan Toko</button>
-        <button class="admin-tab ${state.adminTab === 'newsletter' ? 'active' : ''}" data-tab="newsletter">Email (${adminNewsletter.length})</button>
+        <button class="admin-tab ${state.adminTab === 'products' ? 'active' : ''}" data-tab="products">
+          <span>📦 Produk (${adminProducts.length})</span>
+        </button>
+        <button class="admin-tab ${state.adminTab === 'categories' ? 'active' : ''}" data-tab="categories">
+          <span>🏷️ Kategori (${adminCategories.length})</span>
+        </button>
+        <button class="admin-tab ${state.adminTab === 'orders' ? 'active' : ''}" data-tab="orders">
+          <span>🛍️ Pesanan (${adminOrders.length})</span>
+        </button>
+        <button class="admin-tab ${state.adminTab === 'images' ? 'active' : ''}" data-tab="images">
+          <span>🖼️ Banner &amp; Gambar</span>
+        </button>
+        <button class="admin-tab ${state.adminTab === 'settings' ? 'active' : ''}" data-tab="settings">
+          <span>⚙️ Pengaturan Toko</span>
+        </button>
+        <button class="admin-tab ${state.adminTab === 'newsletter' ? 'active' : ''}" data-tab="newsletter">
+          <span>✉️ Email (${adminNewsletter.length})</span>
+        </button>
       </div>
 
       <div id="adminTabContent" style="margin-top:18px"></div>
@@ -3545,7 +3744,10 @@
             <div class="field">
               <label for="apImageFile">Unggah Foto Produk (Maks 5MB)</label>
               <input type="file" id="apImageFile" accept="image/jpeg,image/png,image/webp" />
-              <span class="field-hint">Atau masukkan URL gambar di bawah jika sudah ada hosting:</span>
+              <div style="margin-top:8px">
+                <img id="apImagePreview" src="" alt="Pratinjau" style="display:none;width:100px;height:100px;object-fit:cover;border-radius:6px;border:1px solid var(--line)" />
+              </div>
+              <span class="field-hint">Atau masukkan URL gambar langsung jika sudah di-host:</span>
               <input type="url" id="apImageUrl" placeholder="https://..." style="margin-top:6px" />
             </div>
             <div class="field">
@@ -3581,6 +3783,7 @@
             <div class="button-row">
               <button class="btn btn-sm btn-ghost" data-admin-edit="${esc(p.id)}">Edit</button>
               <button class="btn btn-sm btn-ghost" data-admin-toggle="${esc(p.id)}">${p.is_active ? 'Sembunyikan' : 'Aktifkan'}</button>
+              <button class="btn btn-sm btn-ghost" style="color:var(--clay)" data-admin-delete="${esc(p.id)}">Hapus</button>
             </div>
           </div>
         `).join('')}
@@ -3590,6 +3793,14 @@
     $('#adminNewProductBtn').addEventListener('click', () => showProductEditor());
     $('#cancelProductBtn').addEventListener('click', () => $('#productEditorBox').classList.add('hide'));
     $('#apIsPreorder').addEventListener('change', e => $('#apPreorderFields').classList.toggle('hide', !e.target.checked));
+    $('#apImageFile')?.addEventListener('change', e => {
+      const f = e.target.files?.[0];
+      const prev = $('#apImagePreview');
+      if (f && prev) {
+        prev.src = URL.createObjectURL(f);
+        prev.style.display = 'block';
+      }
+    });
     $('#adminProductForm').addEventListener('submit', handleSaveProduct);
 
     $$('[data-admin-edit]', container).forEach(b => {
@@ -3609,6 +3820,20 @@
         renderAdminDashboard();
         refreshProducts();
         toast('Status produk diperbarui.');
+      });
+    });
+
+    $$('[data-admin-delete]', container).forEach(b => {
+      b.addEventListener('click', async () => {
+        const prod = adminProducts.find(x => String(x.id) === String(b.dataset.adminDelete));
+        if (!prod || !sb) return;
+        if (!confirm(`Hapus produk "${prod.name}" secara permanen?`)) return;
+        const { error } = await sb.from('products').delete().eq('id', prod.id);
+        if (error) { toast('Gagal menghapus: ' + error.message); return; }
+        await loadAdminDashboardData();
+        renderAdminDashboard();
+        refreshProducts();
+        toast('Produk berhasil dihapus.');
       });
     });
   }
@@ -3632,6 +3857,15 @@
     $('#apBadge').value = p?.badge || '';
     $('#apFeatured').checked = !!p?.featured;
     $('#apImageFile').value = '';
+    const prevEl = $('#apImagePreview');
+    if (prevEl) {
+      if (p?.image_url) {
+        prevEl.src = p.image_url;
+        prevEl.style.display = 'block';
+      } else {
+        prevEl.style.display = 'none';
+      }
+    }
     $('#productEditorBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
@@ -4134,7 +4368,7 @@
     }
   }
 
-  // Refresh Site Images
+  // Refresh Site Images (Foto Murni dari Admin via Supabase Storage)
   async function refreshSiteImages() {
     try {
       if (!sb) return;
@@ -4143,12 +4377,21 @@
       const byKey = new Map(data.map(row => [row.key, row]));
       state.siteImages = DEFAULT_SITE_IMAGES.map(item => ({
         ...item,
-        image_url: byKey.get(item.key)?.image_url || item.fallback
+        image_url: byKey.get(item.key)?.image_url || ''
       }));
 
       for (const item of state.siteImages) {
         $$(`[data-site-image="${item.key}"]`).forEach(img => {
-          img.src = item.image_url;
+          const wrap = img.parentElement;
+          const placeholder = wrap ? wrap.querySelector('.placeholder-banner') : null;
+          if (item.image_url && item.image_url.trim()) {
+            img.src = item.image_url;
+            img.style.display = 'block';
+            if (placeholder) placeholder.style.display = 'none';
+          } else {
+            img.style.display = 'none';
+            if (placeholder) placeholder.style.display = 'flex';
+          }
         });
       }
     } catch (err) {
@@ -4285,12 +4528,71 @@
     setTimeout(() => $('#productSearch')?.focus(), 400);
   });
 
+  // Mobile Bottom Navigation Interaktif & Highlight Aktif
+  function initBottomNav() {
+    const navItems = $$('.bottom-nav a, .bottom-nav button');
+    if (!navItems.length) return;
+
+    function setActiveNav(targetEl) {
+      navItems.forEach(el => el.classList.remove('current', 'active'));
+      if (targetEl) targetEl.classList.add('current', 'active');
+    }
+
+    navItems.forEach(item => {
+      item.addEventListener('click', e => {
+        const navType = item.dataset.nav;
+        if (navType === 'cart') {
+          e.preventDefault();
+          openCartDrawer();
+          setActiveNav(item);
+        } else if (navType === 'account') {
+          e.preventDefault();
+          openAccountArea();
+          setActiveNav(item);
+        } else {
+          setActiveNav(item);
+          const href = item.getAttribute('href');
+          if (href && href.startsWith('#')) {
+            const targetSec = document.querySelector(href);
+            if (targetSec) {
+              e.preventDefault();
+              targetSec.scrollIntoView({ behavior: 'smooth' });
+            }
+          }
+        }
+      });
+    });
+
+    if ('IntersectionObserver' in window) {
+      const sections = [
+        { id: 'home', nav: 'home' },
+        { id: 'preorder-section', nav: 'preorder' },
+        { id: 'shop', nav: 'shop' }
+      ];
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const match = sections.find(s => s.id === entry.target.id);
+            if (match) {
+              const activeBtn = document.querySelector(`.bottom-nav [data-nav="${match.nav}"]`);
+              if (activeBtn) setActiveNav(activeBtn);
+            }
+          }
+        });
+      }, { threshold: 0.35 });
+
+      sections.forEach(s => {
+        const el = document.getElementById(s.id);
+        if (el) observer.observe(el);
+      });
+    }
+  }
+
   // Buttons Navigasi & Modal
-  $('#cartBtn')?.addEventListener('click', () => { renderCart(); openOverlay('cartOverlay'); });
-  $('#bottomCartBtn')?.addEventListener('click', () => { renderCart(); openOverlay('cartOverlay'); });
+  $('#cartBtn')?.addEventListener('click', openCartDrawer);
   $('#accountBtn')?.addEventListener('click', openAccountArea);
-  $('#bottomAccountBtn')?.addEventListener('click', openAccountArea);
   $('#mobileAccountBtn')?.addEventListener('click', openAccountArea);
+  initBottomNav();
   $('#footerAccount')?.addEventListener('click', e => { e.preventDefault(); openAccountArea(); });
   $('#footerAdmin')?.addEventListener('click', e => {
     e.preventDefault();
