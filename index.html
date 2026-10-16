@@ -86,7 +86,7 @@
     <section class="wrap" id="newsletter"><div class="newsletter"><div><div class="eyebrow">Kabar INABA</div><h2 class="serif">Update koleksi<br>langsung ke email.</h2><p>Terima kabar koleksi baru dan informasi dari layanan jahit INABA HIJAB.</p></div><form class="newsletter-form" id="newsletterForm"><input type="email" name="email" placeholder="Email kamu" aria-label="Email kamu" required/><button type="submit">IKUTI ↗</button></form></div></section>
   </main>
 
-  <footer class="footer"><div class="wrap"><div class="footer-top"><div><a href="#home" class="brand"><span class="brand-name">INABA</span><span class="brand-sub">HIJAB · BUSANA MUSLIM</span></a><p class="footer-note">Gamis pria dan wanita, busana muslim, serta layanan penjahit yang bisa diajak berdiskusi.</p></div><div class="footer-col"><h4>Jelajahi</h4><a href="#shop">Koleksi gamis</a><a href="#atelier">Jasa jahit</a><a href="#story">Tentang INABA</a><a href="#journal">Panduan pakaian</a></div><div class="footer-col"><h4>Bantuan</h4><a href="#atelier" id="footerConsult">Konsultasi jahit</a><a href="#" id="footerAccount">Akun saya</a><a href="#newsletter">Kabar INABA</a></div><div class="footer-col"><h4>Hubungi</h4><a href="https://wa.me/6285735144904?text=Halo%20INABA%20HIJAB%2C%20saya%20ingin%20bertanya%20tentang%20produk%20atau%20jasa%20jahit." id="footerContact" target="_blank" rel="noopener noreferrer">WhatsApp 0857-3514-4904 ↗</a><a href="#shop">Lihat produk</a></div></div><div class="footer-bottom"><span>© <span id="year"></span> INABA HIJAB</span><span>Busana muslim & jahit custom.</span></div></div></footer>
+  <footer class="footer"><div class="wrap"><div class="footer-top"><div><a href="#home" class="brand"><span class="brand-name">INABA</span><span class="brand-sub">HIJAB · BUSANA MUSLIM</span></a><p class="footer-note">Gamis pria dan wanita, busana muslim, serta layanan penjahit yang bisa diajak berdiskusi.</p></div><div class="footer-col"><h4>Jelajahi</h4><a href="#shop">Koleksi gamis</a><a href="#atelier">Jasa jahit</a><a href="#story">Tentang INABA</a><a href="#journal">Panduan pakaian</a></div><div class="footer-col"><h4>Bantuan</h4><a href="#atelier" id="footerConsult">Konsultasi jahit</a><a href="#" id="footerAccount">Akun saya</a><a href="#newsletter">Kabar INABA</a><a href="admin.html" id="footerAdmin">Panel admin ↗</a></div><div class="footer-col"><h4>Hubungi</h4><a href="https://wa.me/6285735144904?text=Halo%20INABA%20HIJAB%2C%20saya%20ingin%20bertanya%20tentang%20produk%20atau%20jasa%20jahit." id="footerContact" target="_blank" rel="noopener noreferrer">WhatsApp 0857-3514-4904 ↗</a><a href="#shop">Lihat produk</a></div></div><div class="footer-bottom"><span>© <span id="year"></span> INABA HIJAB</span><span>Busana muslim & jahit custom.</span></div></div></footer>
   <nav class="bottom-nav" aria-label="Navigasi cepat"><a href="#home" class="current"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-6h6v6"/></svg><span>Home</span></a><a href="#shop"><svg viewBox="0 0 24 24"><path d="M4 8h16l-1.2 12H5.2L4 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg><span>Shop</span></a><button id="bottomTailor"><svg viewBox="0 0 24 24"><path d="m4 20 5-5M15 4l5 5M4 4l16 16M4 4l5 5M15 15l5 5"/><circle cx="7" cy="7" r="2"/><circle cx="17" cy="17" r="2"/></svg><span>Jahit custom</span></button><button id="bottomAccount"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.6-3.4 3.1-5.2 7-5.2s6.4 1.8 7 5.2"/></svg><span>Akun</span></button></nav>
 
   <!-- Account sheet -->
@@ -122,7 +122,7 @@
   const sb = supabaseReady ? createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
   }) : null;
-  const state = {products:[],filter:'Semua',cart:(()=>{try{return JSON.parse(localStorage.getItem('inaba_cart')||'[]').filter(item=>!String(item.id).startsWith('demo-')).map(item=>({...item,size:item.size||'M'}))}catch{return []}})(),user:null,profile:null,authMode:'login',adminTab:'products',detailProductId:null,pendingCheckout:false,catalogMode:'empty',backendError:null};
+  const state = {products:[],filter:'Semua',cart:(()=>{try{return JSON.parse(localStorage.getItem('inaba_cart')||'[]').filter(item=>!String(item.id).startsWith('demo-')).map(item=>({...item,size:item.size||'M'}))}catch{return []}})(),user:null,profile:null,authMode:'login',adminTab:'products',detailProductId:null,pendingCheckout:false,adminIntent:false,catalogMode:'empty',backendError:null};
   const $ = (s,root=document)=>root.querySelector(s); const $$=(s,root=document)=>Array.from(root.querySelectorAll(s));
   const rupiah = n => new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n)||0);
   const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -187,6 +187,24 @@
 
   $('#accountBtn').addEventListener('click',openAuth);$('#bottomAccount').addEventListener('click',openAuth);$('#mobileAccount').addEventListener('click',openAuth);$('#footerAccount').addEventListener('click',e=>{e.preventDefault();openAuth()});
 
+  async function openAdminEntry(){
+    state.adminIntent=true;
+    if(state.user && state.profile?.role==='admin'){
+      state.adminIntent=false;
+      await openAccountArea();
+      return;
+    }
+    openAuth();
+    $('#authTitle').textContent='Masuk panel admin.';
+    if(state.user){
+      $('#authNotice').className='notice error';
+      $('#authNotice').textContent='Akun ini belum memiliki izin admin. Keluar lalu masuk memakai akun admin INABA yang sudah diverifikasi.';
+    }else{
+      $('#authNotice').className='notice';
+      $('#authNotice').textContent='Panel admin dilindungi login. Gunakan akun admin INABA yang sudah terverifikasi; setelah berhasil, dashboard akan terbuka otomatis.';
+    }
+  }
+
   function authErrorMessage(err){
     const msg=String(err?.message||'');
     if(/invalid login credentials/i.test(msg))return 'Email atau password tidak cocok.';
@@ -230,6 +248,10 @@
         $('#authNotice').className='notice success';
         $('#authNotice').textContent='Akun berhasil dibuat dan kamu sudah masuk.';
         if(state.backendError)throw new Error('Akun dibuat, tetapi profil database belum siap. Jalankan supabase-setup.sql di SQL Editor.');
+        if(state.adminIntent && state.profile?.role!=='admin'){
+          state.adminIntent=false;openAuth();$('#authNotice').className='notice error';$('#authNotice').textContent='Akun ini belum memiliki izin admin. Pastikan email admin benar dan sudah terverifikasi di Supabase.';return;
+        }
+        state.adminIntent=false;
         closeOverlay('authOverlay');toast('Akun INABA berhasil dibuat.');
         if(state.profile?.role==='admin')await openAccountArea();else if(state.pendingCheckout)startCheckout();
       }else{
@@ -237,6 +259,10 @@
         if(error)throw error;
         await loadSession(data.user);
         if(state.backendError)throw new Error('Login berhasil, tetapi profil toko belum tersedia. Pastikan supabase-setup.sql sudah dijalankan.');
+        if(state.adminIntent && state.profile?.role!=='admin'){
+          state.adminIntent=false;openAuth();$('#authNotice').className='notice error';$('#authNotice').textContent='Login berhasil, tetapi akun ini tidak memiliki izin admin. Gunakan salah satu akun admin INABA yang telah diverifikasi.';return;
+        }
+        state.adminIntent=false;
         closeOverlay('authOverlay');toast(state.profile?.role==='admin'?'Login admin berhasil.':'Berhasil masuk.');
         if(state.profile?.role==='admin')await openAccountArea();else if(state.pendingCheckout)startCheckout();
       }
@@ -363,6 +389,7 @@
       await loadSession(data.session?.user||null);
     }catch(err){console.warn('INABA session restore issue:',err.message)}
     await refreshProducts();
+    if(new URLSearchParams(window.location.search).get('panel')==='admin' || window.location.hash==='#admin') await openAdminEntry();
   })();
   </script>
 </body>
