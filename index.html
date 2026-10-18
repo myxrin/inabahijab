@@ -62,7 +62,12 @@
       --shadow-overlay: 0 -8px 40px rgba(20, 24, 18, 0.10), 0 24px 80px rgba(20, 24, 18, 0.18);
     }
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; scroll-padding-top: 86px; }
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 86px;
+      overflow-x: hidden;
+      max-width: 100%;
+    }
     body {
       margin: 0;
       background: var(--paper);
@@ -73,8 +78,17 @@
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
       font-feature-settings: "kern" 1, "liga" 1;
+      overflow-x: hidden;
+      max-width: 100%;
+      width: 100%;
+      position: relative;
     }
     body.lock { overflow: hidden; }
+    main {
+      overflow-x: hidden;
+      max-width: 100%;
+      width: 100%;
+    }
     button, input, textarea, select { font: inherit; }
     button { cursor: pointer; }
     a { color: inherit; text-decoration: none; }
@@ -102,8 +116,10 @@
       display: inline-block;
     }
     .wrap {
-      width: min(1180px, 100% - 32px);
+      width: min(1180px, calc(100% - 32px));
       margin: 0 auto;
+      max-width: 100%;
+      box-sizing: border-box;
     }
     .skip-link {
       position: absolute;
@@ -131,6 +147,9 @@
       z-index: 40;
       border-bottom: 1px solid var(--line);
       backdrop-filter: blur(14px);
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
     }
     .brand {
       display: flex;
@@ -337,15 +356,31 @@
     /* Hero Section */
     .hero {
       padding: 24px 0 44px;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      box-sizing: border-box;
     }
     .hero-grid {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       gap: 24px;
       align-items: center;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+    .hero-grid > * {
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
     }
     .hero-copy {
       padding: 10px 0;
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
     }
     .hero h1 {
       font-size: clamp(34px, 7.5vw, 58px);
@@ -375,6 +410,10 @@
       overflow: hidden;
       background: #dfded4;
       box-shadow: var(--shadow-md);
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
     }
     .hero-visual img {
       object-position: center 35%;
@@ -392,6 +431,9 @@
       justify-content: space-between;
       padding: 20px;
       color: #fff;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
     }
     .hero-pill-tag {
       align-self: flex-start;
@@ -406,7 +448,8 @@
       border: 1px solid rgba(255,255,255,0.3);
     }
     .hero-overlay-bottom {
-      max-width: 320px;
+      max-width: 100%;
+      box-sizing: border-box;
     }
     .hero-overlay-bottom h3 {
       font: italic 22px/1.2 var(--serif);
@@ -422,9 +465,13 @@
     /* Category Showcase Cards */
     .category-pills-row {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
       margin: 24px 0 0;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
     }
     .cat-card-shortcut {
       background: var(--paper-card);
@@ -436,6 +483,7 @@
       gap: 12px;
       transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
       text-align: left;
+      box-sizing: border-box;
     }
     .cat-card-shortcut:hover {
       transform: translateY(-2px);
@@ -475,10 +523,14 @@
       border-top: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       gap: 16px;
       padding: 22px 0;
       margin: 24px 0 56px;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
     }
     .trust-item {
       display: flex;
@@ -2034,24 +2086,32 @@
     /* Brand Divisions Switcher */
     .brand-divisions-box {
       margin: 18px 0 6px;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
     }
     .brand-switcher-wrap {
       margin: 8px 0 16px;
-      padding: 6px;
+      padding: 4px;
       background: var(--paper-card);
       border: 1px solid var(--line);
       border-radius: var(--radius-full);
-      display: inline-flex;
+      display: flex;
       gap: 6px;
+      width: 100%;
       max-width: 100%;
+      min-width: 0;
       overflow-x: auto;
       scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      box-sizing: border-box;
     }
     .brand-switcher-wrap::-webkit-scrollbar { display: none; }
     .brand-pill-btn {
       border: none;
       background: transparent;
-      padding: 8px 16px;
+      padding: 8px 14px;
       border-radius: var(--radius-full);
       font-size: 13px;
       font-weight: 700;
@@ -2060,6 +2120,7 @@
       align-items: center;
       gap: 6px;
       white-space: nowrap;
+      flex: 0 0 auto;
       transition: all 0.16s ease;
       cursor: pointer;
     }
@@ -2071,6 +2132,34 @@
       background: var(--ink);
       color: #fffdf8;
       box-shadow: var(--shadow-sm);
+    }
+    .pill-icon {
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+    .btn-icon {
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+      margin-right: 5px;
+    }
+    .btn-arrow-icon {
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+      margin-left: 5px;
+      transition: transform 0.16s ease;
+    }
+    .btn:hover .btn-arrow-icon, .text-link:hover .btn-arrow-icon {
+      transform: translate(2px, -2px);
+    }
+    .menu-arrow-icon {
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+      margin-left: auto;
+      opacity: 0.7;
     }
 
     /* Split shipping box */
@@ -2100,15 +2189,23 @@
       body {
         padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
         -webkit-tap-highlight-color: transparent;
+        overflow-x: hidden;
+        max-width: 100%;
+        width: 100%;
       }
       .wrap {
         width: calc(100% - 28px);
+        max-width: calc(100% - 28px);
+        box-sizing: border-box;
       }
 
       /* Sleek Mobile Header */
       .header {
         height: 56px;
         padding: 0 14px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
       }
       .brand-title {
         font-size: 18px;
@@ -2136,6 +2233,24 @@
       /* Hero Section */
       .hero {
         padding: 16px 0 24px;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+        box-sizing: border-box;
+      }
+      .hero-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+      }
+      .hero-copy {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
       }
       .hero h1 {
         font-size: clamp(26px, 6.8vw, 36px);
@@ -2149,10 +2264,14 @@
         margin: 0 0 16px;
       }
       .hero-visual {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
         height: 220px;
         min-height: 0;
         border-radius: var(--radius-md);
         margin-top: 14px;
+        box-sizing: border-box;
       }
       .button-row {
         display: flex;
@@ -2176,6 +2295,10 @@
         padding: 4px 2px 10px;
         scrollbar-width: none;
         -webkit-overflow-scrolling: touch;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
       }
       .category-pills-row::-webkit-scrollbar { display: none; }
       .cat-card-shortcut {
@@ -2185,6 +2308,7 @@
         border-radius: var(--radius-full);
         gap: 8px;
         background: var(--paper-card);
+        box-sizing: border-box;
       }
       .cat-icon-bubble {
         width: 30px;
@@ -2207,20 +2331,26 @@
         overflow-x: auto;
         scroll-snap-type: x mandatory;
         gap: 10px;
-        padding: 14px 0;
+        padding: 14px 2px;
         margin: 14px 0 32px;
         scrollbar-width: none;
         -webkit-overflow-scrolling: touch;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
       }
       .trust-strip::-webkit-scrollbar { display: none; }
       .trust-item {
         flex: 0 0 76%;
+        max-width: 280px;
         scroll-snap-align: start;
         background: var(--paper-card);
         padding: 12px 14px;
         border-radius: var(--radius-md);
         border: 1px solid var(--line);
         gap: 10px;
+        box-sizing: border-box;
       }
       .trust-item strong {
         font-size: 13px;
@@ -2556,12 +2686,12 @@
   <!-- Mobile Menu Drawer -->
   <nav class="mobile-menu" id="mobileMenu">
     <span class="eyebrow"><span class="eyebrow-dot"></span> Temukan Pilihan INABA Hijab</span>
-    <a href="#home">Beranda Toko <span>→</span></a>
+    <a href="#home">Beranda Toko <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="menu-arrow-icon"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     <a href="#preorder-section">Pre-Order Seragam Sekolah <span class="po-pill">SDIT · TPQ · Madin</span></a>
-    <a href="#shop">Katalog Semua Produk <span>→</span></a>
-    <a href="#spotlight">Capel Petani &amp; Meja Lipat <span>→</span></a>
-    <a href="#cara-pesan">Cara Pemesanan <span>→</span></a>
-    <a href="#cerita">Tentang Toko <span>→</span></a>
+    <a href="#shop">Katalog Semua Produk <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="menu-arrow-icon"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    <a href="#spotlight">Capel Petani &amp; Meja Lipat <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="menu-arrow-icon"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    <a href="#cara-pesan">Cara Pemesanan <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="menu-arrow-icon"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    <a href="#cerita">Tentang Toko <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="menu-arrow-icon"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     <div style="display:grid;gap:8px;margin-top:10px">
       <button class="btn btn-ghost" id="mobileAccountBtn">Akun Saya</button>
       <a class="btn btn-clay" href="#bantuan" data-whatsapp-link="general" target="_blank" rel="noopener noreferrer">Hubungi WhatsApp</a>
@@ -2585,10 +2715,18 @@
           <div class="brand-divisions-box">
             <span class="eyebrow" style="font-size:11px"><span class="eyebrow-dot"></span> 3 Lini Spesialis Toko:</span>
             <div class="brand-switcher-wrap" role="tablist" aria-label="Lini Produk INABA">
-              <button type="button" class="brand-pill-btn active" data-division="all">✨ Semua Lini</button>
-              <button type="button" class="brand-pill-btn" data-division="modest">🌸 INABA Modest</button>
-              <button type="button" class="brand-pill-btn" data-division="schoolwear">🏫 INABA Schoolwear</button>
-              <button type="button" class="brand-pill-btn" data-division="living">🌾 INABA Living &amp; Craft</button>
+              <button type="button" class="brand-pill-btn active" data-division="all">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pill-icon"><path d="m12 3 1.912 5.886a2 2 0 0 0 1.202 1.202L21 12l-5.886 1.912a2 2 0 0 0-1.202 1.202L12 21l-1.912-5.886a2 2 0 0 0-1.202-1.202L3 12l5.886-1.912a2 2 0 0 0 1.202-1.202L12 3z"/></svg> Semua Lini
+              </button>
+              <button type="button" class="brand-pill-btn" data-division="modest">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pill-icon"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg> INABA Modest
+              </button>
+              <button type="button" class="brand-pill-btn" data-division="schoolwear">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pill-icon"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> INABA Schoolwear
+              </button>
+              <button type="button" class="brand-pill-btn" data-division="living">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pill-icon"><path d="M2 22 16 8M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94zM7.47 8.53 9 7l1.53 1.53a3.5 3.5 0 0 1 0 4.94L9 15l-1.53-1.53a3.5 3.5 0 0 1 0-4.94zM11.47 4.53 13 3l1.53 1.53a3.5 3.5 0 0 1 0 4.94L13 11l-1.53-1.53a3.5 3.5 0 0 1 0-4.94z"/><path d="M20 2h2v2a4 4 0 0 1-4 4h-2V6a4 4 0 0 1 4-4z"/></svg> INABA Living &amp; Craft
+              </button>
             </div>
           </div>
 
@@ -2682,8 +2820,10 @@
             <div class="po-perk-item"><span class="po-perk-icon"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg></span> <span><strong>Panduan Ukuran Terstandar:</strong> Mulai ukuran anak usia dini hingga dewasa sirimbit orang tua.</span></div>
           </div>
           <div class="button-row">
-            <button class="btn btn-clay" id="openSizeGuideGlobal">Lihat Panduan Tabel Ukuran ↗</button>
-            <button type="button" class="btn btn-ghost" id="openPoCalcBtn" style="color:#fff;border-color:rgba(255,255,255,0.5)">⚡ Kalkulator Rombongan Sekolah ↗</button>
+            <button class="btn btn-clay" id="openSizeGuideGlobal">Lihat Panduan Tabel Ukuran <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="btn-arrow-icon"><path d="M7 17L17 7M7 7h10v10"/></svg></button>
+            <button type="button" class="btn btn-ghost" id="openPoCalcBtn" style="color:#fff;border-color:rgba(255,255,255,0.5)">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14"/><path d="M16 10h.01M12 10h.01M8 10h.01M12 14h.01M8 14h.01M12 18h.01M8 18h.01"/></svg> Kalkulator Rombongan Sekolah <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="btn-arrow-icon"><path d="M7 17L17 7M7 7h10v10"/></svg>
+            </button>
             <a class="btn btn-ghost" style="color:#fff;border-color:rgba(255,255,255,0.4)" href="#bantuan" data-whatsapp-link="preorder" target="_blank" rel="noopener noreferrer">Konsultasi Admin (WA)</a>
           </div>
         </div>
@@ -2718,7 +2858,7 @@
             <h2 class="serif">Jelajahi Semua Produk Pilihan</h2>
             <p class="section-intro">Pilih kategori yang kamu butuhkan: pakaian ready stock, perlengkapan petani di kebun &amp; sawah, meja lipat serbaguna, hingga seragam sekolah.</p>
           </div>
-          <button class="text-link" id="resetCatalogFilters">Tampilkan Semua Produk <span>↗</span></button>
+          <button class="text-link" id="resetCatalogFilters">Tampilkan Semua Produk <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="btn-arrow-icon"><path d="M7 17L17 7M7 7h10v10"/></svg></button>
         </div>
 
         <!-- Category Filter Tabs (Loaded Dynamically) -->
@@ -2779,7 +2919,7 @@
               <h3 class="serif">Topi Capel Petani Anyaman Bambu</h3>
               <p>Dibuat dari anyaman bambu alami yang kuat dengan lapisan furing kain anti-air. Memberikan keteduhan maksimal saat mencangkul, menyiangi padi di sawah, merawat kebun, atau memancing di cuaca terik dan gerimis.</p>
               <div class="button-row">
-                <button class="btn btn-sm btn-ghost" data-quick-filter="Perlengkapan Petani">Lihat Produk Capel ↗</button>
+                <button class="btn btn-sm btn-ghost" data-quick-filter="Perlengkapan Petani">Lihat Produk Capel <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="btn-arrow-icon"><path d="M7 17L17 7M7 7h10v10"/></svg></button>
               </div>
             </div>
           </article>
@@ -2798,7 +2938,7 @@
               <h3 class="serif">Meja Lipat Portable Serbaguna</h3>
               <p>Papan MDF tebal dilapisi laminasi tahan gores dengan rangka pipa aluminium berbusa anti-slip. Ringan dijinjing, kuat menahan beban hingga 25 kg, serta dilengkapi slot gadget dan cup holder.</p>
               <div class="button-row">
-                <button class="btn btn-sm btn-ghost" data-quick-filter="Meja &amp; Perabot">Lihat Meja Lipat ↗</button>
+                <button class="btn btn-sm btn-ghost" data-quick-filter="Meja &amp; Perabot">Lihat Meja Lipat <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="btn-arrow-icon"><path d="M7 17L17 7M7 7h10v10"/></svg></button>
               </div>
             </div>
           </article>
@@ -2895,7 +3035,7 @@
         <p>Daftarkan emailmu untuk info pembukaan pre-order seragam sekolah, promo cuci gudang ready stock, dan kedatangan produk baru.</p>
         <form class="newsletter-form" id="newsletterForm">
           <input type="email" name="email" placeholder="Alamat email kamu" aria-label="Alamat email kamu" required />
-          <button type="submit" class="btn btn-clay">Daftarkan Email ↗</button>
+          <button type="submit" class="btn btn-clay">Daftarkan Email <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="btn-arrow-icon"><path d="M7 17L17 7M7 7h10v10"/></svg></button>
         </form>
       </div>
     </section>
@@ -3205,7 +3345,7 @@
 
         <div style="display:grid;gap:8px">
           <button type="button" class="btn btn-full btn-wa" id="calcSendWaBtn">
-            Kirim Draft Rombongan ke WhatsApp Admin ↗
+            Kirim Draft Rombongan ke WhatsApp Admin <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="btn-arrow-icon"><path d="M7 17L17 7M7 7h10v10"/></svg>
           </button>
           <button type="button" class="btn btn-full btn-ghost" id="calcCopySummaryBtn" style="font-size:13px">
             Salin Rincian Simulasi
@@ -3837,7 +3977,7 @@
           <div class="field" style="margin-top:14px">
             <label for="detailVariantSize" style="font-weight:700;display:flex;justify-content:space-between;align-items:center">
               <span>Pilihan Ukuran / Varian:</span>
-              ${sizeGuideText ? `<button type="button" class="text-link-mini" id="btnOpenSizeGuideModal">Tabel Ukuran ↗</button>` : ''}
+              ${sizeGuideText ? `<button type="button" class="text-link-mini" id="btnOpenSizeGuideModal">Tabel Ukuran <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="btn-arrow-icon"><path d="M7 17L17 7M7 7h10v10"/></svg></button>` : ''}
             </label>
             <div class="size-pill-group" id="sizePillGroup" role="radiogroup" aria-label="Pilih varian produk">
               ${sizeOptions.map((s, idx) => `
@@ -3850,9 +3990,13 @@
           <div class="field" style="margin-top:14px">
             <label style="font-weight:700">Jumlah Pesanan:</label>
             <div class="qty-stepper-container">
-              <button type="button" class="stepper-btn" id="btnQtyMinus" aria-label="Kurang kuantitas" ${isSold ? 'disabled' : ''}>−</button>
+              <button type="button" class="stepper-btn" id="btnQtyMinus" aria-label="Kurang kuantitas" ${isSold ? 'disabled' : ''}>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
+              </button>
               <span class="stepper-val" id="detailQtyDisplay">${minQty}</span>
-              <button type="button" class="stepper-btn" id="btnQtyPlus" aria-label="Tambah kuantitas" ${isSold ? 'disabled' : ''}>+</button>
+              <button type="button" class="stepper-btn" id="btnQtyPlus" aria-label="Tambah kuantitas" ${isSold ? 'disabled' : ''}>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+              </button>
               <input type="hidden" id="detailQty" value="${minQty}">
             </div>
           </div>
@@ -3869,7 +4013,7 @@
         </button>
       </div>
       <button type="button" class="btn btn-full btn-ghost" id="shareProductBtn" style="font-size:12.5px;min-height:38px;margin-top:10px">
-        Salin Tautan Produk ↗
+        Salin Tautan Produk <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="btn-arrow-icon"><path d="M7 17L17 7M7 7h10v10"/></svg>
       </button>
     `;
 
@@ -4099,7 +4243,7 @@
           <svg viewBox="0 0 24 24" style="width:48px;height:48px;stroke:var(--muted);fill:none;stroke-width:1.4;margin:0 auto 12px"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
           <h3 class="serif" style="font-size:24px;margin:0 0 8px">Keranjang Belanja Kosong</h3>
           <p style="font-size:14px;color:var(--muted);margin:0 0 20px">Silakan pilih produk ready stock atau ajukan pre-order seragam sekolah pilihan Anda.</p>
-          <a class="btn btn-clay" href="#shop" id="cartStartShoppingBtn">Jelajahi Katalog Toko ↗</a>
+          <a class="btn btn-clay" href="#shop" id="cartStartShoppingBtn">Jelajahi Katalog Toko <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="btn-arrow-icon"><path d="M7 17L17 7M7 7h10v10"/></svg></a>
         </div>
       `;
       $('#cartStartShoppingBtn')?.addEventListener('click', () => closeOverlay('cartOverlay'));
@@ -4122,9 +4266,9 @@
           <p>${rupiah(item.price)} · Pilihan: <strong>${esc(item.size || 'Standar')}</strong></p>
           ${item.school_institution ? `<p style="font-size:11px;color:var(--olive)">Lembaga: ${esc(item.school_institution)}</p>` : ''}
           <div class="qty-row">
-            <button type="button" data-cart-qty="-1" data-cart-id="${esc(item.cart_item_id)}">−</button>
+            <button type="button" data-cart-qty="-1" data-cart-id="${esc(item.cart_item_id)}" aria-label="Kurang kuantitas"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg></button>
             <span>${item.quantity}</span>
-            <button type="button" data-cart-qty="1" data-cart-id="${esc(item.cart_item_id)}">+</button>
+            <button type="button" data-cart-qty="1" data-cart-id="${esc(item.cart_item_id)}" aria-label="Tambah kuantitas"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></button>
             <button type="button" class="btn-remove-item" data-cart-remove="${esc(item.cart_item_id)}">Hapus</button>
           </div>
         </div>
@@ -4145,7 +4289,7 @@
       </div>
 
       <div style="display:grid;gap:10px">
-        <button class="btn btn-full btn-clay" id="proceedCheckoutBtn">Lanjutkan Pemesanan ↗</button>
+        <button class="btn btn-full btn-clay" id="proceedCheckoutBtn">Lanjutkan Pemesanan <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="btn-arrow-icon"><path d="M7 17L17 7M7 7h10v10"/></svg></button>
         <button class="btn btn-full btn-ghost" id="continueShopBtn">Tambah Produk Lain</button>
       </div>
     `;
@@ -4339,7 +4483,7 @@
 
         <div style="display:grid;gap:10px;margin-top:20px">
           <a class="btn btn-full btn-wa" href="${waUrl}" target="_blank" rel="noopener noreferrer" id="waConfirmBtn">
-            Lanjut Konfirmasi ke WhatsApp ↗
+            Lanjut Konfirmasi ke WhatsApp <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="btn-arrow-icon"><path d="M7 17L17 7M7 7h10v10"/></svg>
           </a>
           <button type="button" class="btn btn-full btn-ghost" id="copyOrderTextBtn" style="font-size:13px">
             Salin Rincian Pesanan
@@ -5386,7 +5530,7 @@
                 </label>
 
                 <div class="button-row">
-                  ${waChatLink ? `<a class="btn btn-sm btn-ghost" href="${waChatLink}" target="_blank" rel="noopener noreferrer">Chat WA Pelanggan ↗</a>` : ''}
+                  ${waChatLink ? `<a class="btn btn-sm btn-ghost" href="${waChatLink}" target="_blank" rel="noopener noreferrer">Chat WA Pelanggan <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="btn-arrow-icon"><path d="M7 17L17 7M7 7h10v10"/></svg></a>` : ''}
                   <button class="btn btn-sm btn-clay" data-save-order-status="${esc(o.id)}">Simpan Status</button>
                 </div>
               </div>
@@ -5625,7 +5769,7 @@
     container.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
         <h3 style="font:22px var(--serif);margin:0">Pelanggan Warta Newsletter (${adminNewsletter.length})</h3>
-        <button class="btn btn-sm btn-ghost" id="exportCsvBtn">Ekspor ke CSV ↗</button>
+        <button class="btn btn-sm btn-ghost" id="exportCsvBtn">Ekspor ke CSV <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="btn-arrow-icon"><path d="M7 17L17 7M7 7h10v10"/></svg></button>
       </div>
 
       <div id="adminNewsletterList">
