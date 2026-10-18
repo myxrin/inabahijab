@@ -60,6 +60,7 @@
       --shadow-md: 0 10px 30px rgba(30, 34, 27, 0.08);
       --shadow-lg: 0 24px 60px rgba(30, 34, 27, 0.12);
       --shadow-overlay: 0 -8px 40px rgba(20, 24, 18, 0.10), 0 24px 80px rgba(20, 24, 18, 0.18);
+      --header-h: 72px;
     }
     * { box-sizing: border-box; }
     html {
@@ -136,26 +137,32 @@
 
     /* Header */
     .header {
-      height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      background: rgba(246, 245, 239, 0.94);
+      height: var(--header-h, 72px);
+      background: rgba(246, 245, 239, 0.95);
       position: sticky;
       top: 0;
       z-index: 40;
       border-bottom: 1px solid var(--line);
       backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       width: 100%;
       max-width: 100%;
       box-sizing: border-box;
+      padding: 0;
+    }
+    .header-inner {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
     }
     .brand {
       display: flex;
       flex-direction: column;
       line-height: 1.1;
       gap: 2px;
+      min-width: 0;
     }
     .brand-title {
       font-family: var(--sans);
@@ -166,6 +173,7 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      white-space: nowrap;
     }
     .brand-title span {
       color: var(--clay);
@@ -176,6 +184,10 @@
       color: var(--muted);
       text-transform: uppercase;
       font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
     }
     .nav {
       display: none;
@@ -256,7 +268,7 @@
     .mobile-menu {
       display: none;
       position: fixed;
-      inset: 72px 0 auto;
+      inset: var(--header-h, 72px) 0 auto;
       background: var(--paper);
       padding: 22px 24px 28px;
       z-index: 39;
@@ -2027,10 +2039,10 @@
     /* Responsive Desktop */
     @media (min-width: 640px) {
       .wrap { width: min(1180px, 100% - 64px); }
-      .header { padding: 0 32px; }
+      .header { padding: 0; }
       .menu-toggle { display: none; }
       .nav { display: flex; }
-      .hero { padding: 36px 0 52px; }
+      .hero { padding: 40px 0 56px; }
       .hero-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
       .hero-visual { height: 460px; }
       .category-pills-row { grid-template-columns: repeat(4, 1fr); }
@@ -2186,6 +2198,9 @@
 
     /* Mobile Responsive (< 640px) */
     @media (max-width: 639px) {
+      :root {
+        --header-h: 60px;
+      }
       body {
         padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
         -webkit-tap-highlight-color: transparent;
@@ -2194,30 +2209,31 @@
         width: 100%;
       }
       .wrap {
-        width: calc(100% - 28px);
-        max-width: calc(100% - 28px);
+        width: calc(100% - 36px);
+        max-width: calc(100% - 36px);
         box-sizing: border-box;
       }
 
       /* Sleek Mobile Header */
       .header {
-        height: 56px;
-        padding: 0 14px;
+        height: var(--header-h, 60px);
+        padding: 0;
         width: 100%;
         max-width: 100%;
         box-sizing: border-box;
       }
+      .header-inner {
+        gap: 6px;
+      }
       .brand-title {
-        font-size: 18px;
-        letter-spacing: 0.1em;
+        font-size: 17px;
+        letter-spacing: 0.08em;
       }
       .brand-desc {
-        font-size: 9px;
-        letter-spacing: 0.12em;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 170px;
+        display: none !important;
+      }
+      .header-actions {
+        gap: 4px;
       }
       .icon-btn {
         width: 38px;
@@ -2226,13 +2242,13 @@
         min-height: 38px;
       }
       .icon-btn svg {
-        width: 19px;
-        height: 19px;
+        width: 18px;
+        height: 18px;
       }
 
       /* Hero Section */
       .hero {
-        padding: 16px 0 24px;
+        padding: 24px 0 32px;
         width: 100%;
         max-width: 100%;
         overflow-x: hidden;
@@ -2254,14 +2270,14 @@
       }
       .hero h1 {
         font-size: clamp(26px, 6.8vw, 36px);
-        line-height: 1.14;
-        margin: 10px 0 12px;
+        line-height: 1.16;
+        margin: 10px 0 14px;
         letter-spacing: -0.02em;
       }
       .hero-desc {
         font-size: 13.5px;
         line-height: 1.6;
-        margin: 0 0 16px;
+        margin: 0 0 18px;
       }
       .hero-visual {
         width: 100%;
@@ -2656,12 +2672,11 @@
       .nav { display: none !important; }
       .menu-toggle { display: grid !important; }
     }
-    @media (max-width: 1499px) { .brand-desc { display: none; } }
+    @media (max-width: 1099px) { .brand-desc { display: none !important; } }
     @media (min-width: 1100px) and (max-width: 1299px) { .nav { gap: 16px; } }
     @media (max-width: 639px) {
       .editorial-hero-banner .placeholder-title,
       .editorial-hero-banner .placeholder-sub { display: none; }
-      .brand-desc { display: block; max-width: 210px; font-size: 9px; }
       body { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
     }
     @media (min-width: 1024px) {
@@ -2684,35 +2699,37 @@
 
   <!-- Header -->
   <header class="header">
-    <button class="icon-btn menu-toggle" id="menuToggle" aria-label="Buka menu navigasi">
-      <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-    </button>
-
-    <a href="#home" class="brand" aria-label="INABA HIJAB beranda">
-      <span class="brand-title">INABA<span>HIJAB</span></span>
-      <span class="brand-desc">Busana Muslim · Seragam Sekolah · Perlengkapan Harian</span>
-    </a>
-
-    <nav class="nav" aria-label="Navigasi utama">
-      <a href="#home">Beranda</a>
-      <a href="#preorder-section" class="badge-nav">Pre-Order Seragam</a>
-      <a href="#shop">Katalog Lengkap</a>
-      <a href="#spotlight">Capel &amp; Meja</a>
-      <a href="#cara-pesan">Cara Pesan</a>
-      <a href="#bantuan">Bantuan</a>
-    </nav>
-
-    <div class="header-actions">
-      <button class="icon-btn" id="searchHeaderBtn" aria-label="Cari produk">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <div class="wrap header-inner">
+      <button class="icon-btn menu-toggle" id="menuToggle" aria-label="Buka menu navigasi">
+        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
-      <button class="icon-btn" id="accountBtn" aria-label="Akun atau Admin">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.6-3.4 3.1-5.2 7-5.2s6.4 1.8 7 5.2"/></svg>
-      </button>
-      <button class="icon-btn" id="cartBtn" aria-label="Keranjang belanja">
-        <svg viewBox="0 0 24 24"><path d="M4 8h16l-1.2 12H5.2L4 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>
-        <span class="cart-count" id="cartCount">0</span>
-      </button>
+
+      <a href="#home" class="brand" aria-label="INABA HIJAB beranda">
+        <span class="brand-title">INABA<span>HIJAB</span></span>
+        <span class="brand-desc">Busana Muslim · Seragam Sekolah · Perlengkapan Harian</span>
+      </a>
+
+      <nav class="nav" aria-label="Navigasi utama">
+        <a href="#home">Beranda</a>
+        <a href="#preorder-section" class="badge-nav">Pre-Order Seragam</a>
+        <a href="#shop">Katalog Lengkap</a>
+        <a href="#spotlight">Capel &amp; Meja</a>
+        <a href="#cara-pesan">Cara Pesan</a>
+        <a href="#bantuan">Bantuan</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="icon-btn" id="searchHeaderBtn" aria-label="Cari produk">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        </button>
+        <button class="icon-btn" id="accountBtn" aria-label="Akun atau Admin">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.6-3.4 3.1-5.2 7-5.2s6.4 1.8 7 5.2"/></svg>
+        </button>
+        <button class="icon-btn" id="cartBtn" aria-label="Keranjang belanja">
+          <svg viewBox="0 0 24 24"><path d="M4 8h16l-1.2 12H5.2L4 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+      </div>
     </div>
   </header>
 
