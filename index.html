@@ -1116,42 +1116,66 @@
       color: var(--clay);
     }
 
-    /* Placeholders Foto Resmi & Styling Admin Dashboard Mudah Dipahami */
+    /* Placeholders Foto Resmi & Editorial Banners */
     .placeholder-banner {
       width: 100%;
       height: 100%;
-      min-height: 320px;
-      background: linear-gradient(135deg, #eeebe0 0%, #dedbd0 100%);
+      min-height: 260px;
+      background: linear-gradient(145deg, #242c1e 0%, #171d13 60%, #10140d 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 12px;
-      color: var(--muted);
+      gap: 10px;
+      color: #f7f6f0;
       text-align: center;
-      padding: 30px;
-      border: 1px dashed var(--line);
+      padding: 28px 20px;
       border-radius: var(--radius-lg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      overflow: hidden;
     }
     .placeholder-banner.banner-sm {
-      min-height: 180px;
-      padding: 20px;
+      min-height: 160px;
+      padding: 18px 16px;
       border-radius: var(--radius-md);
     }
-    .placeholder-banner svg {
-      color: var(--olive);
-      opacity: 0.8;
+    .brand-monogram {
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #d8c29d;
+      margin-bottom: 2px;
+    }
+    .brand-monogram span {
+      color: #f7a582;
+      margin-left: 4px;
     }
     .placeholder-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--ink);
+      font: italic 22px/1.2 var(--serif);
+      color: #ffffff;
+      letter-spacing: -0.01em;
+      max-width: 32ch;
     }
     .placeholder-sub {
       font-size: 12px;
-      color: var(--muted);
-      line-height: 1.4;
-      max-width: 260px;
+      color: #cfd6c7;
+      line-height: 1.5;
+      max-width: 42ch;
+    }
+    .editorial-hero-banner {
+      background: linear-gradient(145deg, #283120 0%, #1a2115 65%, #10140d 100%);
+    }
+    .editorial-po-banner {
+      background: linear-gradient(145deg, #232b1d 0%, #161c12 100%);
+    }
+    .editorial-craft-banner {
+      background: linear-gradient(145deg, #322615 0%, #1d160b 100%);
+    }
+    .editorial-living-banner {
+      background: linear-gradient(145deg, #1b262f 0%, #0e151b 100%);
     }
     .product-placeholder-img {
       width: 100%;
@@ -1161,15 +1185,36 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
       color: var(--muted);
-      font-size: 11px;
-      font-weight: 600;
       border-bottom: 1px solid var(--line-light);
     }
-    .product-placeholder-img svg {
-      opacity: 0.6;
-      color: var(--olive);
+    .boutique-brand-mark {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #f0ece2 0%, #dfdbcd 100%);
+      color: var(--ink);
+      user-select: none;
+    }
+    .boutique-brand-mark .mark-sub {
+      font-family: var(--sans);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .boutique-brand-mark .mark-main {
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      color: var(--clay);
     }
     .admin-stats-grid {
       display: grid;
@@ -1634,6 +1679,96 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.12);
     }
 
+    /* Product Title, Specs, Stepper & Sheet Actions */
+    .product-name-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.32;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin: 0 0 6px;
+      letter-spacing: -0.01em;
+    }
+    .product-sheet-heading {
+      font: 26px/1.15 var(--serif);
+      margin: 6px 0 8px;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    .product-spec-section {
+      margin: 16px 0;
+    }
+    .section-sub-label {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .qty-stepper-container {
+      display: inline-flex;
+      align-items: center;
+      background: var(--paper-card);
+      border: 1.5px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 3px;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .stepper-btn {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      border: 1px solid var(--line-light);
+      background: var(--wash);
+      color: var(--ink);
+      font-size: 19px;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: all 0.14s ease;
+    }
+    .stepper-btn:active {
+      transform: scale(0.92);
+      background: var(--ink);
+      color: #fff;
+    }
+    .stepper-btn:disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    .stepper-val {
+      min-width: 44px;
+      text-align: center;
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+    }
+    .text-link-mini {
+      border: none;
+      background: none;
+      padding: 0;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--clay);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .product-sheet-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
     /* Bespoke Order Receipt Voucher (Order Success) */
     .receipt-voucher {
       background: var(--paper-card);
@@ -1865,29 +2000,7 @@
       .field.full { grid-column: 1 / -1; }
       .product-detail-layout { grid-template-columns: 1fr 1.15fr; gap: 28px; }
       .toast { left: auto; right: 28px; bottom: 28px; max-width: 420px; }
-    }
-    @media (max-width: 480px) {
-      .catalog-tools {
-        grid-template-columns: 1fr;
-        gap: 8px;
-      }
-      .catalog-tools select {
-        max-width: 100%;
-      }
-      .category-pills-row {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-      }
-      .hero-desc {
-        font-size: 14px;
-      }
-      .button-row {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .button-row .btn {
-        width: 100%;
-      }
+      .mobile-bottom-bar { display: none !important; }
     }
     @media (min-width: 1024px) {
       .products { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -1981,26 +2094,384 @@
     .mobile-bottom-bar {
       display: none;
     }
+
+    /* Mobile Responsive (< 640px) */
     @media (max-width: 639px) {
       body {
-        padding-bottom: 68px;
+        padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+        -webkit-tap-highlight-color: transparent;
       }
+      .wrap {
+        width: calc(100% - 28px);
+      }
+
+      /* Sleek Mobile Header */
+      .header {
+        height: 56px;
+        padding: 0 14px;
+      }
+      .brand-title {
+        font-size: 18px;
+        letter-spacing: 0.1em;
+      }
+      .brand-desc {
+        font-size: 9px;
+        letter-spacing: 0.12em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 170px;
+      }
+      .icon-btn {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        min-height: 38px;
+      }
+      .icon-btn svg {
+        width: 19px;
+        height: 19px;
+      }
+
+      /* Hero Section */
+      .hero {
+        padding: 16px 0 24px;
+      }
+      .hero h1 {
+        font-size: clamp(26px, 6.8vw, 36px);
+        line-height: 1.14;
+        margin: 10px 0 12px;
+        letter-spacing: -0.02em;
+      }
+      .hero-desc {
+        font-size: 13.5px;
+        line-height: 1.6;
+        margin: 0 0 16px;
+      }
+      .hero-visual {
+        height: 220px;
+        min-height: 0;
+        border-radius: var(--radius-md);
+        margin-top: 14px;
+      }
+      .button-row {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+      .button-row .btn {
+        width: 100%;
+        min-height: 44px;
+        font-size: 13.5px;
+      }
+
+      /* Story-Style Horizontal Category Pills */
+      .category-pills-row {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 8px;
+        margin: 14px 0 0;
+        padding: 4px 2px 10px;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+      .category-pills-row::-webkit-scrollbar { display: none; }
+      .cat-card-shortcut {
+        flex: 0 0 auto;
+        scroll-snap-align: start;
+        padding: 8px 14px;
+        border-radius: var(--radius-full);
+        gap: 8px;
+        background: var(--paper-card);
+      }
+      .cat-icon-bubble {
+        width: 30px;
+        height: 30px;
+        min-width: 30px;
+        border-radius: 50%;
+        font-size: 14px;
+      }
+      .cat-card-shortcut strong {
+        font-size: 12.5px;
+        white-space: nowrap;
+      }
+      .cat-card-shortcut span {
+        display: none;
+      }
+
+      /* Trust Highlights: Horizontal Swipe */
+      .trust-strip {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 10px;
+        padding: 14px 0;
+        margin: 14px 0 32px;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+      .trust-strip::-webkit-scrollbar { display: none; }
+      .trust-item {
+        flex: 0 0 76%;
+        scroll-snap-align: start;
+        background: var(--paper-card);
+        padding: 12px 14px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--line);
+        gap: 10px;
+      }
+      .trust-item strong {
+        font-size: 13px;
+      }
+      .trust-item span {
+        font-size: 12px;
+      }
+
+      /* Dedicated Pre-Order Section */
+      .preorder-section {
+        padding: 36px 0 44px;
+        margin: 24px 0 40px;
+      }
+      .preorder-site-banner {
+        aspect-ratio: 16 / 7;
+        min-height: 120px;
+        max-height: 200px;
+        border-radius: var(--radius-md);
+      }
+      .preorder-highlight-box {
+        padding: 18px 16px;
+        margin-bottom: 20px;
+      }
+      .preorder-highlight-box h3 {
+        font-size: 22px;
+        line-height: 1.2;
+      }
+      .preorder-highlight-box p {
+        font-size: 13px;
+        line-height: 1.6;
+        margin: 0 0 14px;
+      }
+      .po-perks {
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .po-perk-item {
+        font-size: 12px;
+        line-height: 1.45;
+        gap: 8px;
+      }
+      .po-perk-icon {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+      }
+
+      /* Main Catalog Section */
+      .section {
+        padding: 0 0 44px;
+      }
+      .section-head {
+        margin-bottom: 16px;
+      }
+      .section h2 {
+        font-size: 24px;
+        line-height: 1.15;
+      }
+      .section-intro {
+        font-size: 13px;
+        line-height: 1.55;
+        margin: 6px 0 0;
+      }
+      .filters-wrap {
+        margin-bottom: 14px;
+      }
+      .filter {
+        padding: 8px 14px;
+        min-height: 38px;
+        font-size: 12.5px;
+      }
+      .category-intro-banner {
+        padding: 10px 14px;
+        font-size: 12px;
+        margin-bottom: 16px;
+      }
+      .catalog-tools {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .catalog-tools input {
+        min-height: 42px;
+        font-size: 13.5px;
+        padding: 8px 12px 8px 38px;
+        background: var(--paper-card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%236f7366' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='7' cy='7' r='5'/%3E%3Cpath d='m14 14-3.5-3.5'/%3E%3C/svg%3E") no-repeat 14px center;
+      }
+      .catalog-tools select {
+        max-width: 100%;
+        min-height: 40px;
+        font-size: 13px;
+        padding: 8px 12px;
+      }
+
+      /* Product Grid on Mobile (2 Columns) */
+      .products {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px 10px;
+      }
+      .product-card {
+        border-radius: var(--radius-md);
+      }
+      .product-image {
+        aspect-ratio: 1 / 1;
+        border-radius: var(--radius-md) var(--radius-md) 0 0;
+      }
+      .product-card-body {
+        padding: 10px 10px 12px;
+      }
+      .product-category-text {
+        font-size: 10px;
+        margin-bottom: 2px;
+      }
+      .product-name-title {
+        font-size: 13px;
+        min-height: 34px;
+      }
+      .product-specs-snippet {
+        font-size: 11px;
+        margin-bottom: 6px;
+      }
+      .product-price-row {
+        padding-top: 6px;
+      }
+      .product-price {
+        font-size: 14px;
+      }
+      .product-stock-tag {
+        font-size: 10px;
+      }
+      .quick-detail-btn {
+        width: 32px;
+        height: 32px;
+        right: 6px;
+        bottom: 6px;
+      }
+
+      /* Spotlight & Cara Pesan */
+      .spotlight-card {
+        margin-bottom: 16px;
+      }
+      .spotlight-photo {
+        height: 160px;
+      }
+      .spotlight-copy {
+        padding: 16px;
+      }
+      .spotlight-copy h3 {
+        font-size: 20px;
+      }
+      .order-flow-tabs {
+        gap: 6px;
+        margin-bottom: 16px;
+      }
+      .order-flow-tab {
+        padding: 10px 12px;
+        font-size: 12.5px;
+      }
+
+      /* Bottom Sheet Mobile Experience */
+      .overlay {
+        padding: 0;
+        align-items: flex-end;
+      }
+      .sheet {
+        border-radius: 22px 22px 0 0;
+        padding: 18px 20px calc(24px + env(safe-area-inset-bottom));
+        max-height: 88dvh;
+      }
+      .sheet-head {
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+      }
+      .sheet-head h2 {
+        font-size: 22px;
+      }
+
+      /* Product Detail Bottom Sheet (Native Mobile Feel) */
+      #productOverlay .sheet {
+        display: flex;
+        flex-direction: column;
+        max-height: 88dvh;
+        padding-bottom: 0;
+      }
+      .product-detail-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        flex: 1;
+        padding-bottom: 24px;
+      }
+      .product-detail-media {
+        aspect-ratio: 16 / 11;
+        max-height: 240px;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+      }
+      .product-sheet-heading {
+        font: 22px/1.2 var(--serif);
+        margin: 4px 0 6px;
+        color: var(--ink);
+      }
+      .product-detail-price {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--ink);
+        margin-bottom: 12px;
+      }
+      .product-sheet-actions {
+        position: sticky;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        background: rgba(246, 245, 239, 0.98);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+        margin: 0 -20px;
+        border-top: 1px solid var(--line);
+        z-index: 20;
+      }
+      .product-sheet-actions .btn {
+        min-height: 44px;
+        padding: 0 12px;
+        font-size: 13px;
+      }
+
+      /* Mobile Bottom Navigation Bar */
       .mobile-bottom-bar {
         display: flex;
         position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
-        height: 60px;
-        background: rgba(248, 244, 236, 0.96);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
+        height: 58px;
+        background: rgba(248, 245, 238, 0.98);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         border-top: 1px solid var(--line);
-        z-index: 38;
+        z-index: 50;
         justify-content: space-around;
         align-items: center;
         padding: 0 4px;
         padding-bottom: env(safe-area-inset-bottom, 0px);
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
       }
       .mobile-bottom-item {
         display: flex;
@@ -2010,7 +2481,7 @@
         gap: 3px;
         font-size: 10px;
         font-weight: 700;
-        color: var(--ink-soft);
+        color: var(--muted);
         background: transparent;
         border: none;
         padding: 6px 10px;
@@ -2020,9 +2491,10 @@
         text-decoration: none;
         min-width: 52px;
         touch-action: manipulation;
+        transition: color 0.16s, transform 0.12s;
       }
       .mobile-bottom-item:active { transform: scale(0.92); }
-      .mobile-bottom-item.active { color: var(--clay); }
+      .mobile-bottom-item.active { color: var(--clay); font-weight: 800; }
       .mobile-bottom-item svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 2; }
       .mobile-bottom-item .cart-badge {
         position: absolute;
@@ -2151,10 +2623,10 @@
 
         <div class="hero-visual" id="heroVisualWrap">
           <img data-site-image="hero" id="heroImg" alt="Pilihan produk INABA Hijab" fetchpriority="high" style="display:none;" />
-          <div class="placeholder-banner" id="heroPlaceholder">
-            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-            <span class="placeholder-title">Banner Utama INABA Hijab</span>
-            <span class="placeholder-sub">Foto resmi diatur melalui Dashboard Admin &gt; Tab Banner &amp; Gambar</span>
+          <div class="placeholder-banner editorial-hero-banner" id="heroPlaceholder">
+            <div class="brand-monogram">INABA<span>HIJAB</span></div>
+            <span class="placeholder-title serif">Koleksi Busana &amp; Konveksi Pilihan</span>
+            <span class="placeholder-sub">Mutu terjamin · Jahitan presisi · Amanah melayani</span>
           </div>
           <div class="hero-overlay">
             <span class="hero-pill-tag">INABA HIJAB</span>
@@ -2194,10 +2666,10 @@
       <div class="wrap">
         <div class="preorder-site-banner" id="preorderBannerWrap">
           <img data-site-image="preorder_banner" id="preorderBannerImg" alt="Banner Pre-Order Seragam Sekolah INABA Hijab" loading="lazy" style="display:none;" />
-          <div class="placeholder-banner banner-sm" id="preorderBannerPlaceholder">
-            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M4 15l4-4 4 4 3-3 5 5"/><circle cx="9" cy="8" r="1.5"/></svg>
-            <span class="placeholder-title">Banner Pre-Order Seragam</span>
-            <span class="placeholder-sub">Foto diatur melalui Dashboard Admin</span>
+          <div class="placeholder-banner banner-sm editorial-po-banner" id="preorderBannerPlaceholder">
+            <div class="brand-monogram">INABA<span>SCHOOLWEAR</span></div>
+            <span class="placeholder-title serif">Pre-Order Seragam SDIT, TPQ &amp; Madin Sirimbit</span>
+            <span class="placeholder-sub">Bahan adem, jahitan kuat, dan panduan ukuran terstandar</span>
           </div>
         </div>
         <div class="preorder-highlight-box">
@@ -2296,10 +2768,10 @@
           <article class="spotlight-card">
             <div class="spotlight-photo" id="farmerPhotoWrap">
               <img data-site-image="farmer_banner" id="farmerImg" alt="Topi Capel Petani Tradisional" loading="lazy" style="display:none;" />
-              <div class="placeholder-banner banner-sm" id="farmerPlaceholder">
-                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-                <span class="placeholder-title">Banner Topi Capel Petani</span>
-                <span class="placeholder-sub">Diatur di Dashboard Admin</span>
+              <div class="placeholder-banner banner-sm editorial-craft-banner" id="farmerPlaceholder">
+                <div class="brand-monogram">INABA<span>CRAFT</span></div>
+                <span class="placeholder-title serif">Topi Capel Petani Anyaman Bambu</span>
+                <span class="placeholder-sub">Anyaman bambu alami kuat penahan terik sawah &amp; kebun</span>
               </div>
             </div>
             <div class="spotlight-copy">
@@ -2315,10 +2787,10 @@
           <article class="spotlight-card">
             <div class="spotlight-photo" id="tablePhotoWrap">
               <img data-site-image="table_banner" id="tableImg" alt="Meja Lipat Portable Serbaguna" loading="lazy" style="display:none;" />
-              <div class="placeholder-banner banner-sm" id="tablePlaceholder">
-                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v18M3 9h18M3 15h18"/></svg>
-                <span class="placeholder-title">Banner Meja Lipat &amp; Perabot</span>
-                <span class="placeholder-sub">Diatur di Dashboard Admin</span>
+              <div class="placeholder-banner banner-sm editorial-living-banner" id="tablePlaceholder">
+                <div class="brand-monogram">INABA<span>LIVING</span></div>
+                <span class="placeholder-title serif">Meja Lipat Portable Serbaguna</span>
+                <span class="placeholder-sub">Kuat, praktis dengan slot gadget &amp; kaki anti-slip</span>
               </div>
             </div>
             <div class="spotlight-copy">
@@ -2855,15 +3327,15 @@
   }
 
   function renderProductPhoto(url, name, context = 'card') {
-    // Only public URLs from this project's product-images bucket are accepted.
-    const managedUrl = getManagedStoragePath(url, 'product-images') ? url : '';
+    const isPublicValid = typeof url === 'string' && (url.startsWith('https://') || url.startsWith('http://') || url.startsWith('data:image/'));
+    const photoUrl = isPublicValid ? url : '';
     const detail = context === 'detail';
     const cart = context === 'cart';
     const imgStyle = detail ? ' style="width:100%;height:100%;object-fit:cover"' : (cart ? ' style="width:100%;height:100%;object-fit:cover"' : '');
     const placeholderStyle = detail
       ? ' style="aspect-ratio:auto;height:100%;width:100%"'
       : cart ? ' style="aspect-ratio:auto;height:100%;width:100%;font-size:9px"' : '';
-    return `${managedUrl ? `<img data-managed-photo src="${esc(managedUrl)}" alt="${esc(name)}" loading="lazy"${imgStyle} />` : ''}<div data-image-fallback class="product-placeholder-img"${managedUrl ? ' hidden' : ''}${placeholderStyle}>${getManagedImagePlaceholderSvg(detail ? 48 : 32)}<span>${detail ? 'Foto Produk dari Admin' : 'Foto dari Admin'}</span></div>`;
+    return `${photoUrl ? `<img data-managed-photo src="${esc(photoUrl)}" alt="${esc(name)}" loading="lazy"${imgStyle} />` : ''}<div data-image-fallback class="product-placeholder-img"${photoUrl ? ' hidden' : ''}${placeholderStyle}><div class="boutique-brand-mark"><span class="mark-sub">INABA</span><span class="mark-main">HIJAB</span></div></div>`;
   }
 
   function getManagedStoragePath(publicUrl, bucket) {
@@ -3087,6 +3559,8 @@
     const count = state.cart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
     const hCount = $('#cartCount');
     if (hCount) hCount.textContent = count;
+    const mbCount = $('#mobileCartCount');
+    if (mbCount) mbCount.textContent = count;
     if ($('#cartOverlay') && $('#cartOverlay').classList.contains('open')) {
       renderCart();
     }
@@ -3237,21 +3711,21 @@
     }
 
     return `
-      <article class="product-card ${isSold ? 'sold' : ''}">
+      <article class="product-card ${isSold ? 'sold' : ''}" data-open-detail="${esc(p.id)}">
         <div class="product-image">
           ${renderProductPhoto(p.image_url, p.name, 'card')}
           <div class="product-badges-container">
             <span class="product-badge-pill ${badgeClass}">${esc(badgeText)}</span>
             ${isPo && p.school_institution ? `<span class="product-badge-pill badge-custom">${esc(p.school_institution)}</span>` : ''}
           </div>
-          <button class="quick-detail-btn" data-open-detail="${esc(p.id)}" aria-label="Lihat detail ${esc(p.name)}">
-            <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <button type="button" class="quick-detail-btn" data-open-detail="${esc(p.id)}" aria-label="Lihat detail ${esc(p.name)}">
+            <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.2"><path d="M12 5v14M5 12h14"/></svg>
           </button>
         </div>
         <div class="product-card-body">
           <div>
             <div class="product-category-text">${esc(p.category)}</div>
-            <button type="button" class="product-name-btn" data-open-detail="${esc(p.id)}">${esc(p.name)}</button>
+            <h3 class="product-name-title">${esc(p.name)}</h3>
             ${specSnippet ? `<div class="product-specs-snippet">${specSnippet}</div>` : ''}
           </div>
           <div class="product-price-row">
@@ -3264,8 +3738,12 @@
   }
 
   function attachProductCardEvents(container) {
-    $$('[data-open-detail]', container).forEach(btn => {
-      btn.addEventListener('click', () => openProductDetailModal(btn.dataset.openDetail));
+    $$('[data-open-detail]', container).forEach(el => {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        const id = el.dataset.openDetail;
+        if (id) openProductDetailModal(id);
+      });
     });
   }
 
@@ -3287,9 +3765,12 @@
     let specTableHtml = '';
     if (p.specifications && Object.keys(p.specifications).length) {
       specTableHtml = `
-        <table class="spec-table">
-          ${Object.entries(p.specifications).map(([k, v]) => `<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join('')}
-        </table>
+        <div class="product-spec-section">
+          <div class="section-sub-label">Spesifikasi Produk</div>
+          <table class="spec-table">
+            ${Object.entries(p.specifications).map(([k, v]) => `<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join('')}
+          </table>
+        </div>
       `;
     }
 
@@ -3327,7 +3808,7 @@
         </div>
         <div class="product-detail-copy">
           <div class="eyebrow">${esc(p.category)}</div>
-          <h3>${esc(p.name)}</h3>
+          <h3 class="product-sheet-heading">${esc(p.name)}</h3>
           <div class="product-detail-price">${rupiah(p.price)}</div>
 
           ${isPo ? `
@@ -3336,7 +3817,7 @@
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                 Layanan Pre-Order Resmi
               </div>
-              <div style="display:grid;gap:4px;margin-top:2px">
+              <div style="display:grid;gap:4px;margin-top:4px">
                 <div>• Lembaga: <strong>${esc(p.school_institution || 'Umum')}</strong></div>
                 <div>• Status PO: <strong>${p.preorder_status === 'closed' ? 'Tutup Sementara' : 'Dibuka (Menerima Pesanan)'}</strong></div>
                 <div>• Estimasi Pengerjaan: <strong>${esc(p.estimated_delivery || '10–21 hari kerja')}</strong></div>
@@ -3353,45 +3834,43 @@
 
           ${specTableHtml}
 
-          <div class="field">
-            <label for="detailVariantSize">Pilihan Ukuran / Varian</label>
+          <div class="field" style="margin-top:14px">
+            <label for="detailVariantSize" style="font-weight:700;display:flex;justify-content:space-between;align-items:center">
+              <span>Pilihan Ukuran / Varian:</span>
+              ${sizeGuideText ? `<button type="button" class="text-link-mini" id="btnOpenSizeGuideModal">Tabel Ukuran ↗</button>` : ''}
+            </label>
             <div class="size-pill-group" id="sizePillGroup" role="radiogroup" aria-label="Pilih varian produk">
               ${sizeOptions.map((s, idx) => `
                 <button type="button" class="size-pill ${idx === 0 ? 'active' : ''}" data-variant-choice="${esc(s)}">${esc(s)}</button>
               `).join('')}
             </div>
-            <select id="detailVariantSize" required style="display:none;">
-              ${sizeOptions.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('')}
-            </select>
+            <input type="hidden" id="detailVariantSize" value="${esc(sizeOptions[0] || 'Standar')}">
           </div>
 
-          ${sizeGuideText ? `
-            <button type="button" class="text-link" id="btnOpenSizeGuideModal" style="margin-bottom:14px">
-              Lihat Panduan Ukuran Produk ↗
-            </button>
-          ` : ''}
-
-          <div class="field">
-            <label for="detailQty">Jumlah Pemesanan</label>
-            <select id="detailQty" ${isSold ? 'disabled' : ''}>
-              ${Array.from({ length: maxQty - minQty + 1 }, (_, i) => minQty + i).map(n => `<option value="${n}">${n} pcs</option>`).join('')}
-            </select>
-          </div>
-
-          <div style="margin-top:20px;display:grid;gap:10px">
-            <button type="button" class="btn btn-full btn-wa" id="detailQuickWaBtn" ${isSold || (isPo && p.preorder_status === 'closed') ? 'disabled' : ''}>
-              <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-              <span>⚡ Pesan Langsung via WhatsApp</span>
-            </button>
-            <button type="button" class="btn btn-full btn-clay" id="detailAddToCartBtn" ${isSold || (isPo && p.preorder_status === 'closed') ? 'disabled' : ''}>
-              ${isSold ? 'Stok Habis' : (isPo ? (p.preorder_status === 'closed' ? 'Pre-Order Ditutup' : 'Tambah ke Keranjang Pre-Order ↗') : 'Tambah ke Keranjang ↗')}
-            </button>
-            <button type="button" class="btn btn-full btn-ghost" id="shareProductBtn" style="font-size:13px">
-              Salin Tautan Produk ↗
-            </button>
+          <div class="field" style="margin-top:14px">
+            <label style="font-weight:700">Jumlah Pesanan:</label>
+            <div class="qty-stepper-container">
+              <button type="button" class="stepper-btn" id="btnQtyMinus" aria-label="Kurang kuantitas" ${isSold ? 'disabled' : ''}>−</button>
+              <span class="stepper-val" id="detailQtyDisplay">${minQty}</span>
+              <button type="button" class="stepper-btn" id="btnQtyPlus" aria-label="Tambah kuantitas" ${isSold ? 'disabled' : ''}>+</button>
+              <input type="hidden" id="detailQty" value="${minQty}">
+            </div>
           </div>
         </div>
       </div>
+
+      <div class="product-sheet-actions">
+        <button type="button" class="btn btn-wa" id="detailQuickWaBtn" ${isSold || (isPo && p.preorder_status === 'closed') ? 'disabled' : ''}>
+          <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+          <span>Pesan via WA</span>
+        </button>
+        <button type="button" class="btn btn-clay" id="detailAddToCartBtn" ${isSold || (isPo && p.preorder_status === 'closed') ? 'disabled' : ''}>
+          ${isSold ? 'Stok Habis' : (isPo ? (p.preorder_status === 'closed' ? 'PO Ditutup' : '+ Keranjang PO') : '+ Keranjang')}
+        </button>
+      </div>
+      <button type="button" class="btn btn-full btn-ghost" id="shareProductBtn" style="font-size:12.5px;min-height:38px;margin-top:10px">
+        Salin Tautan Produk ↗
+      </button>
     `;
 
     $('#btnOpenSizeGuideModal')?.addEventListener('click', () => {
@@ -3412,6 +3891,25 @@
       });
     });
 
+    // Tactile Stepper Handler
+    let qtyVal = minQty;
+    const qtyInput = $('#detailQty');
+    const qtyDisplay = $('#detailQtyDisplay');
+    $('#btnQtyMinus')?.addEventListener('click', () => {
+      if (qtyVal > minQty) {
+        qtyVal--;
+        if (qtyInput) qtyInput.value = qtyVal;
+        if (qtyDisplay) qtyDisplay.textContent = qtyVal;
+      }
+    });
+    $('#btnQtyPlus')?.addEventListener('click', () => {
+      if (qtyVal < maxQty) {
+        qtyVal++;
+        if (qtyInput) qtyInput.value = qtyVal;
+        if (qtyDisplay) qtyDisplay.textContent = qtyVal;
+      }
+    });
+
     $('#shareProductBtn')?.addEventListener('click', () => {
       const shareUrl = window.location.origin + window.location.pathname + '#' + encodeURIComponent('produk=' + (p.slug || p.id));
       if (navigator.clipboard) {
@@ -3424,7 +3922,7 @@
     // 1-Click Instant WhatsApp Buy
     $('#detailQuickWaBtn')?.addEventListener('click', () => {
       const selectedSize = $('#detailVariantSize')?.value || sizeOptions[0] || 'Standar';
-      const selectedQty = Number($('#detailQty')?.value) || 1;
+      const selectedQty = Number($('#detailQty')?.value) || minQty;
       const totalPrice = (Number(p.price) || 0) * selectedQty;
       const waContact = String(state.storeSettings.contact_whatsapp || '6285735144904').replace(/\D/g, '') || '6285735144904';
       const lines = [
@@ -3445,7 +3943,7 @@
 
     $('#detailAddToCartBtn')?.addEventListener('click', () => {
       const selectedSize = $('#detailVariantSize')?.value || sizeOptions[0] || 'Standar';
-      const selectedQty = Number($('#detailQty')?.value) || 1;
+      const selectedQty = Number($('#detailQty')?.value) || minQty;
       addItemToCart(p, selectedSize, selectedQty);
       closeOverlay('productOverlay');
     });
@@ -5378,6 +5876,35 @@
     setTimeout(() => $('#productSearch')?.focus(), 400);
   });
 
+  $$('[data-division]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      $$('[data-division]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const div = btn.dataset.division;
+      if (div === 'all') {
+        state.filter = 'Semua';
+      } else if (div === 'modest') {
+        state.filter = 'Hijab & Pakaian';
+      } else if (div === 'schoolwear') {
+        const poSec = document.getElementById('preorder-section');
+        if (poSec) {
+          poSec.scrollIntoView({ behavior: 'smooth' });
+          return;
+        }
+        state.filter = 'Seragam Sekolah — Pre-Order';
+      } else if (div === 'living') {
+        state.filter = 'Perlengkapan Petani';
+      }
+      const targetBtn = $(`[data-cat-filter="${state.filter}"]`, $('#categoryFilters'));
+      if (targetBtn) {
+        $$('.filter', $('#categoryFilters')).forEach(x => x.classList.toggle('active', x === targetBtn));
+      }
+      updateCategoryBanner();
+      renderMainProducts();
+      document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
   // Buttons Navigasi & Modal
   $('#cartBtn')?.addEventListener('click', openCartDrawer);
   $('#accountBtn')?.addEventListener('click', openAccountArea);
@@ -5387,6 +5914,44 @@
 
   $('#openSizeGuideGlobal')?.addEventListener('click', openGlobalSizeGuide);
   $('#footerSizeGuide')?.addEventListener('click', e => { e.preventDefault(); openGlobalSizeGuide(); });
+
+  // Floating Mobile Bottom Nav Handlers
+  $('#mbNavHome')?.addEventListener('click', e => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    updateActiveBottomNav('mbNavHome');
+  });
+  $('#mbNavShop')?.addEventListener('click', e => {
+    e.preventDefault();
+    state.filter = 'Semua';
+    $$('.filter', $('#categoryFilters')).forEach(x => x.classList.toggle('active', x.dataset.catFilter === 'Semua'));
+    updateCategoryBanner();
+    renderMainProducts();
+    document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' });
+    updateActiveBottomNav('mbNavShop');
+  });
+  $('#mbNavPo')?.addEventListener('click', e => {
+    e.preventDefault();
+    const poSec = document.getElementById('preorder-section');
+    if (poSec) {
+      poSec.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      state.filter = 'Seragam Sekolah — Pre-Order';
+      renderMainProducts();
+      document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' });
+    }
+    updateActiveBottomNav('mbNavPo');
+  });
+  $('#mbNavCart')?.addEventListener('click', e => {
+    e.preventDefault();
+    openCartDrawer();
+  });
+
+  function updateActiveBottomNav(activeId) {
+    $$('.mobile-bottom-item').forEach(b => {
+      b.classList.toggle('active', b.id === activeId);
+    });
+  }
 
   // Inisialisasi Auth State Change
   if (sb) {
@@ -5429,6 +5994,25 @@
     revealTargets.forEach(target => {
       target.classList.add('scroll-reveal');
       revealObserver.observe(target);
+    });
+
+    // Mobile Bottom Navigation Scroll Spy
+    const navSections = [
+      { id: 'home', navId: 'mbNavHome' },
+      { id: 'preorder-section', navId: 'mbNavPo' },
+      { id: 'shop', navId: 'mbNavShop' }
+    ];
+    const navObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const match = navSections.find(s => s.id === entry.target.id);
+          if (match) updateActiveBottomNav(match.navId);
+        }
+      });
+    }, { threshold: 0.3 });
+    navSections.forEach(s => {
+      const el = document.getElementById(s.id);
+      if (el) navObserver.observe(el);
     });
   }
 
