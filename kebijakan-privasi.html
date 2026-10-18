@@ -6,23 +6,30 @@
   <meta name="theme-color" content="#f6f5ef" />
   <meta name="description" content="Kebijakan privasi dan perlindungan data pribadi pelanggan INABA Hijab." />
   <title>Kebijakan Privasi — INABA HIJAB</title>
-  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --paper: #f6f5ef;
-      --ink: #1e221b;
-      --muted: #686b61;
-      --line: #dedcd1;
-      --olive: #4f5a3e;
-      --clay: #c56545;
-      --wash: #eceae0;
+      --serif: "Newsreader", Georgia, serif;
+      --sans: "Figtree", system-ui, -apple-system, sans-serif;
+      --paper: #f8f4ec;
+      --ink: #20211b;
+      --muted: #6f7469;
+      --line: #ded8ca;
+      --olive: #426247;
+      --clay: #b84f36;
+      --wash: #efeadf;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       background: var(--paper);
       color: var(--ink);
-      font: 16px/1.8 system-ui, -apple-system, sans-serif;
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.68;
+      -webkit-font-smoothing: antialiased;
     }
     .wrap {
       max-width: 820px;
@@ -40,37 +47,41 @@
     }
     .brand {
       font-weight: 800;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.12em;
       font-size: 18px;
       text-decoration: none;
       color: var(--ink);
     }
     .brand span { color: var(--clay); }
     .back {
-      font-size: 13px;
+      font-size: 13.5px;
       color: var(--olive);
       font-weight: 600;
       text-decoration: none;
+      transition: color 0.15s;
     }
+    .back:hover { color: var(--clay); }
     .eyebrow {
-      font-size: 11px;
-      letter-spacing: 0.14em;
+      font-size: 12px;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--olive);
       margin-top: 36px;
       font-weight: 700;
     }
     h1 {
-      font: clamp(34px, 7vw, 52px)/1.08 Georgia, serif;
-      letter-spacing: -0.03em;
+      font: clamp(34px, 7vw, 50px)/1.08 var(--serif);
+      letter-spacing: -0.025em;
       margin: 12px 0 16px;
+      font-weight: 400;
     }
     h2 {
-      font: 24px/1.2 Georgia, serif;
-      margin: 32px 0 10px;
+      font: 24px/1.2 var(--serif);
+      margin: 36px 0 12px;
       color: var(--ink);
       border-bottom: 1px solid var(--line);
-      padding-bottom: 6px;
+      padding-bottom: 8px;
+      letter-spacing: -0.02em;
     }
     p, li {
       font-size: 15px;

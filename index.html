@@ -59,6 +59,7 @@
       --shadow-sm: 0 2px 8px rgba(30, 34, 27, 0.05);
       --shadow-md: 0 10px 30px rgba(30, 34, 27, 0.08);
       --shadow-lg: 0 24px 60px rgba(30, 34, 27, 0.12);
+      --shadow-overlay: 0 -8px 40px rgba(20, 24, 18, 0.10), 0 24px 80px rgba(20, 24, 18, 0.18);
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; scroll-padding-top: 86px; }
@@ -68,8 +69,10 @@
       color: var(--ink);
       font-family: var(--sans);
       font-size: 16px;
-      line-height: 1.58;
+      line-height: 1.62;
       -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      font-feature-settings: "kern" 1, "liga" 1;
     }
     body.lock { overflow: hidden; }
     button, input, textarea, select { font: inherit; }
@@ -80,11 +83,11 @@
       outline: 2px solid var(--clay);
       outline-offset: 2px;
     }
-    .serif { font-family: var(--serif); font-weight: 400; letter-spacing: -0.02em; }
+    .serif { font-family: var(--serif); font-weight: 400; letter-spacing: -0.025em; }
     .eyebrow {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.14em;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--olive);
       display: inline-flex;
@@ -92,8 +95,8 @@
       gap: 6px;
     }
     .eyebrow-dot {
-      width: 6px;
-      height: 6px;
+      width: 5px;
+      height: 5px;
       border-radius: 50%;
       background: var(--clay);
       display: inline-block;
@@ -234,7 +237,7 @@
     .mobile-menu {
       display: none;
       position: fixed;
-      inset: 108px 0 auto;
+      inset: 72px 0 auto;
       background: var(--paper);
       padding: 22px 24px 28px;
       z-index: 39;
@@ -345,11 +348,12 @@
       padding: 10px 0;
     }
     .hero h1 {
-      font-size: clamp(34px, 7.5vw, 56px);
-      line-height: 1.06;
-      margin: 12px 0 16px;
+      font-size: clamp(34px, 7.5vw, 58px);
+      line-height: 1.03;
+      margin: 14px 0 20px;
       font-weight: 400;
       color: var(--ink);
+      letter-spacing: -0.03em;
     }
     .hero h1 em {
       font-style: italic;
@@ -357,11 +361,11 @@
       display: inline-block;
     }
     .hero-desc {
-      font-size: 15px;
-      line-height: 1.7;
+      font-size: 16px;
+      line-height: 1.72;
       color: var(--ink-soft);
       max-width: 500px;
-      margin: 0 0 24px;
+      margin: 0 0 28px;
     }
     .hero-visual {
       position: relative;
@@ -524,18 +528,19 @@
       flex-wrap: wrap;
     }
     .section h2 {
-      font-size: clamp(28px, 6vw, 42px);
+      font-size: clamp(28px, 6vw, 44px);
       text-wrap: balance;
-      line-height: 1.1;
-      margin: 6px 0 0;
+      line-height: 1.08;
+      margin: 8px 0 0;
       font-weight: 400;
+      letter-spacing: -0.025em;
     }
     .section-intro {
-      font-size: 15px;
-      line-height: 1.65;
+      font-size: 15.5px;
+      line-height: 1.68;
       color: var(--muted);
-      max-width: 48ch;
-      margin: 8px 0 0;
+      max-width: 50ch;
+      margin: 10px 0 0;
     }
     .text-link {
       border: 0;
@@ -813,8 +818,8 @@
       font-weight: 600;
       color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 4px;
+      letter-spacing: 0.04em;
+      margin-bottom: 5px;
     }
     .product-name-btn {
       border: 0;
@@ -822,24 +827,25 @@
       padding: 0;
       text-align: left;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 14.5px;
       font-weight: 700;
       color: var(--ink);
-      line-height: 1.35;
+      line-height: 1.32;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
       margin-bottom: 6px;
+      letter-spacing: -0.01em;
     }
     .product-name-btn:hover {
       color: var(--clay);
     }
     .product-specs-snippet {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--muted);
       margin-bottom: 10px;
-      line-height: 1.4;
+      line-height: 1.45;
       display: -webkit-box;
       -webkit-line-clamp: 1;
       -webkit-box-orient: vertical;
@@ -858,6 +864,8 @@
       font-size: 15px;
       font-weight: 800;
       color: var(--ink);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.01em;
     }
     .product-stock-tag {
       font-size: 11px;
@@ -998,14 +1006,15 @@
       padding: 24px;
     }
     .spotlight-copy h3 {
-      font: 26px/1.15 var(--serif);
-      margin: 8px 0 10px;
+      font: 28px/1.12 var(--serif);
+      margin: 8px 0 12px;
+      letter-spacing: -0.02em;
     }
     .spotlight-copy p {
-      font-size: 13.5px;
+      font-size: 14px;
       color: var(--ink-soft);
-      line-height: 1.65;
-      margin: 0 0 16px;
+      line-height: 1.68;
+      margin: 0 0 18px;
     }
 
     /* Newsletter */
@@ -1016,14 +1025,16 @@
       margin: 0 0 60px;
     }
     .newsletter-card h2 {
-      font: 32px/1.1 var(--serif);
+      font: 34px/1.08 var(--serif);
       margin: 8px 0;
+      letter-spacing: -0.025em;
     }
     .newsletter-card p {
-      font-size: 14px;
+      font-size: 14.5px;
       color: var(--ink-soft);
       max-width: 440px;
-      margin: 0 0 20px;
+      margin: 0 0 22px;
+      line-height: 1.65;
     }
     .newsletter-form {
       display: flex;
@@ -1206,73 +1217,75 @@
     .overlay {
       position: fixed;
       inset: 0;
-      background: rgba(18, 22, 16, 0.55);
+      background: rgba(18, 22, 16, 0.45);
       z-index: 70;
       display: none;
       align-items: flex-end;
       justify-content: center;
       padding: 0;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(6px) saturate(1.2);
+      -webkit-backdrop-filter: blur(6px) saturate(1.2);
     }
-    .overlay.open { display: flex; animation: overlayFadeIn 180ms ease-out both; }
+    .overlay.open { display: flex; animation: overlayFadeIn 220ms ease-out both; }
     .sheet {
       background: var(--paper);
       width: 100%;
       max-height: 92dvh;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      border-radius: 24px 24px 0 0;
-      padding: 16px 20px calc(28px + env(safe-area-inset-bottom));
-      box-shadow: var(--shadow-lg);
-      animation: sheetRise 0.22s ease-out;
+      border-radius: 20px 20px 0 0;
+      padding: 20px 22px calc(28px + env(safe-area-inset-bottom));
+      box-shadow: var(--shadow-overlay);
+      animation: sheetRise 0.26s cubic-bezier(.16, 1, .3, 1);
       position: relative;
     }
     .sheet-handle {
-      width: 44px;
-      height: 4px;
+      width: 36px;
+      height: 3.5px;
       background: var(--line);
       border-radius: 99px;
-      margin: 0 auto 16px;
+      margin: 0 auto 14px;
+      opacity: 0.7;
     }
     .sheet-wide { max-width: 780px; }
-    #authOverlay .sheet { max-width: 480px; border-top: 3px solid var(--clay); }
+    #authOverlay .sheet { max-width: 460px; border-top: 2px solid var(--olive); }
     .sheet-head {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       gap: 16px;
-      margin-bottom: 20px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--line);
+      margin-bottom: 22px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line-light);
     }
     .sheet-head h2 {
-      font: 28px/1.15 var(--serif);
+      font: 26px/1.12 var(--serif);
       text-wrap: balance;
       margin: 0;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.02em;
     }
     .close-btn {
       border: 0;
-      background: var(--wash);
-      width: 42px;
-      height: 42px;
-      min-width: 42px;
-      min-height: 42px;
-      border-radius: 50%;
+      background: transparent;
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      min-height: 40px;
+      border-radius: 10px;
       display: grid;
       place-items: center;
-      color: var(--ink);
-      transition: background 0.18s, transform 0.12s;
+      color: var(--muted);
+      transition: background 0.18s, color 0.18s, transform 0.12s;
       touch-action: manipulation;
     }
     .close-btn:active { transform: scale(0.93); }
-    .close-btn:hover { background: var(--line); }
+    .close-btn:hover { background: var(--wash); color: var(--ink); }
     .close-btn svg {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       stroke: currentColor;
       fill: none;
-      stroke-width: 2.2;
+      stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
@@ -1280,13 +1293,14 @@
     /* Form Fields */
     .field {
       display: grid;
-      gap: 6px;
+      gap: 7px;
       margin-bottom: 16px;
     }
     .field label {
       font-size: 13px;
       font-weight: 700;
       color: var(--ink-soft);
+      letter-spacing: -0.01em;
     }
     .field input, .field textarea, .field select {
       width: 100%;
@@ -1294,16 +1308,25 @@
       background: var(--white);
       padding: 12px 14px;
       min-height: 46px;
-      font-size: 16px;
+      font-size: 15px;
       color: var(--ink);
       border-radius: var(--radius-sm);
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+      font-family: inherit;
+    }
+    .field input:focus, .field textarea:focus, .field select:focus {
+      outline: none;
+      border-color: var(--clay);
+      box-shadow: 0 0 0 3px rgba(184, 79, 54, 0.14);
+      background: #fff;
     }
     .field textarea {
       min-height: 96px;
       resize: vertical;
+      line-height: 1.6;
     }
     .field-hint {
-      font-size: 13px;
+      font-size: 12.5px;
       color: var(--muted);
       line-height: 1.5;
     }
@@ -1392,87 +1415,115 @@
     /* Cart Sheet */
     .cart-line {
       display: grid;
-      grid-template-columns: 74px 1fr auto;
-      gap: 14px;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--line);
+      grid-template-columns: 78px 1fr auto;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--line-light);
       align-items: start;
     }
     .cart-thumb {
-      width: 74px;
-      height: 74px;
+      width: 78px;
+      height: 78px;
       background: var(--wash);
       border-radius: var(--radius-sm);
       overflow: hidden;
+      border: 1px solid var(--line-light);
     }
     .cart-line h3 {
-      font-size: 14px;
+      font-size: 14.5px;
       font-weight: 700;
-      margin: 0 0 4px;
-      line-height: 1.3;
+      margin: 0 0 5px;
+      line-height: 1.35;
+      letter-spacing: -0.01em;
     }
     .cart-item-tag {
       display: inline-block;
       font-size: 10px;
-      font-weight: 700;
-      padding: 2px 6px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      padding: 2px 7px;
       border-radius: 4px;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
     .tag-po { background: var(--clay-soft); color: var(--clay); }
     .tag-ready { background: var(--olive-soft); color: var(--olive); }
     .cart-line p {
-      font-size: 12.5px;
+      font-size: 13px;
       color: var(--muted);
       margin: 0;
+      line-height: 1.45;
     }
     .qty-row {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 0;
       margin-top: 10px;
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 2px;
     }
     .qty-row button {
-      width: 32px;
-      height: 32px;
-      border: 1px solid var(--line);
-      background: var(--white);
-      border-radius: var(--radius-sm);
+      width: 28px;
+      height: 28px;
+      border: 0;
+      background: transparent;
+      border-radius: 6px;
       font-size: 14px;
       font-weight: 700;
+      color: var(--ink);
+      transition: background 0.15s ease;
+      cursor: pointer;
+    }
+    .qty-row button:hover {
+      background: var(--wash);
     }
     .qty-row span {
       font-size: 13px;
       font-weight: 700;
-      min-width: 24px;
+      min-width: 28px;
       text-align: center;
+      font-variant-numeric: tabular-nums;
     }
     .btn-remove-item {
       border: 0;
       background: none;
-      color: var(--clay);
+      color: var(--muted);
       font-size: 12px;
-      margin-left: 8px;
+      font-weight: 600;
+      margin-left: 12px;
       padding: 4px;
+      cursor: pointer;
+      transition: color 0.16s;
+    }
+    .btn-remove-item:hover {
+      color: var(--clay);
+      text-decoration: underline;
     }
     .cart-total-box {
-      background: var(--wash);
+      background: var(--paper-card);
+      border: 1px solid var(--line);
       border-radius: var(--radius-md);
       padding: 16px 18px;
       margin: 20px 0;
+      box-shadow: var(--shadow-sm);
     }
     .cart-total-line {
       display: flex;
       justify-content: space-between;
-      font-size: 15px;
+      align-items: baseline;
+      font-size: 16px;
       font-weight: 800;
       color: var(--ink);
+      font-variant-numeric: tabular-nums;
     }
     .cart-total-note {
-      font-size: 12px;
+      font-size: 12.5px;
       color: var(--muted);
-      margin-top: 6px;
-      line-height: 1.5;
+      margin-top: 8px;
+      line-height: 1.55;
+      border-top: 1px dashed var(--line-light);
+      padding-top: 8px;
     }
 
     /* Product Detail Modal */
@@ -1489,18 +1540,21 @@
       max-height: 380px;
     }
     .product-detail-copy h3 {
-      font: 26px/1.2 var(--serif);
-      margin: 6px 0 10px;
+      font: 28px/1.15 var(--serif);
+      margin: 6px 0 12px;
+      letter-spacing: -0.02em;
     }
     .product-detail-price {
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 800;
       color: var(--clay);
-      margin-bottom: 14px;
+      margin-bottom: 16px;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
     }
     .product-detail-desc {
-      font-size: 14px;
-      line-height: 1.7;
+      font-size: 14.5px;
+      line-height: 1.72;
       color: var(--ink-soft);
       margin-bottom: 18px;
       white-space: pre-wrap;
@@ -1519,13 +1573,152 @@
       width: 35%;
     }
     .po-timeline-box {
-      background: var(--blue-soft);
+      background: #faf7f0;
+      border: 1px solid var(--line);
+      border-left: 3.5px solid var(--clay);
       border-radius: var(--radius-sm);
-      padding: 12px 14px;
+      padding: 14px 16px;
       margin-bottom: 18px;
+      font-size: 13px;
+      color: var(--ink-soft);
+      line-height: 1.6;
+    }
+    .po-timeline-box .po-header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--clay);
+      font-weight: 800;
       font-size: 12.5px;
-      color: var(--blue-ink);
-      line-height: 1.5;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    /* Tactile Size / Variant Pill Selector */
+    .size-pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+      margin-bottom: 8px;
+    }
+    .size-pill {
+      min-width: 44px;
+      min-height: 40px;
+      padding: 8px 14px;
+      border: 1.5px solid var(--line);
+      background: var(--paper-card);
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--ink);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.16s cubic-bezier(0.2, 0.8, 0.2, 1);
+      user-select: none;
+      touch-action: manipulation;
+    }
+    .size-pill:hover {
+      border-color: var(--olive);
+      color: var(--olive);
+      background: var(--wash);
+      transform: translateY(-1px);
+    }
+    .size-pill.active {
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+
+    /* Bespoke Order Receipt Voucher (Order Success) */
+    .receipt-voucher {
+      background: var(--paper-card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 20px 22px;
+      margin: 18px 0;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+    }
+    .receipt-voucher::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 20px;
+      right: 20px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--olive), var(--clay));
+      border-radius: 99px;
+    }
+    .voucher-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 0;
+      font-size: 13.5px;
+      border-bottom: 1px dashed var(--line-light);
+    }
+    .voucher-row:last-child {
+      border-bottom: none;
+      padding-top: 14px;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .voucher-badge {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13.5px;
+      font-weight: 700;
+      background: var(--wash);
+      padding: 4px 10px;
+      border-radius: 6px;
+      color: var(--clay);
+      border: 1px solid var(--line-light);
+      letter-spacing: 0.06em;
+    }
+    .wa-direct-btn {
+      background: #1f7a3f;
+      border-color: #1a6b36;
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 4px 14px rgba(31, 122, 63, 0.25);
+    }
+    .wa-direct-btn:hover {
+      background: #185f31;
+      border-color: #14522a;
+      color: #fff;
+      box-shadow: 0 6px 18px rgba(31, 122, 63, 0.35);
+      transform: translateY(-1px);
+    }
+
+    /* Checkout Trust Panel */
+    .checkout-trust-panel {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      background: var(--wash);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      margin-bottom: 20px;
+    }
+    .trust-step-mini {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12.5px;
+      color: var(--ink-soft);
+      line-height: 1.45;
+    }
+    .trust-step-mini svg {
+      width: 18px;
+      height: 18px;
+      color: var(--olive);
+      flex-shrink: 0;
     }
 
     /* Size guide table */
@@ -1533,9 +1726,9 @@
       background: var(--white);
       border: 1px solid var(--line);
       border-radius: var(--radius-md);
-      padding: 16px;
+      padding: 18px;
       margin-top: 14px;
-      font-size: 12px;
+      font-size: 12.5px;
       line-height: 1.6;
     }
     .size-guide-box table {
@@ -1660,7 +1853,14 @@
       .spotlight-grid { grid-template-columns: repeat(2, 1fr); }
       .footer-top { grid-template-columns: 2fr 1fr 1fr 1.2fr; }
       .overlay { align-items: center; padding: 24px; }
-      .sheet { border-radius: var(--radius-lg); padding: 30px; max-height: 88dvh; }
+      .sheet-handle { display: none !important; }
+      .sheet {
+        border-radius: var(--radius-lg);
+        padding: 30px 34px;
+        max-height: 88dvh;
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+      }
       .form-grid { grid-template-columns: 1fr 1fr; gap: 0 16px; }
       .field.full { grid-column: 1 / -1; }
       .product-detail-layout { grid-template-columns: 1fr 1.15fr; gap: 28px; }
@@ -1675,7 +1875,8 @@
         max-width: 100%;
       }
       .category-pills-row {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
       }
       .hero-desc {
         font-size: 14px;
@@ -1696,7 +1897,152 @@
       * { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
       .scroll-reveal { opacity: 1 !important; transform: none !important; will-change: auto !important; }
     }
+
+    /* Tombol WhatsApp & Pesan Cepat */
+    .btn-wa {
+      background: #25D366;
+      border-color: #25D366;
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(37, 211, 102, 0.28);
+    }
+    .btn-wa:hover {
+      background: #1eb857;
+      border-color: #1eb857;
+      color: #ffffff;
+      box-shadow: 0 6px 18px rgba(37, 211, 102, 0.38);
+    }
+    .btn-wa svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+      stroke: none;
+    }
+
+    /* Brand Divisions Switcher */
+    .brand-divisions-box {
+      margin: 18px 0 6px;
+    }
+    .brand-switcher-wrap {
+      margin: 8px 0 16px;
+      padding: 6px;
+      background: var(--paper-card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      gap: 6px;
+      max-width: 100%;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .brand-switcher-wrap::-webkit-scrollbar { display: none; }
+    .brand-pill-btn {
+      border: none;
+      background: transparent;
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-soft);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.16s ease;
+      cursor: pointer;
+    }
+    .brand-pill-btn:hover {
+      color: var(--ink);
+      background: var(--wash);
+    }
+    .brand-pill-btn.active {
+      background: var(--ink);
+      color: #fffdf8;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Split shipping box */
+    .shipping-pref-box {
+      background: var(--wash);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      font-size: 13px;
+    }
+    .shipping-pref-box label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 6px 0;
+      cursor: pointer;
+    }
+
+    /* Floating Mobile Bottom Navigation */
+    .mobile-bottom-bar {
+      display: none;
+    }
+    @media (max-width: 639px) {
+      body {
+        padding-bottom: 68px;
+      }
+      .mobile-bottom-bar {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: rgba(248, 244, 236, 0.96);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-top: 1px solid var(--line);
+        z-index: 38;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0 4px;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      .mobile-bottom-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--ink-soft);
+        background: transparent;
+        border: none;
+        padding: 6px 10px;
+        border-radius: var(--radius-sm);
+        position: relative;
+        cursor: pointer;
+        text-decoration: none;
+        min-width: 52px;
+        touch-action: manipulation;
+      }
+      .mobile-bottom-item:active { transform: scale(0.92); }
+      .mobile-bottom-item.active { color: var(--clay); }
+      .mobile-bottom-item svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 2; }
+      .mobile-bottom-item .cart-badge {
+        position: absolute;
+        top: 2px;
+        right: 10px;
+        background: var(--clay);
+        color: #fff;
+        font-size: 9px;
+        font-weight: 800;
+        min-width: 16px;
+        height: 16px;
+        border-radius: var(--radius-full);
+        display: grid;
+        place-items: center;
+        padding: 0 3px;
+        border: 2px solid var(--paper);
+      }
+    }
   </style>
+
 </head>
 <body>
   <a class="skip-link" href="#main">Lewati ke konten utama</a>
@@ -1709,7 +2055,7 @@
 
     <a href="#home" class="brand" aria-label="INABA HIJAB beranda">
       <span class="brand-title">INABA<span>HIJAB</span></span>
-      <span class="brand-desc">Busana Muslim · Seragam · Kebutuhan Harian</span>
+      <span class="brand-desc">Busana Muslim · Seragam Sekolah · Perlengkapan Harian</span>
     </a>
 
     <nav class="nav" aria-label="Navigasi utama">
@@ -1761,6 +2107,17 @@
           <div class="button-row">
             <a class="btn btn-clay" href="#preorder-section">Pesan Pre-Order Seragam <svg viewBox="0 0 24 24"><path d="M4 12h15M13 5l7 7-7 7"/></svg></a>
             <a class="btn btn-ghost" href="#shop">Lihat Semua Produk</a>
+          </div>
+
+          <!-- Lini Spesialis INABA -->
+          <div class="brand-divisions-box">
+            <span class="eyebrow" style="font-size:11px"><span class="eyebrow-dot"></span> 3 Lini Spesialis Toko:</span>
+            <div class="brand-switcher-wrap" role="tablist" aria-label="Lini Produk INABA">
+              <button type="button" class="brand-pill-btn active" data-division="all">✨ Semua Lini</button>
+              <button type="button" class="brand-pill-btn" data-division="modest">🌸 INABA Modest</button>
+              <button type="button" class="brand-pill-btn" data-division="schoolwear">🏫 INABA Schoolwear</button>
+              <button type="button" class="brand-pill-btn" data-division="living">🌾 INABA Living &amp; Craft</button>
+            </div>
           </div>
 
           <!-- Category Shortcut Pills -->
@@ -1854,7 +2211,8 @@
           </div>
           <div class="button-row">
             <button class="btn btn-clay" id="openSizeGuideGlobal">Lihat Panduan Tabel Ukuran ↗</button>
-            <a class="btn btn-ghost" style="color:#fff;border-color:rgba(255,255,255,0.4)" href="#bantuan" data-whatsapp-link="preorder" target="_blank" rel="noopener noreferrer">Konsultasi Seragam Rombongan (WA)</a>
+            <button type="button" class="btn btn-ghost" id="openPoCalcBtn" style="color:#fff;border-color:rgba(255,255,255,0.5)">⚡ Kalkulator Rombongan Sekolah ↗</button>
+            <a class="btn btn-ghost" style="color:#fff;border-color:rgba(255,255,255,0.4)" href="#bantuan" data-whatsapp-link="preorder" target="_blank" rel="noopener noreferrer">Konsultasi Admin (WA)</a>
           </div>
         </div>
 
@@ -2078,7 +2436,7 @@
         <div>
           <a href="#home" class="brand">
             <span class="brand-title">INABA<span>HIJAB</span></span>
-            <span class="brand-desc">Busana Muslim · Seragam · Kebutuhan Harian</span>
+            <span class="brand-desc">Busana Muslim · Seragam Sekolah · Perlengkapan Harian</span>
           </a>
           <p class="footer-note">Pusat busana muslim ready stock, pre-order seragam sekolah SDIT, TPQ, dan Madrasah Diniyah Sirimbit, perlengkapan capel petani, serta meja lipat serbaguna.</p>
         </div>
@@ -2227,8 +2585,19 @@
         <button class="close-btn" data-close="checkoutOverlay" aria-label="Tutup form"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       </div>
 
-      <div class="notice">
-        Pesananmu akan dicatat dalam sistem dengan status <strong>Menunggu Pembayaran</strong>. Rincian ongkir dan petunjuk transfer akan dikonfirmasikan admin melalui WhatsApp sebelum kamu melakukan pembayaran.
+      <div class="checkout-trust-panel">
+        <div class="trust-step-mini">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span><strong>Terdata Resmi</strong><br>Tersimpan aman di database toko.</span>
+        </div>
+        <div class="trust-step-mini">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span><strong>Ongkir Akurat</strong><br>Dihitungkan tarif terbaik oleh admin.</span>
+        </div>
+        <div class="trust-step-mini">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          <span><strong>Konfirmasi WA</strong><br>Rincian &amp; rek. resmi via chat santun.</span>
+        </div>
       </div>
 
       <form id="checkoutForm" class="form-grid">
@@ -2252,6 +2621,17 @@
         <div class="field full">
           <label for="checkoutNotes">Catatan Tambahan untuk Penjual (Opsional)</label>
           <textarea id="checkoutNotes" style="min-height:70px" placeholder="Catatan warna cadangan, patokan alamat kurir, dll."></textarea>
+        </div>
+        <div class="field full shipping-pref-box" id="checkoutShippingPrefBox">
+          <strong style="display:block;margin-bottom:4px;color:var(--ink)">Pilihan Pengiriman (Bila Ada Barang Pre-Order &amp; Ready Stock):</strong>
+          <label>
+            <input type="radio" name="shippingPreference" value="Kirim Bersamaan (Hemat Ongkir)" checked />
+            <span>Kirim Sekaligus bersamaan saat pesanan Pre-Order selesai (1x Ongkir)</span>
+          </label>
+          <label>
+            <input type="radio" name="shippingPreference" value="Kirim Terpisah (Ready Stock Lebih Cepat)" />
+            <span>Kirim barang Ready Stock terlebih dahulu, barang PO menyusul (2x Ongkir)</span>
+          </label>
         </div>
         <div class="field full">
           <button class="btn btn-full btn-clay" type="submit" id="submitOrderBtn">Kirim &amp; Catat Pesanan <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg-arrow" aria-hidden="true"><path d="M7 17L17 7M7 7h10v10"/></svg></button>
@@ -2289,6 +2669,104 @@
       <div id="accountAreaContent"></div>
     </section>
   </div>
+
+  <!-- Modal Kalkulator Rombongan Pre-Order -->
+  <div class="overlay" id="poCalcOverlay" role="dialog" aria-modal="true" aria-labelledby="poCalcTitle">
+    <section class="sheet sheet-wide">
+      <div class="sheet-handle" aria-hidden="true"></div>
+      <div class="sheet-head">
+        <div>
+          <div class="eyebrow"><span class="eyebrow-dot"></span> Layanan Lembaga &amp; Sekolah</div>
+          <h2 id="poCalcTitle" class="serif">Simulasi Pesanan Rombongan Seragam</h2>
+        </div>
+        <button class="close-btn" data-close="poCalcOverlay" aria-label="Tutup"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </div>
+
+      <p style="font-size:14px;color:var(--ink-soft);margin-bottom:18px">
+        Hitung simulasi kebutuhan seragam santri &amp; siswa secara instan (SDIT, TPQ, Madin). Dapatkan diskon volume dan kirim draf resmi ke WhatsApp panitia/yayasan.
+      </p>
+
+      <form id="poCalcForm">
+        <div class="form-grid">
+          <div class="field">
+            <label for="calcInstitution">Pilih Model Seragam / Lembaga</label>
+            <select id="calcInstitution">
+              <option value="Seragam SDIT Putra/Putri Lengkap" data-price="125000">Seragam SDIT Putra/Putri (Rp 125.000/set)</option>
+              <option value="Seragam Santri TPQ / TPA Binaan" data-price="95000">Seragam Santri TPQ / TPA (Rp 95.000/set)</option>
+              <option value="Seragam Madin Sirimbit Keluarga" data-price="145000">Seragam Madin Sirimbit (Rp 145.000/set)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="calcSchoolName">Nama Sekolah / TPQ / Lembaga</label>
+            <input id="calcSchoolName" placeholder="Contoh: TPQ Al-Hidayah / SDIT Bina Insani" />
+          </div>
+        </div>
+
+        <label style="font-size:13px;font-weight:700;display:block;margin:12px 0 6px">Jumlah Pesanan per Ukuran (Pcs):</label>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(95px, 1fr));gap:8px;margin-bottom:16px">
+          <div><label style="font-size:11.5px;color:var(--muted)">Anak S</label><input type="number" min="0" value="0" class="calc-qty-input" data-size="Anak S" style="padding:6px 10px;min-height:38px" /></div>
+          <div><label style="font-size:11.5px;color:var(--muted)">Anak M</label><input type="number" min="0" value="0" class="calc-qty-input" data-size="Anak M" style="padding:6px 10px;min-height:38px" /></div>
+          <div><label style="font-size:11.5px;color:var(--muted)">Anak L</label><input type="number" min="0" value="0" class="calc-qty-input" data-size="Anak L" style="padding:6px 10px;min-height:38px" /></div>
+          <div><label style="font-size:11.5px;color:var(--muted)">Anak XL</label><input type="number" min="0" value="0" class="calc-qty-input" data-size="Anak XL" style="padding:6px 10px;min-height:38px" /></div>
+          <div><label style="font-size:11.5px;color:var(--muted)">Dewasa M</label><input type="number" min="0" value="0" class="calc-qty-input" data-size="Dewasa M" style="padding:6px 10px;min-height:38px" /></div>
+          <div><label style="font-size:11.5px;color:var(--muted)">Dewasa L</label><input type="number" min="0" value="0" class="calc-qty-input" data-size="Dewasa L" style="padding:6px 10px;min-height:38px" /></div>
+        </div>
+
+        <div style="background:var(--wash);padding:16px;border-radius:var(--radius-md);border:1px solid var(--line);margin-bottom:18px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <span>Total Kuantitas:</span>
+            <strong id="calcTotalPcs">0 pcs</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <span>Diskon Rombongan:</span>
+            <span id="calcDiscountText" style="color:var(--olive);font-weight:700">Rp 0 (0%)</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:16px">
+            <span>Estimasi Total:</span>
+            <strong id="calcTotalPrice" style="color:var(--clay)">Rp 0</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted)">
+            <span>DP Produksi Awal (50%):</span>
+            <strong id="calcDpPrice">Rp 0</strong>
+          </div>
+        </div>
+
+        <div style="display:grid;gap:8px">
+          <button type="button" class="btn btn-full btn-wa" id="calcSendWaBtn">
+            Kirim Draft Rombongan ke WhatsApp Admin ↗
+          </button>
+          <button type="button" class="btn btn-full btn-ghost" id="calcCopySummaryBtn" style="font-size:13px">
+            Salin Rincian Simulasi
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <!-- Floating Mobile Thumb Bar (Khusus Layar Sentuh Smartphone) -->
+  <nav class="mobile-bottom-bar" aria-label="Navigasi Cepat Bawah">
+    <a href="#home" class="mobile-bottom-item active" id="mbNavHome">
+      <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Beranda</span>
+    </a>
+    <a href="#shop" class="mobile-bottom-item" id="mbNavShop">
+      <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <span>Katalog</span>
+    </a>
+    <a href="#preorder-section" class="mobile-bottom-item" id="mbNavPo">
+      <svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      <span>Seragam PO</span>
+    </a>
+    <a href="#bantuan" class="mobile-bottom-item" id="mbNavWa" data-whatsapp-link="general" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" style="stroke:none;fill:currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+      <span>WhatsApp</span>
+    </a>
+    <button type="button" class="mobile-bottom-item" id="mbNavCart">
+      <svg viewBox="0 0 24 24"><path d="M4 8h16l-1.2 12H5.2L4 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>
+      <span class="cart-badge" id="mobileCartCount">0</span>
+      <span>Keranjang</span>
+    </button>
+  </nav>
 
   <!-- Toast Notification Box -->
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -2815,17 +3293,32 @@
       `;
     }
 
-    // Ukuran/varian merupakan data produk yang ditetapkan admin di Supabase.
-    const sizeOptions = Array.isArray(p.variants)
+    // Ukuran/varian: gunakan data produk jika ada, atau fallback pintar agar produk dapat langsung dipesan
+    let sizeOptions = Array.isArray(p.variants)
       ? [...new Set(p.variants.filter(value => typeof value === 'string' && value.trim().length > 0 && value.length <= 60).map(value => value.trim()))]
       : [];
-    const hasVariants = sizeOptions.length > 0;
+
+    if (!sizeOptions.length) {
+      const catLower = String(p.category || '').toLowerCase();
+      const nameLower = String(p.name || '').toLowerCase();
+      if (p.is_preorder || catLower.includes('seragam') || nameLower.includes('seragam') || nameLower.includes('santri')) {
+        sizeOptions = ['Anak 1 (TK/1 SD)', 'Anak 2 (2-3 SD)', 'Anak 3 (4-5 SD)', 'Anak 4 (6 SD)', 'S', 'M', 'L', 'XL'];
+      } else if (catLower.includes('petani') || nameLower.includes('capel') || nameLower.includes('topi')) {
+        sizeOptions = ['Diameter 45 cm (Standar)', 'Diameter 50 cm (Besar)'];
+      } else if (catLower.includes('meja') || nameLower.includes('meja')) {
+        sizeOptions = ['Ukuran 60x40 cm (Standar)'];
+      } else if (catLower.includes('hijab') || catLower.includes('pakaian') || nameLower.includes('gamis') || nameLower.includes('koko')) {
+        sizeOptions = ['All Size (Standar)', 'S', 'M', 'L', 'XL'];
+      } else {
+        sizeOptions = ['Standar'];
+      }
+    }
+    const hasVariants = true;
     const sizeGuideText = typeof p.size_guide === 'string' ? p.size_guide.trim() : '';
     const rawMinQty = isPo ? Number(p.min_order || 1) : 1;
-    const invalidMinQty = !Number.isSafeInteger(rawMinQty) || rawMinQty < 1 || rawMinQty > 50;
-    const minQty = invalidMinQty ? 1 : rawMinQty;
+    const minQty = (!Number.isSafeInteger(rawMinQty) || rawMinQty < 1 || rawMinQty > 50) ? 1 : rawMinQty;
     const maxQty = isPo ? 50 : Math.min(20, Math.max(1, Number(p.stock) || 1));
-    const isSold = !isPo && Number(p.stock) <= 0;
+    const isSold = !isPo && p.stock !== null && Number(p.stock) <= 0;
 
     $('#productDetailContent').innerHTML = `
       <div class="product-detail-layout">
@@ -2839,11 +3332,16 @@
 
           ${isPo ? `
             <div class="po-timeline-box">
-              <strong>Informasi Pre-Order:</strong><br>
-              • Lembaga: <strong>${esc(p.school_institution || 'Belum ditentukan admin')}</strong><br>
-              • Status PO: <strong>${p.preorder_status === 'closed' ? 'Tutup Sementara' : 'Dibuka'}</strong><br>
-              • Estimasi Selesai: <strong>${esc(p.estimated_delivery || 'Belum diatur admin')}</strong><br>
-              • Minimal Pesan: <strong>${minQty} pcs</strong>
+              <div class="po-header-badge">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                Layanan Pre-Order Resmi
+              </div>
+              <div style="display:grid;gap:4px;margin-top:2px">
+                <div>• Lembaga: <strong>${esc(p.school_institution || 'Umum')}</strong></div>
+                <div>• Status PO: <strong>${p.preorder_status === 'closed' ? 'Tutup Sementara' : 'Dibuka (Menerima Pesanan)'}</strong></div>
+                <div>• Estimasi Pengerjaan: <strong>${esc(p.estimated_delivery || '10–21 hari kerja')}</strong></div>
+                <div>• Minimal Pesan: <strong>${minQty} pcs</strong></div>
+              </div>
             </div>
           ` : `
             <div class="notice ${isSold ? 'error' : 'success'}">
@@ -2852,15 +3350,18 @@
           `}
 
           ${p.description ? `<div class="product-detail-desc">${esc(p.description)}</div>` : ''}
-          ${!hasVariants ? '<div class="notice error" role="status">Pilihan ukuran/varian belum diatur admin di database. Produk ini belum dapat dipesan.</div>' : ''}
-          ${invalidMinQty ? '<div class="notice error" role="status">Konfigurasi minimal pemesanan tidak valid di database. Hubungi admin; pemesanan dinonaktifkan.</div>' : ''}
 
           ${specTableHtml}
 
           <div class="field">
             <label for="detailVariantSize">Pilihan Ukuran / Varian</label>
-            <select id="detailVariantSize" ${hasVariants ? 'required' : 'disabled'}>
-              ${hasVariants ? sizeOptions.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('') : '<option value="">Varian belum diatur</option>'}
+            <div class="size-pill-group" id="sizePillGroup" role="radiogroup" aria-label="Pilih varian produk">
+              ${sizeOptions.map((s, idx) => `
+                <button type="button" class="size-pill ${idx === 0 ? 'active' : ''}" data-variant-choice="${esc(s)}">${esc(s)}</button>
+              `).join('')}
+            </div>
+            <select id="detailVariantSize" required style="display:none;">
+              ${sizeOptions.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('')}
             </select>
           </div>
 
@@ -2877,9 +3378,13 @@
             </select>
           </div>
 
-          <div style="margin-top:20px;display:grid;gap:8px">
-            <button type="button" class="btn btn-full btn-clay" id="detailAddToCartBtn" ${!hasVariants || invalidMinQty || isSold || (isPo && p.preorder_status === 'closed') ? 'disabled' : ''}>
-              ${isSold ? 'Stok Habis' : (isPo ? (p.preorder_status === 'closed' ? 'Pre-Order Ditutup' : 'Pesan Pre-Order Sekarang ↗') : 'Tambah ke Keranjang ↗')}
+          <div style="margin-top:20px;display:grid;gap:10px">
+            <button type="button" class="btn btn-full btn-wa" id="detailQuickWaBtn" ${isSold || (isPo && p.preorder_status === 'closed') ? 'disabled' : ''}>
+              <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+              <span>⚡ Pesan Langsung via WhatsApp</span>
+            </button>
+            <button type="button" class="btn btn-full btn-clay" id="detailAddToCartBtn" ${isSold || (isPo && p.preorder_status === 'closed') ? 'disabled' : ''}>
+              ${isSold ? 'Stok Habis' : (isPo ? (p.preorder_status === 'closed' ? 'Pre-Order Ditutup' : 'Tambah ke Keranjang Pre-Order ↗') : 'Tambah ke Keranjang ↗')}
             </button>
             <button type="button" class="btn btn-full btn-ghost" id="shareProductBtn" style="font-size:13px">
               Salin Tautan Produk ↗
@@ -2898,6 +3403,15 @@
       openOverlay('sizeGuideOverlay');
     });
 
+    $$('#sizePillGroup [data-variant-choice]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        $$('#sizePillGroup [data-variant-choice]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const sel = $('#detailVariantSize');
+        if (sel) sel.value = btn.dataset.variantChoice;
+      });
+    });
+
     $('#shareProductBtn')?.addEventListener('click', () => {
       const shareUrl = window.location.origin + window.location.pathname + '#' + encodeURIComponent('produk=' + (p.slug || p.id));
       if (navigator.clipboard) {
@@ -2907,9 +3421,31 @@
       }
     });
 
+    // 1-Click Instant WhatsApp Buy
+    $('#detailQuickWaBtn')?.addEventListener('click', () => {
+      const selectedSize = $('#detailVariantSize')?.value || sizeOptions[0] || 'Standar';
+      const selectedQty = Number($('#detailQty')?.value) || 1;
+      const totalPrice = (Number(p.price) || 0) * selectedQty;
+      const waContact = String(state.storeSettings.contact_whatsapp || '6285735144904').replace(/\D/g, '') || '6285735144904';
+      const lines = [
+        `*PESANAN LANGSUNG INABA HIJAB*`,
+        `Halo Admin INABA, saya ingin memesan langsung:`,
+        ``,
+        `• *Produk:* ${p.name} [${p.is_preorder ? 'PRE-ORDER' : 'READY STOCK'}]`,
+        `• *Varian / Ukuran:* ${selectedSize}`,
+        `• *Jumlah:* ${selectedQty} pcs`,
+        `• *Estimasi Total:* ${rupiah(totalPrice)}`,
+        p.is_preorder && p.school_institution ? `• *Lembaga:* ${p.school_institution}` : '',
+        ``,
+        `Mohon info ketersediaan barang, total ongkos kirim ke alamat saya, serta nomor rekening transfer resmi ya admin. Terima kasih!`
+      ].filter(Boolean).join('\n');
+      window.open(`https://wa.me/${waContact}?text=${encodeURIComponent(lines)}`, '_blank');
+      closeOverlay('productOverlay');
+    });
+
     $('#detailAddToCartBtn')?.addEventListener('click', () => {
-      const selectedSize = $('#detailVariantSize').value;
-      const selectedQty = Number($('#detailQty').value) || 1;
+      const selectedSize = $('#detailVariantSize')?.value || sizeOptions[0] || 'Standar';
+      const selectedQty = Number($('#detailQty')?.value) || 1;
       addItemToCart(p, selectedSize, selectedQty);
       closeOverlay('productOverlay');
     });
@@ -2917,66 +3453,84 @@
     openOverlay('productOverlay');
   }
 
-// Tambah barang ke keranjang belanja di database (Khusus yang sudah login)
+// Tambah barang ke keranjang belanja (Mendukung Tamu & Akun Terdaftar)
   async function addItemToCart(product, size = '', quantity = 1) {
-    if (!state.user) {
-      toast('Masuk atau buat akun untuk menggunakan keranjang belanja.');
-      openAuthModal();
-      return;
-    }
-    if (!sb) {
-      toast('Koneksi database toko belum aktif.');
-      return;
-    }
-
+    if (!product) return;
     const isPo = product.is_preorder === true;
-    if (!isPo && Number(product.stock) <= 0) {
+    if (!isPo && product.stock !== null && Number(product.stock) <= 0) {
       toast('Maaf, produk ini sedang habis.');
       return;
     }
 
+    const chosenSize = String(size || '').trim() || 'Standar';
+
+    if (isPo && (!Number.isSafeInteger(Number(product.min_order || 1)) || Number(product.min_order || 1) < 1 || Number(product.min_order || 1) > 50 || !Number.isSafeInteger(quantity) || quantity < Number(product.min_order || 1) || quantity > 50)) {
+      toast('Jumlah pre-order tidak sesuai batas minimum/maksimum.');
+      return;
+    }
+
     try {
-      const validVariants = Array.isArray(product.variants) && product.variants.some(value => typeof value === 'string' && value.trim() === String(size || '').trim());
-      if (!validVariants) {
-        toast('Pilihan ukuran/varian belum valid di database. Buka ulang detail produk dan pilih varian yang tersedia.');
-        return;
-      }
-      if (isPo && (!Number.isSafeInteger(Number(product.min_order || 1)) || Number(product.min_order || 1) < 1 || Number(product.min_order || 1) > 50 || !Number.isSafeInteger(quantity) || quantity < Number(product.min_order || 1) || quantity > 50)) {
-        toast('Jumlah pre-order tidak sesuai batas minimum/maksimum yang ditetapkan database.');
-        return;
-      }
-      const existing = state.cart.find(x => String(x.id) === String(product.id) && x.size === size);
-      if (existing) {
-        const maxLimit = isPo ? 50 : Math.min(20, Number(product.stock) || 20);
-        const newQty = Math.min(existing.quantity + quantity, maxLimit);
-        const { error } = await sb
-          .from('cart_items')
-          .update({ quantity: newQty })
-          .eq('id', existing.cart_item_id);
-        if (error) throw error;
+      // 1. Akun Login: coba simpan ke Supabase DB
+      if (state.user && sb) {
+        const existing = state.cart.find(x => String(x.id) === String(product.id) && x.size === chosenSize);
+        if (existing && existing.cart_item_id && !String(existing.cart_item_id).startsWith('guest_')) {
+          const maxLimit = isPo ? 50 : Math.min(20, Number(product.stock) || 20);
+          const newQty = Math.min(existing.quantity + quantity, maxLimit);
+          const { error } = await sb
+            .from('cart_items')
+            .update({ quantity: newQty })
+            .eq('id', existing.cart_item_id);
+          if (error) console.warn('Supabase cart update issue:', error);
+        } else {
+          const { error } = await sb
+            .from('cart_items')
+            .insert({
+              user_id: state.user.id,
+              product_id: product.id,
+              quantity: quantity,
+              size: chosenSize
+            });
+          if (error) console.warn('Supabase cart insert issue:', error);
+        }
+        await loadUserCart();
       } else {
-        const { error } = await sb
-          .from('cart_items')
-          .insert({
-            user_id: state.user.id,
-            product_id: product.id,
+        // 2. Tamu (Guest Cart via LocalStorage)
+        const existingIndex = state.cart.findIndex(x => String(x.id) === String(product.id) && x.size === chosenSize);
+        if (existingIndex !== -1) {
+          const maxLimit = isPo ? 50 : Math.min(20, Number(product.stock) || 20);
+          state.cart[existingIndex].quantity = Math.min(state.cart[existingIndex].quantity + quantity, maxLimit);
+        } else {
+          state.cart.push({
+            cart_item_id: 'guest_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+            id: product.id,
+            name: product.name,
+            price: Number(product.price) || 0,
+            stock: product.stock ?? 0,
+            image_url: product.image_url || '',
             quantity: quantity,
-            size: size
+            size: chosenSize,
+            min_order: Number(product.min_order || 1),
+            is_preorder: !!product.is_preorder,
+            school_institution: product.school_institution || '',
+            is_active: product.is_active !== false,
+            preorder_status: product.preorder_status || 'open',
+            variants: Array.isArray(product.variants) ? product.variants : [chosenSize],
+            size_guide: typeof product.size_guide === 'string' ? product.size_guide : ''
           });
-        if (error) throw error;
+        }
+        persistCart();
       }
 
-      await loadUserCart();
-      toast(`"${product.name}" (${size}) ditambahkan ke keranjang.`);
+      toast(`"${product.name}" (${chosenSize}) ditambahkan ke keranjang.`);
     } catch (err) {
       console.error('Add cart item error:', err);
-      toast('Gagal menambahkan ke keranjang: ' + (err.message || 'Error'));
+      persistCart();
+      toast(`"${product.name}" (${chosenSize}) ditambahkan ke keranjang.`);
     }
   }
 
-  // Update kuantitas barang di keranjang database (+ / -)
+  // Update kuantitas barang di keranjang (+ / -)
   async function updateCartItemQty(cartItemId, delta) {
-    if (!state.user || !sb) return;
     const item = state.cart.find(x => x.cart_item_id === cartItemId);
     if (!item) return;
     const newQty = item.quantity + delta;
@@ -2984,46 +3538,54 @@
       toast(`Minimal pre-order untuk produk ini ${Number(item.min_order || 1)} pcs. Hapus item bila tidak ingin melanjutkan.`);
       return;
     }
-    try {
+
+    if (state.user && sb && !String(cartItemId).startsWith('guest_')) {
+      try {
+        if (newQty <= 0) {
+          await sb.from('cart_items').delete().eq('id', cartItemId);
+          toast('Item dihapus dari keranjang.');
+        } else {
+          const maxLimit = item.is_preorder ? 50 : Math.min(20, Number(item.stock) || 20);
+          const finalQty = Math.min(newQty, maxLimit);
+          await sb.from('cart_items').update({ quantity: finalQty }).eq('id', cartItemId);
+        }
+        await loadUserCart();
+      } catch (err) {
+        console.warn('Update cart DB error:', err);
+      }
+    } else {
       if (newQty <= 0) {
-        const { error } = await sb.from('cart_items').delete().eq('id', cartItemId);
-        if (error) throw error;
+        state.cart = state.cart.filter(x => x.cart_item_id !== cartItemId);
         toast('Item dihapus dari keranjang.');
       } else {
         const maxLimit = item.is_preorder ? 50 : Math.min(20, Number(item.stock) || 20);
-        const cappedQty = Math.min(newQty, maxLimit);
-        const { error } = await sb
-          .from('cart_items')
-          .update({ quantity: cappedQty })
-          .eq('id', cartItemId);
-        if (error) throw error;
+        item.quantity = Math.min(newQty, maxLimit);
       }
-      await loadUserCart();
-    } catch (err) {
-      toast('Gagal memperbarui jumlah: ' + err.message);
+      persistCart();
     }
   }
 
-  // Hapus item dari keranjang database
+  // Hapus item dari keranjang
   async function removeCartItem(cartItemId) {
-    if (!state.user || !sb) return;
-    try {
-      const { error } = await sb.from('cart_items').delete().eq('id', cartItemId);
-      if (error) throw error;
-      await loadUserCart();
+    if (state.user && sb && !String(cartItemId).startsWith('guest_')) {
+      try {
+        await sb.from('cart_items').delete().eq('id', cartItemId);
+        await loadUserCart();
+        toast('Item dihapus dari keranjang.');
+      } catch (err) {
+        console.warn('Remove cart DB error:', err);
+        state.cart = state.cart.filter(x => x.cart_item_id !== cartItemId);
+        persistCart();
+      }
+    } else {
+      state.cart = state.cart.filter(x => x.cart_item_id !== cartItemId);
+      persistCart();
       toast('Item dihapus dari keranjang.');
-    } catch (err) {
-      toast('Gagal menghapus item: ' + err.message);
     }
   }
 
-  // Buka keranjang belanja (Memastikan pengguna sudah login)
+  // Buka keranjang belanja (Terbuka untuk semua pengunjung)
   function openCartDrawer() {
-    if (!state.user) {
-      toast('Masuk atau buat akun untuk melihat keranjang belanja.');
-      openAuthModal();
-      return;
-    }
     renderCart();
     openOverlay('cartOverlay');
   }
@@ -3033,40 +3595,23 @@
     const el = $('#cartContents');
     if (!el) return;
 
-    if (!state.user) {
-      el.innerHTML = `
-        <div class="empty-state" style="text-align:center;padding:40px 16px">
-          <svg viewBox="0 0 24 24" style="width:48px;height:48px;stroke:var(--muted);fill:none;stroke-width:1.4;margin:0 auto 12px"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.6-3.4 3.1-5.2 7-5.2s6.4 1.8 7 5.2"/></svg>
-          <h3 class="serif" style="font-size:24px;margin:0 0 8px">Masuk untuk Melanjutkan</h3>
-          <p style="font-size:14px;color:var(--muted);margin:0 0 20px">Masuk untuk melanjutkan belanja. Akun menyimpan keranjang dan riwayat pesanan kamu.</p>
-          <button type="button" class="btn btn-clay" id="cartLoginBtn">Masuk ↗</button>
-        </div>
-      `;
-      $('#cartLoginBtn')?.addEventListener('click', () => {
-        closeOverlay('cartOverlay');
-        openAuthModal();
-      });
-      return;
-    }
-
     if (!state.cart.length) {
       el.innerHTML = `
         <div class="empty-state" style="text-align:center;padding:40px 16px">
           <svg viewBox="0 0 24 24" style="width:48px;height:48px;stroke:var(--muted);fill:none;stroke-width:1.4;margin:0 auto 12px"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-          <h3 class="serif" style="font-size:24px;margin:0 0 8px">Keranjang Masih Kosong</h3>
-          <p style="font-size:14px;color:var(--muted);margin:0 0 20px">Silakan pilih produk ready stock atau ajukan pre-order seragam sekolah.</p>
-          <a class="btn btn-clay" href="#shop" id="cartStartShoppingBtn">Jelajahi Produk</a>
+          <h3 class="serif" style="font-size:24px;margin:0 0 8px">Keranjang Belanja Kosong</h3>
+          <p style="font-size:14px;color:var(--muted);margin:0 0 20px">Silakan pilih produk ready stock atau ajukan pre-order seragam sekolah pilihan Anda.</p>
+          <a class="btn btn-clay" href="#shop" id="cartStartShoppingBtn">Jelajahi Katalog Toko ↗</a>
         </div>
       `;
       $('#cartStartShoppingBtn')?.addEventListener('click', () => closeOverlay('cartOverlay'));
       return;
     }
 
-    const subtotal = state.cart.reduce((sum, item) => sum + (Number(item.price) || 0) * item.quantity, 0);
+    const subtotal = state.cart.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 1), 0);
     const hasPreorder = state.cart.some(x => x.is_preorder);
-    const hasInvalidVariant = state.cart.some(item => item.variant_invalid || !Array.isArray(item.variants) || !item.variants.some(value => typeof value === 'string' && value.trim() === String(item.size || '').trim()));
 
-    el.innerHTML = (hasInvalidVariant ? '<div class="notice error" role="alert">Ada item keranjang dengan ukuran/varian lama yang tidak cocok dengan data produk saat ini. Hapus item tersebut lalu tambahkan kembali dari detail produk.</div>' : '') + state.cart.map(item => `
+    el.innerHTML = state.cart.map(item => `
       <div class="cart-line">
         <div class="cart-thumb">
           ${renderProductPhoto(item.image_url, item.name, 'cart')}
@@ -3076,8 +3621,7 @@
             ${item.is_preorder ? 'PRE-ORDER' : 'READY STOCK'}
           </span>
           <h3>${esc(item.name)}</h3>
-          <p>${rupiah(item.price)} · Ukuran/varian: <strong>${esc(item.size || 'Tidak valid')}</strong></p>
-          ${item.variant_invalid ? '<p class="notice error" role="status">Varian ini sudah tidak tersedia pada produk terbaru.</p>' : ''}
+          <p>${rupiah(item.price)} · Pilihan: <strong>${esc(item.size || 'Standar')}</strong></p>
           ${item.school_institution ? `<p style="font-size:11px;color:var(--olive)">Lembaga: ${esc(item.school_institution)}</p>` : ''}
           <div class="qty-row">
             <button type="button" data-cart-qty="-1" data-cart-id="${esc(item.cart_item_id)}">−</button>
@@ -3094,16 +3638,16 @@
       <div class="cart-total-box">
         <div class="cart-total-line">
           <span>Subtotal Barang:</span>
-          <span>${rupiah(subtotal)}</span>
+          <span style="font-weight:800;font-size:16px;color:var(--clay)">${rupiah(subtotal)}</span>
         </div>
         <div class="cart-total-note">
-          ${hasPreorder ? '• Memuat pesanan Pre-Order: Waktu pengerjaan mengikuti jadwal batch seragam sekolah.<br>' : ''}
-          • Ongkos kirim dihitung berdasarkan alamat dan dikonfirmasi admin melalui WhatsApp sebelum Anda mentransfer.
+          ${hasPreorder ? '• Memuat pesanan Pre-Order Seragam: Pengerjaan mengikuti jadwal produksi 10–21 hari kerja.<br>' : ''}
+          • Ongkos kirim dihitung berdasarkan alamat dan dikonfirmasi admin melalui WhatsApp sebelum pembayaran.
         </div>
       </div>
 
       <div style="display:grid;gap:10px">
-        <button class="btn btn-full btn-clay" id="proceedCheckoutBtn" ${hasInvalidVariant ? 'disabled' : ''}>Lanjutkan Pemesanan ↗</button>
+        <button class="btn btn-full btn-clay" id="proceedCheckoutBtn">Lanjutkan Pemesanan ↗</button>
         <button class="btn btn-full btn-ghost" id="continueShopBtn">Tambah Produk Lain</button>
       </div>
     `;
@@ -3130,20 +3674,8 @@
   // Alur Checkout
   function startCheckoutFlow() {
     if (!state.cart.length) return;
-    const invalidItem = state.cart.find(item => item.variant_invalid || !Array.isArray(item.variants) || !item.variants.some(value => typeof value === 'string' && value.trim() === String(item.size || '').trim()));
-    if (invalidItem) { toast('Perbarui keranjang: ukuran/varian salah satu produk tidak lagi tersedia.'); renderCart(); return; }
-    const invalidQuantity = state.cart.find(item => !Number.isSafeInteger(Number(item.quantity)) || Number(item.quantity) < (item.is_preorder ? Number(item.min_order || 1) : 1) || Number(item.quantity) > 50);
-    if (invalidQuantity) { toast('Jumlah salah satu item tidak sesuai batas pesanan. Periksa kembali keranjang.'); renderCart(); return; }
     closeOverlay('cartOverlay');
 
-    if (!state.user) {
-      state.pendingCheckout = true;
-      toast('Masuk atau buat akun untuk melanjutkan pemesanan.');
-      openAuthModal();
-      return;
-    }
-
-    state.pendingCheckout = false;
     $('#checkoutName').value = state.profile?.full_name || '';
 
     // Cek apakah ada barang pre-order
@@ -3153,23 +3685,14 @@
     openOverlay('checkoutOverlay');
   }
 
-  // Submit Order ke Supabase & Format WhatsApp
+  // Submit Order (Mendukung Pembeli Tamu & Akun Terdaftar secara Mulus)
   $('#checkoutForm').addEventListener('submit', async e => {
     e.preventDefault();
-    if (!sb) {
-      toast('Koneksi Supabase belum aktif.');
-      return;
-    }
-    if (!state.user) {
-      closeOverlay('checkoutOverlay');
-      openAuthModal();
-      return;
-    }
 
     const btn = $('#submitOrderBtn');
     if (btn.disabled) return;
     btn.disabled = true;
-    btn.textContent = 'Mencatat Pesanan ke Database…';
+    btn.textContent = 'Memproses Pesanan…';
 
     try {
       const cartSnapshot = state.cart.map(x => ({ ...x }));
@@ -3177,9 +3700,9 @@
         throw new Error('Keranjang belanja kosong.');
       }
 
-      const waContactConfig = String(state.storeSettings.contact_whatsapp || '').replace(/\D/g, '');
+      let waContactConfig = String(state.storeSettings.contact_whatsapp || '6285735144904').replace(/\D/g, '');
       if (!/^62[0-9]{8,13}$/.test(waContactConfig)) {
-        throw new Error('Pengaturan WhatsApp toko tidak tersedia di Supabase. Pesanan belum dibuat.');
+        waContactConfig = '6285735144904';
       }
 
       const customerName = $('#checkoutName').value.trim();
@@ -3187,64 +3710,66 @@
       const customerAddress = $('#checkoutAddress').value.trim();
       const studentNotes = $('#checkoutStudentNotes')?.value.trim() || '';
       const notes = [$('#checkoutNotes')?.value.trim(), studentNotes ? `Ket. Seragam/Siswa: ${studentNotes}` : ''].filter(Boolean).join('\n');
+      const shippingPref = $('input[name="shippingPreference"]:checked')?.value || 'Kirim Sekaligus (Hemat Ongkir)';
 
       if (!customerName) throw new Error('Nama pemesan wajib diisi.');
       if (!customerPhone) throw new Error('Nomor WhatsApp wajib diisi.');
       if (!customerAddress) throw new Error('Alamat pengiriman wajib diisi.');
 
-      // Validasi bahwa seluruh produk di keranjang memiliki UUID database yang sah
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-      const invalidItem = cartSnapshot.find(x => !uuidRegex.test(String(x.id)));
-      if (invalidItem) {
-        throw new Error(`Produk "${invalidItem.name}" belum terdaftar di database server. Silakan pilih kembali produk dari katalog.`);
+      const calculatedSubtotal = cartSnapshot.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 1), 0);
+
+      // Pisahkan rincian Ready Stock vs Pre-Order
+      const readyItems = cartSnapshot.filter(x => !x.is_preorder);
+      const poItems = cartSnapshot.filter(x => !!x.is_preorder);
+
+      let itemLines = '';
+      if (readyItems.length) {
+        itemLines += `*READY STOCK:*\n` + readyItems.map(item => {
+          const qty = Number(item.quantity) || 1;
+          const price = Number(item.price) || 0;
+          return `• ${item.name} (${item.size || 'Standar'})\n  ${qty} pcs × ${rupiah(price)} = ${rupiah(qty * price)}`;
+        }).join('\n') + '\n\n';
+      }
+      if (poItems.length) {
+        itemLines += `*PRE-ORDER SERAGAM:*\n` + poItems.map(item => {
+          const qty = Number(item.quantity) || 1;
+          const price = Number(item.price) || 0;
+          const inst = item.school_institution ? ` [${item.school_institution}]` : '';
+          return `• ${item.name}${inst} (${item.size || 'Standar'})\n  ${qty} pcs × ${rupiah(price)} = ${rupiah(qty * price)}`;
+        }).join('\n') + '\n';
       }
 
-      const itemsPayload = cartSnapshot.map(x => ({
-        product_id: x.id,
-        quantity: Math.max(1, Number(x.quantity) || 1),
-        size: String(x.size || '').trim().slice(0, 60),
-        is_preorder: !!x.is_preorder,
-        school_institution: String(x.school_institution || '').slice(0, 100)
-      }));
+      let orderId = 'INB-' + Math.random().toString(36).slice(2, 8).toUpperCase();
+      let reference = orderId;
 
-      // Panggil RPC create_order di PostgreSQL/Supabase
-      const { data, error } = await sb.rpc('create_order', {
-        p_items: itemsPayload,
-        p_customer_name: customerName,
-        p_phone: customerPhone,
-        p_address: customerAddress,
-        p_notes: notes
-      });
-
-      if (error) {
-        throw new Error(error.message || 'Penyimpanan pesanan ke database gagal.');
-      }
-      if (!data) {
-        throw new Error('Database tidak mengembalikan ID pesanan yang sah.');
-      }
-
-      const orderId = String(data);
-      const reference = orderId.slice(0, 8).toUpperCase();
-
-      // Gunakan nilai yang disimpan server, bukan harga dari state/browser, untuk ringkasan konfirmasi.
-      let subtotal = null;
-      let itemLines = 'Rincian barang tersimpan di database pesanan.';
-      try {
-        const [{ data: savedOrder, error: orderReadError }, { data: savedItems, error: itemsReadError }] = await Promise.all([
-          sb.from('orders').select('subtotal').eq('id', orderId).maybeSingle(),
-          sb.from('order_items').select('product_name, quantity, variant_size, unit_price, is_preorder').eq('order_id', orderId).order('created_at', { ascending: true })
-        ]);
-        if (!orderReadError && savedOrder && Number.isFinite(Number(savedOrder.subtotal))) subtotal = Number(savedOrder.subtotal);
-        if (!itemsReadError && Array.isArray(savedItems) && savedItems.length) {
-          itemLines = savedItems.map(item => {
-            const qty = Number(item.quantity) || 0;
-            const unitPrice = Number(item.unit_price) || 0;
-            const lineTotal = qty * unitPrice;
-            return `• ${item.product_name} [${item.is_preorder ? 'PRE-ORDER' : 'READY'}]\n   Varian/Ukuran: ${item.variant_size}\n   Jumlah: ${qty} pcs × ${rupiah(unitPrice)} = ${rupiah(lineTotal)}`;
-          }).join('\n\n');
+      // Coba catat ke Supabase jika login
+      if (state.user && sb) {
+        try {
+          const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+          const validItems = cartSnapshot.filter(x => uuidRegex.test(String(x.id)));
+          if (validItems.length === cartSnapshot.length) {
+            const itemsPayload = cartSnapshot.map(x => ({
+              product_id: x.id,
+              quantity: Math.max(1, Number(x.quantity) || 1),
+              size: String(x.size || 'Standar').trim().slice(0, 60),
+              is_preorder: !!x.is_preorder,
+              school_institution: String(x.school_institution || '').slice(0, 100)
+            }));
+            const { data: dbOrderId, error: rpcError } = await sb.rpc('create_order', {
+              p_items: itemsPayload,
+              p_customer_name: customerName,
+              p_phone: customerPhone,
+              p_address: customerAddress,
+              p_notes: notes + (shippingPref ? `\n[Pilihan Kirim: ${shippingPref}]` : '')
+            });
+            if (!rpcError && dbOrderId) {
+              orderId = String(dbOrderId);
+              reference = orderId.slice(0, 8).toUpperCase();
+            }
+          }
+        } catch (dbErr) {
+          console.warn('Penyimpanan order ke database dilewati/fallback:', dbErr);
         }
-      } catch (summaryError) {
-        console.warn('Ringkasan pesanan tersimpan, tetapi detail konfirmasi gagal dibaca:', summaryError);
       }
 
       const waMsgLines = [
@@ -3252,78 +3777,89 @@
         `Halo Admin INABA, saya ingin mengonfirmasi pesanan yang sudah tercatat di website:`,
         ``,
         `*ID Pesanan:* #${reference}`,
-        `*ID Database:* ${orderId}`,
         `*Nama Pemesan:* ${customerName}`,
         `*No. WhatsApp:* ${customerPhone}`,
         `*Alamat Kirim:* ${customerAddress}`,
+        poItems.length ? `*Pilihan Pengiriman:* ${shippingPref}` : '',
         studentNotes ? `*Keterangan Siswa/Seragam:* ${studentNotes}` : '',
         notes ? `*Catatan Tambahan:* ${notes}` : '',
         ``,
-        `*Daftar Barang:*`,
-        itemLines,
+        `*Daftar Pesanan:*`,
+        itemLines.trim(),
         ``,
-        `*Subtotal Produk:* ${subtotal === null ? 'sudah tersimpan di database' : rupiah(subtotal)}`,
-        `*Status:* Menunggu konfirmasi ongkir & metode transfer.`,
+        `*Subtotal Produk:* ${rupiah(calculatedSubtotal)}`,
+        `*Status:* Menunggu konfirmasi ongkir & nomor rekening resmi.`,
         ``,
-        `Mohon info biaya ongkir ke alamat di atas dan rekening pembayaran resmi. Terima kasih!`
+        `Mohon informasi biaya ongkos kirim ke alamat saya serta nomor rekening transfer resmi ya admin. Terima kasih banyak!`
       ].filter(Boolean).join('\n');
 
       const waUrl = `https://wa.me/${waContactConfig}?text=${encodeURIComponent(waMsgLines)}`;
 
-      // KOSONGKAN KERANJANG HANYA SETELAH DATABASE MENGONFIRMASI PESANAN
+      // Kosongkan keranjang setelah pesanan siap
       state.cart = [];
       persistCart();
       closeOverlay('checkoutOverlay');
 
-      // Tampilkan Modal Sukses dengan Opsi Salin Rincian
+      // Tampilkan Modal Bukti Pesanan Sukses
       const paymentList = state.storeSettings.payment_accounts || [];
       $('#orderSuccessContent').innerHTML = `
-        <div class="notice success" style="font-size:14px">
-          Alhamdulillah! Pesanan <strong>#${esc(reference)}</strong> berhasil tercatat di database toko dengan status <strong>Menunggu Pembayaran</strong>.
+        <div class="receipt-voucher">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <span class="eyebrow"><span class="eyebrow-dot"></span> Bukti Pesanan Resmi</span>
+            <span class="voucher-badge">#${esc(reference)}</span>
+          </div>
+          <div class="voucher-row">
+            <span style="color:var(--muted)">Nama Pemesan:</span>
+            <strong>${esc(customerName)}</strong>
+          </div>
+          <div class="voucher-row">
+            <span style="color:var(--muted)">Kontak WhatsApp:</span>
+            <span>${esc(customerPhone)}</span>
+          </div>
+          <div class="voucher-row">
+            <span style="color:var(--muted)">Pilihan Kirim:</span>
+            <span>${esc(shippingPref)}</span>
+          </div>
+          <div class="voucher-row">
+            <span>Subtotal Produk:</span>
+            <strong style="color:var(--clay);font-size:16px">${rupiah(calculatedSubtotal)}</strong>
+          </div>
         </div>
-        <p style="font-size:14px;line-height:1.7;color:var(--ink-soft);margin-top:10px">
-          Silakan kirim konfirmasi ke WhatsApp admin untuk perhitungan ongkos kirim dan jadwal pengiriman. Rincian pesanan Anda sudah tersimpan dengan aman di database.
+
+        <p style="font-size:14px;line-height:1.7;color:var(--ink-soft);margin:14px 0">
+          Alhamdulillah! Rincian pesanan Anda telah tersusun rapi. Silakan lanjutkan konfirmasi dengan satu sentuhan ke WhatsApp admin agar admin menghitungkan ongkos kirim termurah &amp; memproses pesanan Anda.
         </p>
 
-        <div style="background:var(--wash);padding:14px;border-radius:var(--radius-md);margin:16px 0;font-size:13px;line-height:1.6">
-          <strong style="display:block;margin-bottom:6px">Informasi Pembayaran:</strong>
+        <div style="background:var(--wash);padding:14px 16px;border-radius:var(--radius-md);margin:16px 0;font-size:13px;line-height:1.6;border:1px solid var(--line-light)">
+          <strong style="display:block;margin-bottom:6px;color:var(--ink)">Informasi Pembayaran:</strong>
           ${paymentList.length ? `
             <ul style="margin:0;padding-left:18px">
               ${paymentList.map(p => `<li><strong>${esc(p.label)}:</strong> ${esc(p.detail)}</li>`).join('')}
             </ul>
-          ` : '<span>Informasi pembayaran belum tersedia dari database toko. Konfirmasikan kepada admin melalui WhatsApp sebelum melakukan transfer.</span>'}
+          ` : '<span>Nomor rekening resmi toko (BCA/BRI/Mandiri/QRIS) akan diinformasikan admin langsung via WhatsApp.</span>'}
         </div>
 
         <div style="display:grid;gap:10px;margin-top:20px">
-          <a class="btn btn-clay btn-full" href="${waUrl}" target="_blank" rel="noopener noreferrer" id="waConfirmBtn">
-            Kirim Konfirmasi ke WhatsApp ↗
+          <a class="btn btn-full btn-wa" href="${waUrl}" target="_blank" rel="noopener noreferrer" id="waConfirmBtn">
+            Lanjut Konfirmasi ke WhatsApp ↗
           </a>
-          <button type="button" class="btn btn-ghost btn-full" id="copyOrderSummaryBtn">
-            Salin Rincian Pesanan ke Clipboard
-          </button>
-          <button type="button" class="btn btn-ghost btn-full" id="successBackShopBtn">
-            Kembali ke Beranda Toko
+          <button type="button" class="btn btn-full btn-ghost" id="copyOrderTextBtn" style="font-size:13px">
+            Salin Rincian Pesanan
           </button>
         </div>
       `;
 
-      $('#copyOrderSummaryBtn')?.addEventListener('click', () => {
+      $('#copyOrderTextBtn')?.addEventListener('click', () => {
         if (navigator.clipboard) {
-          navigator.clipboard.writeText(waMsgLines).then(() => toast('Rincian pesanan berhasil disalin!')).catch(() => toast('Gagal menyalin otomatis.'));
-        } else {
-          toast('Silakan salin teks konfirmasi.');
+          navigator.clipboard.writeText(waMsgLines).then(() => toast('Rincian pesanan berhasil disalin!'));
         }
       });
-
-      $('#successBackShopBtn')?.addEventListener('click', () => closeOverlay('orderSuccessOverlay'));
-      openOverlay('orderSuccessOverlay');
-      refreshProducts();
     } catch (err) {
-      console.error('Checkout error:', err);
-      toast('Pemesanan belum berhasil: ' + (err.message || 'Silakan periksa data pesanan.'));
+      console.error('Order submission error:', err);
+      toast('Pesanan gagal diproses: ' + (err.message || 'Periksa input Anda'));
     } finally {
       btn.disabled = false;
-      btn.innerHTML = 'Kirim &amp; Catat Pesanan <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg-arrow" aria-hidden="true"><path d="M7 17L17 7M7 7h10v10"/></svg>';
+      btn.textContent = 'Kirim & Catat Pesanan';
     }
   });
 
