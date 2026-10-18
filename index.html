@@ -9,8 +9,8 @@
   <meta property="og:site_name" content="INABA HIJAB" />
   <meta property="og:title" content="INABA Hijab — Busana Muslim, Seragam & Kebutuhan Harian" />
   <meta property="og:description" content="Pusat busana muslim, seragam sekolah pre-order (SDIT, TPQ, Madin), topi capel petani, dan meja lipat serbaguna. Praktis, terpercaya, dan amanah." />
-  <meta property="og:image" content="./favicon.svg" />
-  <meta name="twitter:card" content="summary_large_image" />
+  <meta property="og:image" content="https://inabahijab.com/favicon.svg" />
+  <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="INABA Hijab — Busana Muslim & Kebutuhan Pilihan" />
   <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
   <link rel="canonical" href="https://inabahijab.com/" />
@@ -2643,6 +2643,39 @@
         border: 2px solid var(--paper);
       }
     }
+
+    /* ===== Revisi 5: polish tata letak desktop + mobile ===== */
+    html { scroll-padding-top: 84px; -webkit-text-size-adjust: 100%; }
+    a, button { -webkit-tap-highlight-color: transparent; }
+    :focus-visible { outline: 3px solid var(--clay); outline-offset: 2px; border-radius: 6px; }
+    img, svg, video { max-width: 100%; }
+    .nav { gap: 22px; }
+    .nav a { white-space: nowrap; }
+    .brand-desc { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    @media (min-width: 640px) and (max-width: 1099px) {
+      .nav { display: none !important; }
+      .menu-toggle { display: grid !important; }
+    }
+    @media (max-width: 1499px) { .brand-desc { display: none; } }
+    @media (min-width: 1100px) and (max-width: 1299px) { .nav { gap: 16px; } }
+    @media (max-width: 639px) {
+      .editorial-hero-banner .placeholder-title,
+      .editorial-hero-banner .placeholder-sub { display: none; }
+      .brand-desc { display: block; max-width: 210px; font-size: 9px; }
+      body { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+    }
+    @media (min-width: 1024px) {
+      .filters { flex-wrap: wrap; overflow: visible; }
+    }
+    @media (min-width: 640px) and (max-width: 1023px) {
+      .category-pills-row { grid-template-columns: repeat(2, 1fr); }
+    }
+    .cat-card-shortcut { min-width: 0; }
+    .cat-card-shortcut strong, .cat-card-shortcut span { overflow-wrap: anywhere; }
+    @media (min-width: 1024px) {
+      .brand-switcher-wrap { flex-wrap: wrap; overflow: visible; border-radius: 22px; }
+      .category-pills-row { grid-template-columns: repeat(2, 1fr); }
+    }
   </style>
 
 </head>
@@ -2763,7 +2796,7 @@
           <img data-site-image="hero" id="heroImg" alt="Pilihan produk INABA Hijab" fetchpriority="high" style="display:none;" />
           <div class="placeholder-banner editorial-hero-banner" id="heroPlaceholder">
             <div class="brand-monogram">INABA<span>HIJAB</span></div>
-            <span class="placeholder-title serif">Koleksi Busana &amp; Konveksi Pilihan</span>
+            <span class="placeholder-title serif">Koleksi Busana Pilihan</span>
             <span class="placeholder-sub">Mutu terjamin · Jahitan presisi · Amanah melayani</span>
           </div>
           <div class="hero-overlay">
@@ -2813,7 +2846,7 @@
         <div class="preorder-highlight-box">
           <span class="po-badge">Layanan Pre-Order Resmi</span>
           <h3>Seragam Sekolah SDIT, TPQ &amp; Madrasah Diniyah Sirimbit</h3>
-          <p>Menerima pesanan pre-order seragam satuan maupun rombongan untuk lembaga sekolah Islam, santri mengaji, serta setelan sirimbit keluarga santri dan wali. Dikerjakan dengan bahan adem, jahitan kuat berstandar konveksi terpercaya, dan ukuran akurat.</p>
+          <p>Menerima pesanan pre-order seragam satuan maupun rombongan untuk lembaga sekolah Islam, santri mengaji, serta setelan sirimbit keluarga santri dan wali. Dikerjakan dengan bahan adem, jahitan kuat berstandar mutu terjaga, dan ukuran akurat.</p>
           <div class="po-perks">
             <div class="po-perk-item"><span class="po-perk-icon"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg></span> <span><strong>Bahan Nyaman:</strong> Oxford Super, Katun Toyobo Fodu, Katun Madinah yang adem dan tidak mudah kusut.</span></div>
             <div class="po-perk-item"><span class="po-perk-icon"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg></span> <span><strong>Pilihan Lembaga:</strong> Desain khusus untuk SDIT, TPQ/TPA, dan Madrasah Diniyah Sirimbit Keluarga.</span></div>
