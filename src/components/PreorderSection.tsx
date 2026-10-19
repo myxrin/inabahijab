@@ -1,7 +1,6 @@
 import React from 'react';
 import { useStore } from '../context/StoreContext';
 import { ProductCard } from './ProductCard';
-import { Check, ArrowUpRight, Calculator, MessageSquare } from 'lucide-react';
 import { cleanPhoneNumber } from '../lib/supabase';
 
 export const PreorderSection: React.FC = () => {
@@ -46,40 +45,11 @@ export const PreorderSection: React.FC = () => {
         <div className="preorder-highlight-box">
           <span className="po-badge">Layanan Pre-Order Resmi</span>
           <h3>Seragam Sekolah SDIT, TPQ &amp; Madrasah Diniyah Sirimbit</h3>
-          <p>
-            Menerima pesanan pre-order seragam satuan maupun rombongan untuk lembaga sekolah Islam, santri mengaji, serta setelan sirimbit keluarga santri dan wali. Dikerjakan dengan bahan adem, jahitan kuat berstandar mutu terjaga, dan ukuran akurat.
-          </p>
-
-          <div className="po-perks">
-            <div className="po-perk-item">
-              <span className="po-perk-icon">
-                <Check size={13} strokeWidth={3} />
-              </span>
-              <span>
-                <strong>Bahan Nyaman:</strong> Oxford Super, Katun Toyobo Fodu, Katun Madinah yang adem dan tidak mudah kusut.
-              </span>
-            </div>
-            <div className="po-perk-item">
-              <span className="po-perk-icon">
-                <Check size={13} strokeWidth={3} />
-              </span>
-              <span>
-                <strong>Pilihan Lembaga:</strong> Desain khusus untuk SDIT, TPQ/TPA, dan Madrasah Diniyah Sirimbit Keluarga.
-              </span>
-            </div>
-            <div className="po-perk-item">
-              <span className="po-perk-icon">
-                <Check size={13} strokeWidth={3} />
-              </span>
-              <span>
-                <strong>Panduan Ukuran Terstandar:</strong> Mulai ukuran anak usia dini hingga dewasa sirimbit orang tua.
-              </span>
-            </div>
-          </div>
+          <p className="po-summary">Pesan seragam untuk SDIT, TPQ, dan Madrasah Diniyah. Pilih produk, cek ukuran, lalu konfirmasi jadwal kepada admin.</p>
 
           <div className="button-row">
             <button className="btn btn-clay" onClick={() => openModal('sizeGuide')}>
-              Lihat Panduan Tabel Ukuran <ArrowUpRight size={14} className="btn-arrow-icon" />
+              Panduan ukuran
             </button>
             <button
               type="button"
@@ -87,7 +57,7 @@ export const PreorderSection: React.FC = () => {
               style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.5)' }}
               onClick={() => openModal('poCalculator')}
             >
-              <Calculator size={15} className="btn-icon" /> Kalkulator Rombongan Sekolah <ArrowUpRight size={14} className="btn-arrow-icon" />
+              Hitung pesanan
             </button>
             {waConsultUrl ? (
               <a
@@ -97,11 +67,11 @@ export const PreorderSection: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <MessageSquare size={15} /> Konsultasi Admin (WA)
+                Tanya via WhatsApp
               </a>
             ) : (
               <button type="button" className="btn btn-ghost" style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.4)' }} onClick={() => showToast('Kontak WhatsApp toko belum tersedia. Silakan cek kembali nanti.')}>
-                <MessageSquare size={15} /> Kontak belum tersedia
+                WhatsApp belum tersedia
               </button>
             )}
           </div>
@@ -112,9 +82,7 @@ export const PreorderSection: React.FC = () => {
           <div>
             <div className="eyebrow"><span className="eyebrow-dot"></span> Katalog Khusus Pre-Order</div>
             <h2 className="serif">Pilihan Seragam Sekolah Pre-Order</h2>
-            <p className="section-intro">
-              Pilih jenis seragam sesuai lembaga, tentukan ukuran santri/anak, dan kirimkan pesanan dengan jadwal pengerjaan yang transparan.
-            </p>
+            <p className="section-intro">Pilih produk pre-order sesuai kebutuhan sekolah atau keluarga.</p>
           </div>
         </div>
 
@@ -127,7 +95,7 @@ export const PreorderSection: React.FC = () => {
               className={`filter ${poFilter === filterName ? 'active' : ''}`}
               onClick={() => setPoFilter(filterName)}
             >
-              {filterName === 'Semua' ? 'Semua Seragam PO' : (filterName === 'TPQ' ? 'Santri TPQ / TPA' : filterName)}
+              {filterName === 'Semua' ? 'Semua' : filterName}
             </button>
           ))}
         </div>
@@ -140,7 +108,7 @@ export const PreorderSection: React.FC = () => {
             ))
           ) : (
             <div className="products-empty" style={{ gridColumn: '1 / -1' }}>
-              Belum ada seragam sekolah pre-order pada filter ini. Hubungi admin untuk pendaftaran rombongan sekolah.
+              Belum ada produk seragam untuk kategori ini.
             </div>
           )}
         </div>

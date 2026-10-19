@@ -274,6 +274,66 @@ create table if not exists public.tailoring_requests (
   created_at timestamptz not null default now()
 );
 
+-- Backward-compatible migration for older installations. CREATE TABLE IF NOT EXISTS
+-- does not add columns to an existing table, so add any fields needed by this release.
+alter table public.tailoring_requests
+  add column if not exists user_id text,
+  add column if not exists customer_name text,
+  add column if not exists phone text,
+  add column if not exists address text,
+  add column if not exists garment_type text default 'Gamis',
+  add column if not exists fabric_source text default 'Bawa sendiri',
+  add column if not exists target_date date,
+  add column if not exists notes text default '',
+  add column if not exists status text default 'submitted',
+  add column if not exists created_at timestamptz default now();
+
+-- Keep legacy rows in place while allowing them to meet the current required fields.
+update public.tailoring_requests
+set customer_name = coalesce(nullif(btrim(customer_name), ''), 'Permintaan lama'),
+    phone = coalesce(nullif(btrim(phone), ''), 'Tidak tersedia'),
+    address = coalesce(nullif(btrim(address), ''), 'Alamat belum tersedia'),
+    garment_type = coalesce(nullif(btrim(garment_type), ''), 'Gamis'),
+    fabric_source = coalesce(nullif(btrim(fabric_source), ''), 'Bawa sendiri'),
+    notes = coalesce(notes, ''),
+    status = case
+      when status in ('submitted','reviewed','estimated','approved','in_progress','completed','cancelled') then status
+      else 'submitted'
+    end,
+    created_at = coalesce(created_at, now());
+
+alter table public.tailoring_requests
+  alter column garment_type set default 'Gamis',
+  alter column fabric_source set default 'Bawa sendiri',
+  alter column notes set default '',
+  alter column status set default 'submitted',
+  alter column created_at set default now(),
+  alter column customer_name set not null,
+  alter column phone set not null,
+  alter column address set not null,
+  alter column garment_type set not null,
+  alter column fabric_source set not null,
+  alter column notes set not null,
+  alter column status set not null,
+  alter column created_at set not null;
+
+-- Add current-release validation constraints where they are not already present.
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conrelid = 'public.tailoring_requests'::regclass and conname = 'tailoring_requests_customer_name_check') then
+    alter table public.tailoring_requests add constraint tailoring_requests_customer_name_check check (char_length(customer_name) between 1 and 120) not valid;
+  end if;
+  if not exists (select 1 from pg_constraint where conrelid = 'public.tailoring_requests'::regclass and conname = 'tailoring_requests_phone_check') then
+    alter table public.tailoring_requests add constraint tailoring_requests_phone_check check (char_length(phone) between 5 and 40) not valid;
+  end if;
+  if not exists (select 1 from pg_constraint where conrelid = 'public.tailoring_requests'::regclass and conname = 'tailoring_requests_address_check') then
+    alter table public.tailoring_requests add constraint tailoring_requests_address_check check (char_length(address) between 5 and 1500) not valid;
+  end if;
+  if not exists (select 1 from pg_constraint where conrelid = 'public.tailoring_requests'::regclass and conname = 'tailoring_requests_status_check') then
+    alter table public.tailoring_requests add constraint tailoring_requests_status_check check (status in ('submitted','reviewed','estimated','approved','in_progress','completed','cancelled')) not valid;
+  end if;
+end $$;
+
 -- 7. TABEL WARTA & NEWSLETTER
 create table if not exists public.newsletter_subscribers (
   id uuid primary key default gen_random_uuid(),
@@ -692,7 +752,7 @@ drop policy if exists "Users read their order items" on public.order_items;
 
 create policy "Customers read own orders, admins read all" on public.orders
   for select to authenticated
-  using (user_id = (select auth.uid())::text or (select public.is_admin()));
+  using (user_id::text = (select auth.uid())::text or (select public.is_admin()));
 
 create policy "Admins update order status" on public.orders
   for update to authenticated
@@ -721,11 +781,11 @@ drop policy if exists "Admins update tailoring status" on public.tailoring_reque
 
 create policy "Anyone can request tailoring" on public.tailoring_requests
   for insert to anon, authenticated
-  with check (user_id is null or user_id = (select auth.uid())::text);
+  with check (user_id is null or user_id::text = (select auth.uid())::text);
 
 create policy "Owners or admins read tailoring requests" on public.tailoring_requests
   for select to authenticated
-  using (user_id = (select auth.uid())::text or (select public.is_admin()));
+  using (user_id::text = (select auth.uid())::text or (select public.is_admin()));
 
 create policy "Admins update tailoring status" on public.tailoring_requests
   for update to authenticated
