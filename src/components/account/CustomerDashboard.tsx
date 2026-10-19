@@ -115,10 +115,15 @@ export const CustomerDashboard: React.FC = () => {
               <strong>{profile?.full_name || user?.email?.split('@')[0]}</strong>
               <span>{user?.email}</span>
             </div>
+            <button
+              className="dashboard-logout-btn"
+              onClick={handleSignOut}
+              title="Keluar Akun"
+              aria-label="Keluar Akun"
+            >
+              <LogOut size={16} />
+            </button>
           </div>
-          <button type="button" className="dashboard-logout-text-btn" onClick={handleSignOut}>
-            <LogOut size={16} aria-hidden="true" /> Keluar akun
-          </button>
         </div>
       </aside>
 

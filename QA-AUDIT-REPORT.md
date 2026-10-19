@@ -1,61 +1,38 @@
-# INABA HIJAB — Laporan Audit & Revisi UX
+# INABA HIJAB — Audit Teknis Paket Peluncuran
 
-## Ringkasan perubahan
+## Perubahan inti dalam revisi ini
 
-### Navigasi dan alur akun
-- Navigasi publik disederhanakan menjadi empat tujuan: Beranda, Katalog, Keranjang, dan Akun.
-- Header desktop dan bottom navigation mobile menggunakan struktur yang konsisten; menu tambahan yang berulang di header sebelumnya dihilangkan dari navigasi utama.
-- Tombol Akun mengarahkan sesi admin yang sudah diverifikasi ke dashboard admin, dan sesi pelanggan ke dashboard pelanggan. Pengunjung tanpa sesi melihat form autentikasi.
-- Tombol Keluar Akun diberi label yang terlihat pada dashboard admin dan pelanggan.
-- Form autentikasi memakai satu tombol submit dan dua tab/pemilih mode Masuk/Daftar, sehingga tidak muncul dua tombol submit yang membingungkan.
-- Modal menutup lewat tombol, Escape, atau browser Back; state modal dikelola dengan history state agar Back dapat menutup dialog terlebih dahulu.
-
-### Katalog dan modal produk
-- Katalog diringkas: filter kategori, pencarian, pengurutan, kartu produk; pilihan grid/list yang berulang dihapus.
-- Kartu produk dibuat sebagai satu area interaktif dengan informasi nama, kategori, harga, dan status yang diprioritaskan.
-- Detail produk diberi CSS untuk seluruh keluarga kelas `ref-*` yang digunakan komponennya, termasuk layout desktop dua kolom dan bottom sheet mobile.
-- Detail mendukung maksimal lima gambar, thumbnail yang dapat dipilih, varian, status ready/pre-order, kuantitas, tambah ke keranjang, salin tautan, dan WhatsApp.
-- Pilihan wishlist palsu dihapus karena sebelumnya tidak tersimpan ke layanan mana pun.
-- Tata letak pencarian lebih pendek dan konsisten pada layar kecil.
-
-### Home dan konsistensi visual
-- Hero/beranda disederhanakan dan CTA berulang dikurangi.
-- Ringkasan keuntungan, preorder, spotlight, alur pemesanan, tentang toko, dan newsletter menggunakan salinan yang lebih singkat.
-- CSS tambahan mencakup kontrol input, dialog, tombol, keadaan kosong, navigasi, serta layout mobile.
-- Ikon dipakai sebagai bantuan navigasi/aksi, bukan dekorasi berulang. Teks action tetap disertakan pada tombol penting.
-- Header disejajarkan ke kiri pada area merek dan jarak navigasi diatur untuk tampilan desktop.
-
-### Database dan keamanan yang tetap dipertahankan
-- Katalog dan aset tetap berasal dari Supabase; tidak ditambahkan produk demo atau URL foto luar sebagai fallback.
-- Hak admin tetap membutuhkan verifikasi server (`is_admin()`); menyembunyikan tombol bukan mekanisme keamanan.
-- Setup SQL menambahkan migrasi kompatibel untuk kolom yang mungkin belum ada pada tabel `tailoring_requests` versi lama, mengisi field wajib kosong dengan penanda yang eksplisit, dan menjaga baris lama tetap ada.
-- Tidak ada service-role key yang ditambahkan ke frontend.
+- Menghapus tombol publik untuk membuka panel admin, toolbar pergantian mode developer, autentikasi admin palsu berbasis browser, dan persistensi katalog/pesanan demo. Tampilan admin dirender hanya setelah `public.is_admin()` menyatakan pengguna berhak. RLS database tetap menjadi kontrol keamanan utama.
+- Mengamankan promosi admin: allowlist email tidak lagi cukup untuk memperoleh hak admin secara otomatis. Akun baru selalu dimulai sebagai pelanggan; hak admin membutuhkan `inaba_admin=true` pada `auth.users.raw_app_meta_data`, ditetapkan manual oleh operator proyek.
+- Katalog, kategori, setelan toko, pesanan, dan data dashboard dipanggil dari Supabase; bila katalog kosong atau gagal dimuat, aplikasi memberi status kosong dan tidak mengganti hasil dengan barang contoh.
+- Checkout memakai RPC `create_order` yang membaca harga, varian, status pre-order, dan stok dari PostgreSQL; harga dari browser tidak dijadikan otoritas. Riwayat/struk diambil kembali dari pesanan yang benar-benar tercatat.
+- Akses produk dan pesanan dipagari RLS; upload, perubahan, dan penghapusan foto dilakukan oleh admin yang server-verified. Foto produk harus berada di bucket publik `product-images`, dan galeri dibatasi maksimal lima foto pada UI dan SQL.
+- Menghapus fallback foto luar serta nomor WhatsApp contoh. Nomor kontak dan rekening perlu diisi admin sebelum komunikasi toko digunakan.
+- Merapikan pesan katalog kosong, placeholder foto, informasi status ready-stock/pre-order, tanggal pesanan nyata, dan alur keluar akun.
 
 ## Pemeriksaan statis
 
-| Pemeriksaan | Hasil |
+| Pemeriksaan | Status saat paket disiapkan |
 |---|---|
-| Parser TypeScript/TSX | 29 file diparse tanpa error sintaks |
-| Impor lokal relatif | Tidak ditemukan impor lokal yang hilang pada pemeriksaan statis |
-| Diff Git | Paket unggahan tidak menyertakan metadata `.git`, jadi audit dilakukan pada source hasil ekstraksi, bukan riwayat diff repository |
-| Build Vite/TypeScript penuh | **Belum terverifikasi** — dependency npm tidak tersedia dan npm registry tidak merespons dari lingkungan kerja ini |
-| Workflow GitHub Pages | Diperbarui ke Actions berbasis runtime Node 24 dan Node.js 22 untuk build proyek; tetap perlu diuji oleh GitHub Actions |
-| Tes browser/mobile | Belum dapat dijalankan dalam lingkungan ini |
-| SQL pada Supabase live | Belum dieksekusi/dikonfirmasi pada project pengguna |
-| Deployment Cloudflare/GitHub Pages | Tidak diklaim telah diuji oleh paket ini |
+| Referensi produk/foto Unsplash/demo dari source frontend | Tidak ditemukan setelah seed demo dihapus |
+| Nomor WhatsApp fallback di frontend | Dihapus; nomor disimpan melalui pengaturan Supabase |
+| Jalan pintas `loginAsAdmin`/localStorage admin | Tidak ditemukan |
+| Tombol publik “Kelola Toko” | Dihapus |
+| Kumpulan foto produk | Maksimal 5, diunggah ke Storage Supabase |
+| Validasi varian/harga/stok saat checkout | RPC database |
+| RLS dan Storage policy | Disediakan di satu SQL setup; skrip menghapus policy pada `storage.objects` sebelum membuat policy bucket toko |
 
-Pemeriksaan parser tidak menggantikan `npm run build`, tes browser, atau tes RLS/checkout di project live.
+## Yang belum dapat dikonfirmasi dari lingkungan ini
 
-## Hal yang harus dilakukan sebelum menerima pesanan
+- Skrip SQL belum dijalankan pada database Supabase live; validitas final SQL harus dibuktikan melalui SQL Editor sebelum situs dipublikasikan.
+- Tidak tersedia sesi login administrator live untuk tes CRUD Storage/RLS dan checkout sungguhan.
+- Perlu tes visual langsung pada browser target serta tes di ponsel.
+- Build produksi penuh belum bisa dijalankan: dependensi npm belum tersedia di lingkungan dan registry tidak merespons pada percobaan pemasangan. Pemeriksaan parser TypeScript/TSX berhasil pada semua 29 file sumber (0 diagnostic syntax), tetapi itu bukan pengganti build penuh.
 
-1. Buat backup database Supabase dan jalankan `supabase_setup.sql` melalui SQL Editor pada project yang benar. Review error serta hasil setiap statement.
-2. Karena migrasi menambahkan field yang belum ada, baris tailoring lama yang tidak punya nama/telepon/alamat asli dapat berisi placeholder seperti `Permintaan lama`, `Tidak tersedia`, atau `Alamat belum tersedia`. Periksa dan koreksi data tersebut dari sumber yang sah bila dibutuhkan.
-3. Pastikan kebijakan Storage sesuai project. Skrip setup menata policy `storage.objects`; jangan jalankan pada project bersama sebelum memahami pengaruhnya.
-4. Uji daftar/login, logout, routing akun admin/pelanggan, upload maksimal 5 foto, stok, varian, checkout, status pesanan, dan RLS menggunakan akun uji.
-5. Jalankan `npm ci` atau `npm install`, lalu `npm run build` pada mesin dengan akses registry dan verifikasi deployment terbaru dari dashboard.
+## Peringatan operasional
 
-## Batasan yang masih diketahui
+`supabase_setup.sql` mereset seluruh policy pada `storage.objects` sebelum menetapkan policy dua bucket milik toko. Pastikan project Supabase bukan project bersama untuk aplikasi lain atau sesuaikan skrip setelah backup. Jangan masukkan service-role key ke frontend.
+| Parser TypeScript/TSX | 29 file lolos; 0 syntax diagnostic |
+| Impor lokal relatif | 29 file dicek; 0 impor lokal hilang |
 
-- Implementasi UI telah dirapikan, tetapi tanpa browser runtime tidak dapat dipastikan semua kombinasi ukuran layar bebas masalah visual.
-- Build typecheck penuh dan koneksi langsung Supabase tidak dapat dijalankan dalam lingkungan pembuatan paket ini.
-- Ini adalah paket source yang direvisi, bukan bukti bahwa website live sudah 100% siap menerima transaksi.
+Catatan: pemeriksaan di atas adalah pemeriksaan statis. Tidak ada klaim bahwa aplikasi telah menjalani build produksi, tes browser, pengujian transaksi di Supabase live, atau deployment.

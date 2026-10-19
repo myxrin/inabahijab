@@ -68,18 +68,18 @@ export const AdminDashboard: React.FC = () => {
 
   // Admin information is always loaded from protected Supabase rows, never mock/demo arrays.
   useEffect(() => {
-    const client = supabase;
-    if (!client || !isAdmin) { setLoading(false); return; }
+    if (!supabase || !isAdmin) { setLoading(false); return; }
     let cancelled = false;
     const load = async () => {
+      if (!supabase) return;
       setLoading(true);
       try {
         const [productsResult, categoriesResult, ordersResult, newsletterResult, customersResult] = await Promise.all([
-          client.from('products').select('*').order('created_at', { ascending: false }),
-          client.from('categories').select('*').order('display_order', { ascending: true }),
-          client.from('orders').select('*, order_items(*)').order('created_at', { ascending: false }),
-          client.from('newsletter_subscribers').select('email, created_at').order('created_at', { ascending: false }),
-          client.from('profiles').select('id,email,full_name,created_at,role').order('created_at', { ascending: false })
+          supabase.from('products').select('*').order('created_at', { ascending: false }),
+          supabase.from('categories').select('*').order('display_order', { ascending: true }),
+          supabase.from('orders').select('*, order_items(*)').order('created_at', { ascending: false }),
+          supabase.from('newsletter_subscribers').select('email, created_at').order('created_at', { ascending: false }),
+          supabase.from('profiles').select('id,email,full_name,created_at,role').order('created_at', { ascending: false })
         ]);
         const failed = [productsResult, categoriesResult, ordersResult, newsletterResult, customersResult].find(result => result.error);
         if (failed?.error) throw failed.error;
@@ -576,19 +576,21 @@ export const AdminDashboard: React.FC = () => {
         {/* Administrator Identity & Logout at Bottom */}
         <div className="ref-sidebar-footer">
           <div className="ref-admin-user-profile">
-            <div className="ref-avatar-circle">{(profile?.full_name || user?.email || 'A').slice(0, 1).toUpperCase()}</div>
+            <div className="ref-avatar-circle">AD</div>
             <div className="ref-admin-user-details">
               <strong>Admin</strong>
-              <span>{user?.email || 'Admin toko'}</span>
+              <span>{user?.email || 'admin@inaba.id'}</span>
             </div>
+            <button
+              type="button"
+              className="ref-logout-btn"
+              onClick={handleSignOut}
+              title="Keluar Akun Admin"
+              aria-label="Keluar Akun Admin"
+            >
+              <LogOut size={16} />
+            </button>
           </div>
-          <button
-            type="button"
-            className="ref-logout-text-btn"
-            onClick={handleSignOut}
-          >
-            <LogOut size={16} aria-hidden="true" /> Keluar akun
-          </button>
         </div>
       </aside>
 

@@ -53,15 +53,12 @@ export const App: React.FC = () => {
       } else if (hash === 'akun' || hash === 'account') {
         if (userRef.current) navigateToViewRef.current(isAdminRef.current ? 'admin' : 'customer');
         else openModalRef.current('auth');
-      } else if (!hash) {
-        // The storefront is the safe default when Back clears an in-app route.
-        navigateToViewRef.current('store');
       }
     };
     handleHash();
     window.addEventListener('hashchange', handleHash);
     return () => window.removeEventListener('hashchange', handleHash);
-  }, [isAdmin, user?.id, products]);
+  }, [isAdmin, user?.id]);
 
   return (
     <>
