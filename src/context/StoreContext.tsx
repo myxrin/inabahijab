@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Product, Category, CartItem, StoreSettings, UserProfile, Order, SiteImage } from '../types';
-import { supabase, cleanPhoneNumber } from '../lib/supabase';
+import { supabase, cleanPhoneNumber, isProductStorageUrl, isSiteStorageUrl } from '../lib/supabase';
 
 export type ModalType =
   | 'productDetail'

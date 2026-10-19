@@ -68,17 +68,18 @@ export const AdminDashboard: React.FC = () => {
 
   // Admin information is always loaded from protected Supabase rows, never mock/demo arrays.
   useEffect(() => {
-    if (!supabase || !isAdmin) { setLoading(false); return; }
+    const client = supabase;
+    if (!client || !isAdmin) { setLoading(false); return; }
     let cancelled = false;
     const load = async () => {
       setLoading(true);
       try {
         const [productsResult, categoriesResult, ordersResult, newsletterResult, customersResult] = await Promise.all([
-          supabase.from('products').select('*').order('created_at', { ascending: false }),
-          supabase.from('categories').select('*').order('display_order', { ascending: true }),
-          supabase.from('orders').select('*, order_items(*)').order('created_at', { ascending: false }),
-          supabase.from('newsletter_subscribers').select('email, created_at').order('created_at', { ascending: false }),
-          supabase.from('profiles').select('id,email,full_name,created_at,role').order('created_at', { ascending: false })
+          client.from('products').select('*').order('created_at', { ascending: false }),
+          client.from('categories').select('*').order('display_order', { ascending: true }),
+          client.from('orders').select('*, order_items(*)').order('created_at', { ascending: false }),
+          client.from('newsletter_subscribers').select('email, created_at').order('created_at', { ascending: false }),
+          client.from('profiles').select('id,email,full_name,created_at,role').order('created_at', { ascending: false })
         ]);
         const failed = [productsResult, categoriesResult, ordersResult, newsletterResult, customersResult].find(result => result.error);
         if (failed?.error) throw failed.error;

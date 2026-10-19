@@ -345,14 +345,13 @@ export const Header: React.FC = () => {
 
         <button
           className="mobile-bottom-item"
-          onClick={handleOpenAdmin}
-          aria-label="Admin Dashboard"
+          onClick={handleAccountClick}
+          aria-label="Akun saya"
         >
           <div className="mobile-bottom-icon-wrap">
-            <LayoutDashboard size={14} />
-            <span className="admin-status-dot" />
+            <User size={14} />
           </div>
-          <span>Admin</span>
+          <span>Akun</span>
         </button>
       </nav>
     </>
