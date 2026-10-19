@@ -75,8 +75,12 @@ export const PoCalculatorModal: React.FC = () => {
 
   const handleSendWa = () => {
     const text = generateSummaryText();
-    const waNumber = cleanPhoneNumber(storeSettings.contact_whatsapp || '6285735144904');
-    window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`, '_blank');
+    const waNumber = cleanPhoneNumber(storeSettings.contact_whatsapp);
+    if (!waNumber) {
+      showToast('Kontak WhatsApp toko belum diatur. Rincian dapat disalin terlebih dahulu.');
+      return;
+    }
+    window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
     closeModal();
   };
 

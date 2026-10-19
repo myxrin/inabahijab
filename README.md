@@ -1,32 +1,34 @@
-# INABA HIJAB — Toko Busana Muslim, Seragam Pre-Order & Perlengkapan Harian
+# INABA HIJAB — Toko Online
 
-Aplikasi e-commerce modern dibangun menggunakan **React 19**, **TypeScript**, dan **Vite**, terhubung dengan backend **Supabase** (Auth, PostgreSQL, Storage, RLS) serta konfirmasi pemesanan terintegrasi langsung ke **WhatsApp**.
+Aplikasi toko online mobile-first menggunakan React 19, TypeScript, Vite, dan Supabase (Auth, PostgreSQL, Storage, Row Level Security). Data katalog, harga, stok, varian, pengaturan, pesanan, dan foto produk berasal dari Supabase; aplikasi tidak menampilkan produk demo jika database kosong.
 
-## Fitur Utama
+## Fitur
 
-- **Katalog Multikategori & Filter Lini:**
-  - 3 Lini Spesialis: INABA Modest (Busana Muslim & Hijab), INABA Schoolwear (Pre-Order Seragam SDIT, TPQ, Madin), INABA Living & Craft (Topi Capel Petani Tradisional & Meja Lipat).
-  - Pencarian instan dan pengurutan (Unggulan, Harga, Nama A-Z, Ready Stock, Pre-Order).
-- **Layanan Pre-Order Resmi Seragam Sekolah:**
-  - Filter institusi (SDIT, Santri TPQ/TPA, Madrasah Diniyah Sirimbit).
-  - Kalkulator Rombongan Sekolah/Lembaga dengan diskon bertingkat (5% - 15%) dan perhitungan DP 50%.
-  - Tabel panduan ukuran terstandar.
-- **Keranjang Belanja & Checkout Atomik:**
-  - Pilihan varian ukuran, stepper kuantitas dengan batas minimal/maksimal.
-  - Alur checkout dengan catatan identitas santri & pilihan pengiriman terpadu (kirim sekaligus atau terpisah).
-  - Penghasil pesan WhatsApp terformat otomatis dengan nomor resi unik pesanan `#INB-XXXXXX`.
-- **Dashboard Pengelola Toko (Admin):**
-  - Hanya dapat diakses oleh admin terdaftar di allowlist (`numanalmuqorrin@gmail.com`, `inabahijab@gmail.com`).
-  - Pengelolaan katalog produk, kategori, status pesanan, pengaturan nomor WhatsApp & rekening pembayaran, serta ekspor pelanggan warta newsletter ke CSV.
-- **Antarmuka Responsif & Cepat:**
-  - Header dengan menu drawer mobile dan bilah navigasi cepat bawah (mobile bottom bar) untuk kenyamanan pengguna smartphone.
+- Katalog multikategori dengan pencarian, filter, urutan harga, grid/list, dan detail produk.
+- Ready stock dan pre-order seragam, keranjang serta checkout yang menghitung harga dan memeriksa stok kembali di PostgreSQL.
+- Dashboard admin untuk mengelola produk, melihat pesanan, mengubah status, melihat pelanggan/newsletter, laporan, dan pengaturan kontak/rekening.
+- Upload foto produk ke Supabase Storage dengan maksimal lima foto per produk; upload hero/banner dari admin ke bucket `site-images`.
+- Tombol WhatsApp hanya aktif jika nomor toko yang sah sudah disetel.
+- Antarmuka responsif dengan ikon SVG dari Lucide; tidak ada produk/foto contoh yang dijadikan fallback.
 
-## Pengembangan Lokal
+## Menjalankan di lokal
 
 ```bash
-# Menjalankan dev server di port 3000
+npm install
 npm run dev
+```
 
-# Membangun produksi
+Build produksi:
+
+```bash
 npm run build
 ```
+
+## Supabase dan keamanan
+
+1. Jalankan `supabase_setup.sql` pada project Supabase yang tepat setelah melakukan backup dan membaca peringatan di `README-LAUNCH.md`.
+2. Setel URL website produksi di Supabase Auth. Sign-up pelanggan tidak otomatis memberi hak admin walau email berada di allowlist.
+3. Hak admin membutuhkan flag `inaba_admin=true` pada `auth.users.raw_app_meta_data`, yang hanya boleh disetel operator proyek melalui Supabase SQL Editor setelah identitas admin dipastikan. Lihat `README-LAUNCH.md`.
+4. Jangan menempatkan Supabase service-role key atau secret key di browser. Publishable key boleh berada di client; RLS/RPC tetap menjadi kontrol akses server.
+
+Status akhir: kode sudah disiapkan, tetapi SQL belum dieksekusi pada project live dan perlu uji end-to-end sebelum menerima pesanan sungguhan.

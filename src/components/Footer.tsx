@@ -16,7 +16,7 @@ export const Footer: React.FC = () => {
     scrollTo('shop');
   };
 
-  const waNumber = cleanPhoneNumber(storeSettings.contact_whatsapp || '6285735144904');
+  const waNumber = cleanPhoneNumber(storeSettings.contact_whatsapp);
   const waContactUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(
     'Halo INABA HIJAB, saya ingin bertanya tentang produk dan pemesanan.'
   )}`;
@@ -81,14 +81,18 @@ export const Footer: React.FC = () => {
 
           <div className="footer-col">
             <h4>Hubungi Kami</h4>
-            <a
-              href={waContactUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
-            >
-              WhatsApp Toko (+{waNumber}) <ArrowUpRight size={13} className="btn-arrow-icon" />
-            </a>
+            {waNumber ? (
+              <a
+                href={waContactUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
+              >
+                WhatsApp Toko (+{waNumber}) <ArrowUpRight size={13} className="btn-arrow-icon" />
+              </a>
+            ) : (
+              <span>Kontak WhatsApp akan tersedia setelah toko mengaturnya.</span>
+            )}
             <p style={{ fontSize: 12, color: '#9da195', marginTop: 6, lineHeight: 1.6 }}>
               Layanan chat aktif setiap hari untuk konfirmasi pesanan, jadwal batch PO, dan cek ongkir.
             </p>

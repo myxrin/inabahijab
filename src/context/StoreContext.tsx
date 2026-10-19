@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { Product, Category, CartItem, StoreSettings, UserProfile, Order } from '../types';
-import { DEFAULT_PRODUCTS, DEFAULT_CATEGORIES, DEFAULT_STORE_SETTINGS } from '../data/seedData';
-import { supabase, ADMIN_ALLOWLIST, cleanPhoneNumber } from '../lib/supabase';
+import { Product, Category, CartItem, StoreSettings, UserProfile, Order, SiteImage } from '../types';
+import { supabase, cleanPhoneNumber } from '../lib/supabase';
 
 export type ModalType =
   | 'productDetail'
@@ -31,9 +30,10 @@ export type ViewType = 'store' | 'admin' | 'customer';
 
 interface StoreContextType {
   currentView: ViewType;
-  navigateToView: (view: ViewType) => void;
+  navigateToView: (view: ViewType, serverVerifiedAdmin?: boolean) => void;
   products: Product[];
   categories: Category[];
+  siteImages: SiteImage[];
   storeSettings: StoreSettings;
   activeFilter: string;
   setActiveFilter: (filter: string) => void;
@@ -75,31 +75,23 @@ interface StoreContextType {
     notes?: string;
     shippingPref: string;
   }) => Promise<LastOrderSummary>;
+  orders: Order[];
+  updateOrderStatus: (orderId: string, newStatus: Order['status']) => Promise<void>;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 const CART_STORAGE_KEY = 'inaba_cart_items_v2';
-const CUSTOM_PRODUCTS_STORAGE_KEY = 'inaba_custom_products_v2';
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [products, setProducts] = useState<Product[]>(() => {
-    try {
-      const saved = localStorage.getItem(CUSTOM_PRODUCTS_STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const ids = new Set(parsed.map(p => p.id));
-          return [...parsed, ...DEFAULT_PRODUCTS.filter(p => !ids.has(p.id))];
-        }
-      }
-    } catch (e) {
-      console.warn('Could not load custom products from storage', e);
-    }
-    return DEFAULT_PRODUCTS;
+  // Catalog, orders and settings are server-owned data; never populate them from demo/local storage.
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [siteImages, setSiteImages] = useState<SiteImage[]>([]);
+  const [storeSettings, setStoreSettings] = useState<StoreSettings>({
+    store_title: 'INABA HIJAB', contact_whatsapp: '', payment_accounts: []
   });
-  const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
-  const [storeSettings, setStoreSettings] = useState<StoreSettings>(DEFAULT_STORE_SETTINGS);
+  const [orders, setOrders] = useState<Order[]>([]);
 
   const [activeFilter, setActiveFilter] = useState<string>('Semua');
   const [poFilter, setPoFilter] = useState<string>('Semua');
@@ -116,29 +108,27 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
   // View state: 'store' | 'admin' | 'customer'
-  const [currentView, setCurrentView] = useState<ViewType>(() => {
-    const hash = typeof window !== 'undefined' ? window.location.hash.toLowerCase() : '';
-    if (hash === '#admin') return 'admin';
-    if (hash === '#akun' || hash === '#account') return 'customer';
-    return 'store';
-  });
+  const [currentView, setCurrentView] = useState<ViewType>('store');
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  const navigateToView = useCallback((view: ViewType) => {
-    setCurrentView(view);
+  const navigateToView = useCallback((view: ViewType, serverVerifiedAdmin = false) => {
+    const safeView: ViewType = view === 'admin' && !isAdmin && !serverVerifiedAdmin ? 'store' : view;
+    setCurrentView(safeView);
     if (typeof window !== 'undefined') {
-      if (view === 'admin') {
+      if (safeView === 'admin') {
         window.location.hash = '#admin';
-      } else if (view === 'customer') {
+      } else if (safeView === 'customer') {
         window.location.hash = '#akun';
       } else {
         if (window.location.hash === '#admin' || window.location.hash === '#akun' || window.location.hash === '#account') {
-          history.pushState(null, '', window.location.pathname + window.location.search);
+          history.replaceState(null, '', window.location.pathname + window.location.search);
         }
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, []);
+  }, [isAdmin]);
 
+  // A cart preference is not authoritative order data. Final pricing/inventory always comes from Supabase.
   // Load initial cart from localStorage
   const [cart, setCart] = useState<CartItem[]>(() => {
     try {
@@ -163,107 +153,122 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setToastMessage(msg);
   }, []);
 
-  // Fetch products from Supabase
+  // Load public catalog and storefront settings exclusively from Supabase.
   const refreshProducts = useCallback(async () => {
-    if (!supabase) return;
-    try {
-      const { data: catData, error: catError } = await supabase
-        .from('categories')
-        .select('*')
-        .order('display_order', { ascending: true });
-
-      if (!catError && catData && catData.length > 0) {
-        setCategories(catData);
-      }
-
-      const { data: prodData, error: prodError } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_active', true)
-        .order('featured', { ascending: false })
-        .order('created_at', { ascending: false });
-
-      if (!prodError && prodData && prodData.length > 0) {
-        setProducts(prev => {
-          const supabaseIds = new Set(prodData.map(p => p.id));
-          const localOnly = prev.filter(p => !supabaseIds.has(p.id));
-          const merged = [...localOnly, ...prodData];
-          try {
-            localStorage.setItem(CUSTOM_PRODUCTS_STORAGE_KEY, JSON.stringify(merged));
-          } catch {}
-          return merged;
-        });
-      }
-
-      // Fetch store settings
-      const { data: settsData } = await supabase
-        .from('store_settings')
-        .select('key, value')
-        .in('key', ['contact_whatsapp', 'payment_accounts', 'store_title']);
-
-      if (settsData && settsData.length > 0) {
-        const newSettings: StoreSettings = { ...DEFAULT_STORE_SETTINGS };
-        for (const row of settsData) {
-          if (row.key === 'contact_whatsapp' && typeof row.value === 'string') {
-            newSettings.contact_whatsapp = row.value.replace(/\D/g, '') || DEFAULT_STORE_SETTINGS.contact_whatsapp;
-          }
-          if (row.key === 'payment_accounts' && Array.isArray(row.value)) {
-            newSettings.payment_accounts = row.value;
-          }
-          if (row.key === 'store_title' && typeof row.value === 'string') {
-            newSettings.store_title = row.value;
-          }
-        }
-        setStoreSettings(newSettings);
-      }
-    } catch (err) {
-      console.warn('Network issue fetching from Supabase, using default seed inventory.', err);
+    if (!supabase) {
+      setProducts([]);
+      setCategories([]);
+      setSiteImages([]);
+      setStoreSettings({ store_title: 'INABA HIJAB', contact_whatsapp: '', payment_accounts: [] });
+      return;
     }
+
+    const [categoriesResult, productsResult, settingsResult, siteImagesResult] = await Promise.all([
+      supabase.from('categories').select('*').eq('is_active', true).order('display_order', { ascending: true }),
+      supabase.from('products').select('*').eq('is_active', true).order('featured', { ascending: false }).order('created_at', { ascending: false }),
+      supabase.from('store_settings').select('key, value').in('key', ['contact_whatsapp', 'payment_accounts', 'store_title']),
+      supabase.from('site_images').select('key, label, image_url')
+    ]);
+
+    if (categoriesResult.error) throw categoriesResult.error;
+    if (productsResult.error) throw productsResult.error;
+    if (settingsResult.error) throw settingsResult.error;
+    if (siteImagesResult.error) throw siteImagesResult.error;
+
+    setCategories((categoriesResult.data || []) as Category[]);
+    setSiteImages((siteImagesResult.data || []).map((item: any) => ({ ...item, image_url: isSiteStorageUrl(item.image_url) ? item.image_url : '' })) as SiteImage[]);
+    setProducts((productsResult.data || []).map((p: any) => {
+      const imageUrl = isProductStorageUrl(p.image_url) ? p.image_url : null;
+      const gallery = Array.isArray(p.gallery_urls) ? p.gallery_urls.filter(isProductStorageUrl).slice(0, 5) : [];
+      return {
+        ...p,
+        image_url: imageUrl,
+        gallery_urls: gallery.length ? gallery : (imageUrl ? [imageUrl] : []),
+        variants: Array.isArray(p.variants) ? p.variants : []
+      };
+    }) as Product[]);
+
+    const nextSettings: StoreSettings = { store_title: 'INABA HIJAB', contact_whatsapp: '', payment_accounts: [] };
+    for (const row of settingsResult.data || []) {
+      if (row.key === 'contact_whatsapp' && typeof row.value === 'string') nextSettings.contact_whatsapp = row.value.replace(/\D/g, '');
+      if (row.key === 'payment_accounts' && Array.isArray(row.value)) nextSettings.payment_accounts = row.value;
+      if (row.key === 'store_title' && typeof row.value === 'string' && row.value.trim()) nextSettings.store_title = row.value.trim();
+    }
+    setStoreSettings(nextSettings);
   }, []);
 
-  // Auth session listener
+  // Admin rights are asked from the database for each authenticated session. Browser values,
+  // email strings, URL fragments and localStorage are never accepted as proof of admin access.
   useEffect(() => {
-    refreshProducts();
+    let disposed = false;
 
-    if (supabase) {
-      supabase.auth.getSession().then(({ data }) => {
-        if (data.session?.user) {
-          setUser(data.session.user);
-          const email = (data.session.user.email || '').toLowerCase();
-          const isAdminUser = ADMIN_ALLOWLIST.includes(email);
-          setProfile({
-            id: data.session.user.id,
-            email,
-            full_name: data.session.user.user_metadata?.full_name || email.split('@')[0],
-            role: isAdminUser ? 'admin' : 'customer'
-          });
-        }
-      });
-
-      const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-        if (session?.user) {
-          setUser(session.user);
-          const email = (session.user.email || '').toLowerCase();
-          const isAdminUser = ADMIN_ALLOWLIST.includes(email);
-          setProfile({
-            id: session.user.id,
-            email,
-            full_name: session.user.user_metadata?.full_name || email.split('@')[0],
-            role: isAdminUser ? 'admin' : 'customer'
-          });
-        } else {
+    const applySession = async (session: any) => {
+      const sessionUser = session?.user || null;
+      if (!sessionUser || !supabase) {
+        if (!disposed) {
           setUser(null);
           setProfile(null);
+          setIsAdmin(false);
+          setOrders([]);
+          if (currentView === 'admin' || currentView === 'customer') setCurrentView('store');
         }
-      });
+        return;
+      }
 
-      return () => {
-        authListener.subscription.unsubscribe();
-      };
+      if (!disposed) setUser(sessionUser);
+      let serverAdmin = false;
+      let profileData: any = null;
+      try {
+        const [adminResult, profileResult] = await Promise.all([
+          supabase.rpc('is_admin'),
+          supabase.from('profiles').select('id,email,full_name,role').eq('id', sessionUser.id).maybeSingle()
+        ]);
+        if (!adminResult.error) serverAdmin = adminResult.data === true;
+        if (!profileResult.error) profileData = profileResult.data;
+      } catch (error) {
+        console.warn('Tidak dapat memverifikasi hak akses sesi.', error);
+      }
+
+      if (!disposed) {
+        setIsAdmin(serverAdmin);
+        setProfile({
+          id: sessionUser.id,
+          email: String(sessionUser.email || '').toLowerCase(),
+          full_name: profileData?.full_name || sessionUser.user_metadata?.full_name || String(sessionUser.email || '').split('@')[0],
+          role: serverAdmin ? 'admin' : 'customer'
+        });
+        if (!serverAdmin && currentView === 'admin') setCurrentView('store');
+      }
+    };
+
+    void refreshProducts().catch((error) => {
+      console.error('Gagal memuat katalog Supabase.', error);
+      if (!disposed) {
+        setProducts([]);
+        setCategories([]);
+        setSiteImages([]);
+        setStoreSettings({ store_title: 'INABA HIJAB', contact_whatsapp: '', payment_accounts: [] });
+      }
+    });
+
+    if (!supabase) {
+      setUser(null);
+      setProfile(null);
+      setIsAdmin(false);
+      return () => { disposed = true; };
     }
-  }, [refreshProducts]);
 
-  const isAdmin = Boolean(profile?.role === 'admin');
+    void supabase.auth.getSession().then(({ data }) => applySession(data.session));
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      // Run after Supabase finishes its auth callback to avoid blocking its internal lock.
+      Promise.resolve().then(() => applySession(session));
+    });
+
+    return () => {
+      disposed = true;
+      listener.subscription.unsubscribe();
+    };
+  }, [refreshProducts]);
 
   // Modal helpers
   const openModal = useCallback((modal: ModalType) => {
@@ -298,7 +303,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       return;
     }
 
-    const chosenSize = (size || '').trim() || 'Standar';
+    const chosenSize = (size || '').trim();
+    if (!chosenSize || !Array.isArray(product.variants) || !product.variants.includes(chosenSize)) {
+      showToast('Pilih varian yang tersedia untuk produk ini.');
+      return;
+    }
 
     setCart(prev => {
       const existingIndex = prev.findIndex(item => item.id === product.id && item.size === chosenSize);
@@ -322,7 +331,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           school_institution: product.school_institution || '',
           is_active: product.is_active !== false,
           preorder_status: product.preorder_status || 'open',
-          variants: product.variants || [chosenSize],
+          variants: product.variants || [],
           size_guide: product.size_guide || ''
         };
         return [...prev, newItem];
@@ -362,7 +371,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const cartCount = cart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
   const cartSubtotal = cart.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 1), 0);
 
-  // Create order
+  // Order creation is a single server-side transaction. Never insert an order directly
+  // from the browser or calculate the final price using cart/localStorage values.
   const createOrder = useCallback(async (orderData: {
     customerName: string;
     phone: string;
@@ -371,200 +381,163 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     notes?: string;
     shippingPref: string;
   }): Promise<LastOrderSummary> => {
-    const calculatedSubtotal = cart.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 1), 0);
-    const readyItems = cart.filter(x => !x.is_preorder);
-    const poItems = cart.filter(x => Boolean(x.is_preorder));
+    if (!supabase || !user) throw new Error('Silakan masuk atau buat akun sebelum mengirim pesanan.');
+    if (!cart.length) throw new Error('Keranjang masih kosong.');
 
-    const rupiahStr = (n: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
-
-    let itemLines = '';
-    if (readyItems.length) {
-      itemLines += `*READY STOCK:*\n` + readyItems.map(item => {
-        const qty = item.quantity;
-        const price = item.price;
-        return `• ${item.name} (${item.size})\n  ${qty} pcs × ${rupiahStr(price)} = ${rupiahStr(qty * price)}`;
-      }).join('\n') + '\n\n';
-    }
-    if (poItems.length) {
-      itemLines += `*PRE-ORDER SERAGAM:*\n` + poItems.map(item => {
-        const qty = item.quantity;
-        const price = item.price;
-        const inst = item.school_institution ? ` [${item.school_institution}]` : '';
-        return `• ${item.name}${inst} (${item.size})\n  ${qty} pcs × ${rupiahStr(price)} = ${rupiahStr(qty * price)}`;
-      }).join('\n') + '\n';
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (cart.some(item => !uuidRegex.test(item.id))) {
+      throw new Error('Keranjang berisi produk lama yang tidak tersinkron. Hapus item tersebut, lalu tambahkan ulang dari katalog.');
     }
 
-    const reference = 'INB-' + Math.random().toString(36).slice(2, 8).toUpperCase();
-    const contactWa = cleanPhoneNumber(storeSettings.contact_whatsapp || '6285735144904');
+    const itemsPayload = cart.map(item => ({
+      product_id: item.id,
+      quantity: Math.max(1, Math.floor(Number(item.quantity) || 1)),
+      size: item.size,
+      is_preorder: Boolean(item.is_preorder),
+      school_institution: item.school_institution || ''
+    }));
+    const notes = [
+      orderData.notes?.trim(),
+      orderData.studentNotes?.trim() ? `Keterangan sekolah/siswa: ${orderData.studentNotes.trim()}` : '',
+      orderData.shippingPref ? `Pilihan pengiriman: ${orderData.shippingPref}` : ''
+    ].filter(Boolean).join('\n').slice(0, 2000);
 
-    const waMsgLines = [
-      `*KONFIRMASI PESANAN INABA HIJAB #${reference}*`,
-      `Halo Admin INABA, saya ingin mengonfirmasi pesanan yang sudah tercatat di website:`,
-      ``,
-      `*ID Pesanan:* #${reference}`,
-      `*Nama Pemesan:* ${orderData.customerName}`,
-      `*No. WhatsApp:* ${orderData.phone}`,
-      `*Alamat Kirim:* ${orderData.address}`,
-      poItems.length ? `*Pilihan Pengiriman:* ${orderData.shippingPref}` : '',
-      orderData.studentNotes ? `*Keterangan Siswa/Seragam:* ${orderData.studentNotes}` : '',
-      orderData.notes ? `*Catatan Tambahan:* ${orderData.notes}` : '',
-      ``,
-      `*Daftar Pesanan:*`,
-      itemLines.trim(),
-      ``,
-      `*Subtotal Produk:* ${rupiahStr(calculatedSubtotal)}`,
-      `*Status:* Menunggu konfirmasi ongkir & nomor rekening resmi.`,
-      ``,
-      `Mohon informasi biaya ongkos kirim ke alamat saya serta nomor rekening transfer resmi ya admin. Terima kasih banyak!`
-    ].filter(Boolean).join('\n');
+    const { data: orderId, error: createError } = await supabase.rpc('create_order', {
+      p_items: itemsPayload,
+      p_customer_name: orderData.customerName.trim(),
+      p_phone: orderData.phone.trim(),
+      p_address: orderData.address.trim(),
+      p_notes: notes
+    });
+    if (createError) throw createError;
+    if (!orderId || typeof orderId !== 'string') throw new Error('Server tidak mengembalikan ID pesanan yang valid.');
 
-    const waUrl = `https://wa.me/${contactWa}?text=${encodeURIComponent(waMsgLines)}`;
-
-    // Try storing into Supabase if user is logged in
-    if (supabase && user) {
-      try {
-        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-        const itemsPayload = cart.map(x => ({
-          product_id: uuidRegex.test(x.id) ? x.id : null,
-          product_name: x.name,
-          quantity: x.quantity,
-          variant_size: x.size,
-          unit_price: x.price,
-          is_preorder: !!x.is_preorder,
-          school_institution: x.school_institution || ''
-        }));
-
-        await supabase.from('orders').insert({
-          user_id: user.id,
-          customer_name: orderData.customerName,
-          phone: orderData.phone,
-          address: orderData.address,
-          notes: [orderData.notes, orderData.studentNotes ? `Ket: ${orderData.studentNotes}` : '', `[Kirim: ${orderData.shippingPref}]`].filter(Boolean).join('\n'),
-          subtotal: calculatedSubtotal,
-          status: 'pending'
-        });
-      } catch (err) {
-        console.warn('Could not record to database directly:', err);
-      }
+    // The RPC already committed the order and stock update. Clear the stale cart immediately,
+    // then read the authoritative receipt generated by PostgreSQL.
+    clearCart();
+    const { data: orderRow, error: readError } = await supabase
+      .from('orders')
+      .select('id, customer_name, phone, subtotal, created_at, status, order_items(product_name, quantity, variant_size, unit_price, is_preorder, school_institution)')
+      .eq('id', orderId)
+      .single();
+    if (readError || !orderRow) {
+      throw new Error(`Pesanan sudah tercatat dengan ID ${orderId.slice(0, 8).toUpperCase()}, tetapi struk belum dapat dimuat. Jangan kirim pesanan ulang; buka menu Akun untuk memeriksanya.`);
     }
+
+    const reference = String(orderRow.id).slice(0, 8).toUpperCase();
+    const subtotal = Number(orderRow.subtotal) || 0;
+    const rupiah = (amount: number) => new Intl.NumberFormat('id-ID', {
+      style: 'currency', currency: 'IDR', maximumFractionDigits: 0
+    }).format(amount);
+    const serverItems = Array.isArray((orderRow as any).order_items) ? (orderRow as any).order_items : [];
+    const itemLines = serverItems.map((item: any) => {
+      const label = item.is_preorder ? 'PRE-ORDER' : 'READY STOCK';
+      const institution = item.school_institution ? ` — ${item.school_institution}` : '';
+      const total = Number(item.unit_price) * Number(item.quantity);
+      return `${label}: ${item.product_name}${institution} (${item.variant_size})\n${item.quantity} × ${rupiah(Number(item.unit_price))} = ${rupiah(total)}`;
+    }).join('\n\n');
+
+    const message = [
+      `KONFIRMASI PESANAN INABA HIJAB #${reference}`,
+      'Halo Admin INABA, saya ingin mengonfirmasi pesanan yang sudah tercatat di website.',
+      '',
+      `ID Pesanan: ${orderRow.id}`,
+      `Nama Pemesan: ${orderRow.customer_name}`,
+      `No. WhatsApp: ${orderRow.phone}`,
+      `Alamat Kirim: ${orderData.address.trim()}`,
+      '',
+      'Daftar Pesanan:',
+      itemLines,
+      '',
+      `Subtotal Produk: ${rupiah(subtotal)}`,
+      'Mohon konfirmasi ongkos kirim dan instruksi pembayaran resmi. Terima kasih.'
+    ].join('\n');
+    const contactWa = cleanPhoneNumber(storeSettings.contact_whatsapp || '');
+    const waUrl = contactWa ? `https://wa.me/${contactWa}?text=${encodeURIComponent(message)}` : '';
 
     const summary: LastOrderSummary = {
-      orderId: reference,
+      orderId: String(orderRow.id),
       reference,
-      customerName: orderData.customerName,
-      customerPhone: orderData.phone,
+      customerName: String(orderRow.customer_name),
+      customerPhone: String(orderRow.phone),
       shippingPref: orderData.shippingPref,
-      subtotal: calculatedSubtotal,
+      subtotal,
       waUrl,
-      rawText: waMsgLines
+      rawText: message
     };
-
     setLastOrder(summary);
-    clearCart();
+    setOrders(prev => [
+      { id: String(orderRow.id), order_number: `#${reference}`, user_id: user.id,
+        customer_name: String(orderRow.customer_name), phone: String(orderRow.phone), address: orderData.address.trim(),
+        notes, subtotal, status: String(orderRow.status || 'pending') as Order['status'],
+        created_at: String(orderRow.created_at), items: serverItems },
+      ...prev.filter(order => order.id !== String(orderRow.id))
+    ]);
     return summary;
-  }, [cart, user, storeSettings, clearCart]);
+  }, [cart, user, storeSettings.contact_whatsapp, clearCart]);
 
-  // Save Product (insert or update with Supabase + local persistence)
-  const saveProduct = useCallback(async (productData: Partial<Product>, isEditingId?: string) => {
-    let savedProduct: Product | null = null;
+  const dbStatus = (status: Order['status']): string => {
+    const normalized = String(status).toLowerCase();
+    const map: Record<string, string> = {
+      'menunggu pembayaran': 'pending', 'menunggu diproses': 'pending', 'menunggu': 'pending', 'pending': 'pending',
+      'dikonfirmasi': 'confirmed', 'confirmed': 'confirmed', 'dikemas': 'processing', 'processing': 'processing',
+      'dikirim': 'shipped', 'shipped': 'shipped', 'diterima': 'completed', 'completed': 'completed',
+      'dibatalkan': 'cancelled', 'batal': 'cancelled', 'cancelled': 'cancelled'
+    };
+    return map[normalized] || 'pending';
+  };
+
+  const updateOrderStatus = useCallback(async (orderId: string, newStatus: Order['status']) => {
+    if (!supabase || !isAdmin) throw new Error('Akses admin diperlukan.');
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    let backendError: string | null = null;
-    let backendSuccess = false;
+    if (!uuidRegex.test(orderId)) throw new Error('ID pesanan tidak valid.');
+    const normalized = dbStatus(newStatus);
+    const { data, error } = await supabase.from('orders').update({ status: normalized }).eq('id', orderId).select('id,status').single();
+    if (error) throw error;
+    if (!data) throw new Error('Pesanan tidak ditemukan atau akses ditolak.');
+    setOrders(prev => prev.map(order => order.id === orderId ? { ...order, status: normalized as Order['status'] } : order));
+    showToast(`Status pesanan diperbarui menjadi "${normalized}".`);
+  }, [isAdmin, showToast]);
 
-    if (supabase) {
-      try {
-        if (isEditingId && uuidRegex.test(isEditingId)) {
-          const { data, error } = await supabase.from('products').update(productData).eq('id', isEditingId).select().single();
-          if (error) {
-            backendError = error.message;
-          } else if (data) {
-            backendSuccess = true;
-            savedProduct = data;
-          }
-        } else {
-          const insertPayload: any = { ...productData };
-          if (insertPayload.id && !uuidRegex.test(insertPayload.id)) {
-            delete insertPayload.id;
-          }
-          const { data, error } = await supabase.from('products').insert([insertPayload]).select().single();
-          if (error) {
-            backendError = error.message;
-          } else if (data) {
-            backendSuccess = true;
-            savedProduct = data;
-          }
-        }
-      } catch (err: any) {
-        backendError = err?.message || 'Gagal koneksi database';
-      }
+  // Products are server-owned data. A failed request is a failure, never a local-only success.
+  const saveProduct = useCallback(async (productData: Partial<Product>, isEditingId?: string) => {
+    if (!supabase || !isAdmin) throw new Error('Akses admin terverifikasi diperlukan.');
+    const payload: Record<string, any> = { ...productData };
+    const gallery = Array.isArray(payload.gallery_urls) ? payload.gallery_urls.slice(0, 5) : [];
+    payload.gallery_urls = gallery;
+    payload.image_url = gallery[0] || payload.image_url || null;
+    if (!Array.isArray(payload.variants) || payload.variants.length === 0) {
+      throw new Error('Tambahkan minimal satu pilihan ukuran atau varian produk.');
+    }
+    if (gallery.some((url: unknown) => !isProductStorageUrl(url)) || (payload.image_url && !isProductStorageUrl(payload.image_url))) {
+      throw new Error('Foto produk harus diunggah ke bucket product-images di Supabase Storage.');
     }
 
-    if (!savedProduct) {
-      savedProduct = {
-        id: isEditingId || ('prod_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)),
-        name: productData.name || '',
-        slug: productData.slug || ('prod-' + Date.now().toString(36)),
-        category: productData.category || 'Hijab & Pakaian',
-        price: Number(productData.price) || 0,
-        stock: productData.is_preorder ? 0 : Number(productData.stock) || 0,
-        is_preorder: Boolean(productData.is_preorder),
-        preorder_status: productData.preorder_status || 'open',
-        school_institution: productData.school_institution || '',
-        estimated_delivery: productData.estimated_delivery || '',
-        min_order: Number(productData.min_order) || 1,
-        description: productData.description || '',
-        variants: productData.variants || ['Standar'],
-        size_guide: productData.size_guide || '',
-        badge: productData.badge || null,
-        image_url: productData.image_url || null,
-        is_active: productData.is_active !== undefined ? productData.is_active : true,
-        created_at: new Date().toISOString()
-      };
+    let query;
+    if (isEditingId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(isEditingId)) {
+      query = supabase.from('products').update(payload).eq('id', isEditingId).select().single();
+    } else {
+      delete payload.id;
+      query = supabase.from('products').insert(payload).select().single();
     }
+    const { data, error } = await query;
+    if (error) throw error;
+    if (!data) throw new Error('Server tidak mengembalikan produk yang tersimpan.');
+    const saved = { ...data, gallery_urls: Array.isArray(data.gallery_urls) ? data.gallery_urls.slice(0, 5) : [], variants: Array.isArray(data.variants) ? data.variants : [] } as Product;
+    setProducts(prev => saved.is_active === false
+      ? prev.filter(item => item.id !== saved.id)
+      : [saved, ...prev.filter(item => item.id !== saved.id)]);
+    return { success: true, backendSuccess: true, backendError: null, product: saved };
+  }, [isAdmin]);
 
-    const finalProduct = savedProduct;
-    setProducts(prev => {
-      let next: Product[];
-      const idx = prev.findIndex(p => p.id === finalProduct.id || (p.slug && p.slug === finalProduct.slug));
-      if (idx !== -1) {
-        next = [...prev];
-        next[idx] = finalProduct;
-      } else {
-        next = [finalProduct, ...prev];
-      }
-      try {
-        localStorage.setItem(CUSTOM_PRODUCTS_STORAGE_KEY, JSON.stringify(next));
-      } catch (e) {
-        console.warn(e);
-      }
-      return next;
-    });
-
-    return { success: true, backendSuccess, backendError, product: finalProduct };
-  }, []);
-
-  // Delete product
+  // Delete only after Supabase confirms the operation.
   const deleteProductItem = useCallback(async (id: string) => {
-    let backendError: string | null = null;
-    if (supabase) {
-      try {
-        const { error } = await supabase.from('products').delete().eq('id', id);
-        if (error) backendError = error.message;
-      } catch (e: any) {
-        backendError = e.message;
-      }
-    }
-    setProducts(prev => {
-      const next = prev.filter(p => p.id !== id);
-      try {
-        localStorage.setItem(CUSTOM_PRODUCTS_STORAGE_KEY, JSON.stringify(next));
-      } catch (e) {
-        console.warn(e);
-      }
-      return next;
-    });
-    return { success: true, backendError };
-  }, []);
+    if (!supabase || !isAdmin) throw new Error('Akses admin terverifikasi diperlukan.');
+    const { error } = await supabase.from('products').delete().eq('id', id);
+    if (error) throw error;
+    setProducts(prev => prev.filter(product => product.id !== id));
+    return { success: true, backendError: null };
+  }, [isAdmin]);
 
   return (
     <StoreContext.Provider
@@ -573,6 +546,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         navigateToView,
         products,
         categories,
+        siteImages,
         storeSettings,
         activeFilter,
         setActiveFilter,
@@ -606,7 +580,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         refreshProducts,
         saveProduct,
         deleteProductItem,
-        createOrder
+        createOrder,
+        orders,
+        updateOrderStatus,
       }}
     >
       {children}

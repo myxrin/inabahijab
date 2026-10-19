@@ -3,7 +3,9 @@ import { useStore } from '../context/StoreContext';
 import { ArrowUpRight } from 'lucide-react';
 
 export const SpotlightSection: React.FC = () => {
-  const { setActiveFilter } = useStore();
+  const { setActiveFilter, siteImages } = useStore();
+  const farmerBanner = siteImages.find(image => image.key === 'farmer_banner')?.image_url;
+  const tableBanner = siteImages.find(image => image.key === 'table_banner')?.image_url;
 
   const handleFilterClick = (categoryName: string) => {
     setActiveFilter(categoryName);
@@ -27,11 +29,15 @@ export const SpotlightSection: React.FC = () => {
         <div className="spotlight-grid">
           <article className="spotlight-card">
             <div className="spotlight-photo" id="farmerPhotoWrap">
-              <div className="placeholder-banner banner-sm editorial-craft-banner">
-                <div className="brand-monogram">INABA<span>CRAFT</span></div>
-                <span className="placeholder-title serif">Topi Capel Petani Anyaman Bambu</span>
-                <span className="placeholder-sub">Anyaman bambu alami kuat penahan terik sawah &amp; kebun</span>
-              </div>
+              {farmerBanner ? (
+                <img className="site-banner-image" src={farmerBanner} alt="Perlengkapan petani INABA" />
+              ) : (
+                <div className="placeholder-banner banner-sm editorial-craft-banner">
+                  <div className="brand-monogram">INABA<span>CRAFT</span></div>
+                  <span className="placeholder-title serif">Topi Capel Petani Anyaman Bambu</span>
+                  <span className="placeholder-sub">Unggah foto banner melalui panel admin untuk menampilkan foto toko.</span>
+                </div>
+              )}
             </div>
             <div className="spotlight-copy">
               <div className="eyebrow">Perlengkapan Petani &amp; Kebun</div>
@@ -52,11 +58,15 @@ export const SpotlightSection: React.FC = () => {
 
           <article className="spotlight-card">
             <div className="spotlight-photo" id="tablePhotoWrap">
-              <div className="placeholder-banner banner-sm editorial-living-banner">
-                <div className="brand-monogram">INABA<span>LIVING</span></div>
-                <span className="placeholder-title serif">Meja Lipat Portable Serbaguna</span>
-                <span className="placeholder-sub">Kuat, praktis dengan slot gadget &amp; kaki anti-slip</span>
-              </div>
+              {tableBanner ? (
+                <img className="site-banner-image" src={tableBanner} alt="Meja lipat serbaguna INABA" />
+              ) : (
+                <div className="placeholder-banner banner-sm editorial-living-banner">
+                  <div className="brand-monogram">INABA<span>LIVING</span></div>
+                  <span className="placeholder-title serif">Meja Lipat Portable Serbaguna</span>
+                  <span className="placeholder-sub">Unggah foto banner melalui panel admin untuk menampilkan foto toko.</span>
+                </div>
+              )}
             </div>
             <div className="spotlight-copy">
               <div className="eyebrow">Perabot &amp; Kebutuhan Belajar</div>

@@ -2,7 +2,7 @@
 -- INABA HIJAB — UNIFIED PRODUCTION DATABASE SETUP (SUPABASE ONLY)
 -- Skrip Tunggal Lengkap untuk dijalankan di Supabase SQL Editor.
 -- Mendukung:
--- 1. Autentikasi Pengguna & Profil (allowlist server-side + email terverifikasi)
+-- 1. Autentikasi Pengguna & Profil (hak admin hanya dari app_metadata yang ditetapkan operator server)
 -- 2. Keranjang Belanja Berbasis Database (public.cart_items) untuk pengguna terdaftar
 -- 3. Katalog Multikategori Dinamis (categories, products, store_settings)
 -- 4. Pre-Order Seragam Sekolah & Ready Stock Inventori
@@ -88,6 +88,48 @@ alter table public.products add column if not exists gallery_urls jsonb default 
 alter table public.products add column if not exists variants jsonb not null default '[]'::jsonb;
 alter table public.products drop constraint if exists products_variants_array_check;
 alter table public.products add constraint products_variants_array_check check (jsonb_typeof(variants) = 'array');
+-- Satu produk memiliki maksimal lima foto; NOT VALID tetap menjaga data legacy sambil memvalidasi perubahan baru.
+alter table public.products drop constraint if exists products_gallery_urls_limit_check;
+alter table public.products add constraint products_gallery_urls_limit_check
+  check (gallery_urls is null or (jsonb_typeof(gallery_urls) = 'array' and jsonb_array_length(gallery_urls) <= 5)) not valid;
+
+-- Cegah URL gambar eksternal tersimpan dari API, bukan hanya dari formulir admin.
+-- URL lama yang sudah ada dapat ditampilkan ulang setelah admin menggantinya dengan upload Storage.
+create or replace function public.validate_product_image_urls()
+returns trigger language plpgsql security definer set search_path = '' as $$
+declare
+  v_url text;
+  v_prefix constant text := 'https://yrmnajmkibuuzyfhjoyw.supabase.co/storage/v1/object/public/product-images/';
+begin
+  if new.gallery_urls is null then new.gallery_urls := '[]'::jsonb; end if;
+  if jsonb_typeof(new.gallery_urls) is distinct from 'array' or jsonb_array_length(new.gallery_urls) > 5 then
+    raise exception 'Galeri produk harus berupa array dengan maksimal lima foto.';
+  end if;
+  if new.image_url is not null and btrim(new.image_url) <> '' and new.image_url not like v_prefix || '%' then
+    raise exception 'Foto utama harus berasal dari Supabase Storage bucket product-images.';
+  end if;
+  -- image_url juga dihitung sebagai foto jika belum tercantum di gallery_urls.
+  if new.image_url is not null and btrim(new.image_url) <> ''
+     and not exists (
+       select 1 from jsonb_array_elements_text(new.gallery_urls) as gallery_item(url)
+       where gallery_item.url = new.image_url
+     )
+     and jsonb_array_length(new.gallery_urls) >= 5 then
+    raise exception 'Maksimal lima foto total per produk, termasuk foto utama.';
+  end if;
+  for v_url in select jsonb_array_elements_text(new.gallery_urls) loop
+    if v_url not like v_prefix || '%' then
+      raise exception 'Semua foto produk harus berasal dari Supabase Storage bucket product-images.';
+    end if;
+  end loop;
+  return new;
+end;
+$$;
+revoke all on function public.validate_product_image_urls() from public, anon, authenticated;
+drop trigger if exists validate_product_image_urls_trigger on public.products;
+create trigger validate_product_image_urls_trigger
+  before insert or update of image_url, gallery_urls on public.products
+  for each row execute function public.validate_product_image_urls();
 
 -- Ganti nama kategori turut menyelaraskan products.category di transaksi yang sama.
 create or replace function public.sync_product_category_name()
@@ -247,6 +289,26 @@ create table if not exists public.site_images (
   updated_at timestamptz not null default now()
 );
 alter table public.site_images drop constraint if exists site_images_key_check;
+alter table public.site_images add constraint site_images_key_check
+  check (key in ('hero', 'preorder_banner', 'farmer_banner', 'table_banner')) not valid;
+
+-- Banner publik wajib disimpan di bucket Supabase milik proyek ini.
+create or replace function public.validate_site_image_url()
+returns trigger language plpgsql security definer set search_path = '' as $$
+declare
+  v_prefix constant text := 'https://yrmnajmkibuuzyfhjoyw.supabase.co/storage/v1/object/public/site-images/';
+begin
+  if coalesce(btrim(new.image_url), '') <> '' and new.image_url not like v_prefix || '%' then
+    raise exception 'Banner website harus berasal dari Supabase Storage bucket site-images.';
+  end if;
+  return new;
+end;
+$$;
+revoke all on function public.validate_site_image_url() from public, anon, authenticated;
+drop trigger if exists validate_site_image_url_trigger on public.site_images;
+create trigger validate_site_image_url_trigger
+  before insert or update of image_url on public.site_images
+  for each row execute function public.validate_site_image_url();
 
 -- 9. TABEL PENGATURAN TOKO DINAMIS
 create table if not exists public.store_settings (
@@ -255,7 +317,8 @@ create table if not exists public.store_settings (
   updated_at timestamptz not null default now()
 );
 
--- Satu sumber konfigurasi email admin. Tabel tidak dapat dibaca/diubah lewat API browser.
+-- Allowlist tambahan untuk admin yang boleh diprovisikan operator; ini bukan bukti kepemilikan akun.
+-- Tabel ini tidak dapat dibaca/diubah lewat API browser.
 create table if not exists public.admin_email_allowlist (
   email text primary key check (email = lower(btrim(email)) and email ~ '^[^[:space:]@]+@[^[:space:]@]+[.][^[:space:]@]+$'),
   created_at timestamptz not null default now()
@@ -271,7 +334,8 @@ on conflict (email) do nothing;
 -- FUNGSI & OTORISASI ADMIN
 -- ====================================================================
 
--- Validasi hak admin dari sisi server database (bukan dari browser)
+-- Validasi hak admin dari sisi server database. Email allowlist SAJA tidak memberi akses admin:
+-- hanya operator tepercaya yang dapat menambahkan inaba_admin=true ke raw_app_meta_data Auth.
 create or replace function public.is_admin()
 returns boolean language sql stable security definer set search_path = '' as $$
   select exists (
@@ -279,6 +343,7 @@ returns boolean language sql stable security definer set search_path = '' as $$
     from auth.users u
     where u.id = (select auth.uid())
       and u.email_confirmed_at is not null
+      and coalesce(u.raw_app_meta_data->>'inaba_admin', 'false') = 'true'
       and exists (
         select 1 from public.admin_email_allowlist a
         where a.email = lower(coalesce(u.email, ''))
@@ -288,44 +353,38 @@ $$;
 revoke all on function public.is_admin() from public, anon, authenticated;
 grant execute on function public.is_admin() to anon, authenticated;
 
--- Trigger pembuatan profil otomatis; admin hanya ditetapkan bila email terverifikasi dan ada di allowlist server
+-- Akun baru SELALU pelanggan. Pencocokan email allowlist tidak boleh menaikkan role,
+-- karena signup dapat diatur tanpa konfirmasi email di Supabase Auth.
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = '' as $$
-declare
-  v_role text := 'customer';
 begin
-  if new.email_confirmed_at is not null and exists (
-    select 1 from public.admin_email_allowlist a where a.email = lower(coalesce(new.email, ''))
-  ) then
-    v_role := 'admin';
-  end if;
-
   insert into public.profiles (id, email, full_name, role)
   values (
     new.id::text,
     coalesce(new.email, ''),
     coalesce(new.raw_user_meta_data->>'full_name', split_part(coalesce(new.email,''), '@', 1)),
-    v_role
+    'customer'
   )
   on conflict (id) do update set
     email = excluded.email,
-    full_name = excluded.full_name,
-    role = excluded.role;
+    full_name = excluded.full_name;
 
   return new;
 end;
 $$;
 
--- Role admin hanya diberikan pada email allowlist setelah Supabase menandai email terverifikasi.
--- User tidak bisa mengubah email_confirmed_at atau role profil melalui frontend/RLS.
+-- Role admin hanya mengikuti flag di raw_app_meta_data (tidak dapat diedit oleh pemilik akun).
+-- Flag ini harus dipasang manual oleh pemilik proyek setelah identitas admin dikonfirmasi.
 create or replace function public.sync_profile_role_from_app_metadata()
 returns trigger language plpgsql security definer set search_path = '' as $$
 declare
   v_role text := 'customer';
 begin
-  if new.email_confirmed_at is not null and exists (
-    select 1 from public.admin_email_allowlist a where a.email = lower(coalesce(new.email, ''))
-  ) then
+  if new.email_confirmed_at is not null
+     and coalesce(new.raw_app_meta_data->>'inaba_admin', 'false') = 'true'
+     and exists (
+       select 1 from public.admin_email_allowlist a where a.email = lower(coalesce(new.email, ''))
+     ) then
     v_role := 'admin';
   end if;
 
@@ -351,22 +410,23 @@ create trigger on_auth_user_role_sync
   after update of raw_app_meta_data, email, email_confirmed_at on auth.users
   for each row execute function public.sync_profile_role_from_app_metadata();
 
--- Sinkronkan profil lama dan buat profil yang mungkin belum tercipta sebelumnya.
--- Tidak menghapus profil/data; role admin ditetapkan hanya untuk email allowlist yang terverifikasi.
+-- Sinkronkan profil yang belum ada. Akses admin hanya jika flag app_metadata ditetapkan operator.
 insert into public.profiles (id, email, full_name, role)
 select
   u.id::text,
   coalesce(u.email, ''),
   coalesce(nullif(u.raw_user_meta_data->>'full_name', ''), split_part(coalesce(u.email, ''), '@', 1)),
   case
-    when u.email_confirmed_at is not null and exists (
-      select 1 from public.admin_email_allowlist a where a.email = lower(coalesce(u.email, ''))
-    ) then 'admin'
+    when u.email_confirmed_at is not null
+      and coalesce(u.raw_app_meta_data->>'inaba_admin', 'false') = 'true'
+      and exists (select 1 from public.admin_email_allowlist a where a.email = lower(coalesce(u.email, '')))
+      then 'admin'
     else 'customer'
   end
 from auth.users u
 on conflict (id) do update set
   email = excluded.email,
+  full_name = excluded.full_name,
   role = excluded.role;
 
 -- Pemulihan stok barang ready-stock secara otomatis saat pesanan dibatalkan

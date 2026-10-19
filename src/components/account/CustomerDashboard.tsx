@@ -46,7 +46,7 @@ export const CustomerDashboard: React.FC = () => {
 
   useEffect(() => {
     loadCustomerOrders();
-  }, [user]);
+  }, [user?.id]);
 
   const handleSignOut = async () => {
     if (supabase) await supabase.auth.signOut();
@@ -79,16 +79,23 @@ export const CustomerDashboard: React.FC = () => {
             <span className="dashboard-nav-counter">{orders.length}</span>
           </button>
 
-          <a
-            href={`https://wa.me/${cleanStoreWa}?text=${encodeURIComponent('Halo Admin INABA HIJAB, saya ingin bertanya tentang pesanan/katalog.')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="dashboard-nav-item"
-          >
-            <HelpCircle size={18} className="dashboard-nav-icon" />
-            <span className="dashboard-nav-label">Bantuan &amp; Konsultasi</span>
-            <ArrowUpRight size={13} style={{ marginLeft: 'auto', opacity: 0.6 }} />
-          </a>
+          {cleanStoreWa ? (
+            <a
+              href={`https://wa.me/${cleanStoreWa}?text=${encodeURIComponent('Halo Admin INABA HIJAB, saya ingin bertanya tentang pesanan/katalog.')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="dashboard-nav-item"
+            >
+              <HelpCircle size={18} className="dashboard-nav-icon" />
+              <span className="dashboard-nav-label">Bantuan &amp; Konsultasi</span>
+              <ArrowUpRight size={13} style={{ marginLeft: 'auto', opacity: 0.6 }} />
+            </a>
+          ) : (
+            <div className="dashboard-nav-item" aria-disabled="true">
+              <HelpCircle size={18} className="dashboard-nav-icon" />
+              <span className="dashboard-nav-label">Kontak bantuan belum tersedia</span>
+            </div>
+          )}
         </nav>
 
         <div className="dashboard-sidebar-footer">
@@ -183,9 +190,9 @@ export const CustomerDashboard: React.FC = () => {
               ) : (
                 <div className="dashboard-orders-stack">
                   {orders.map(order => {
-                    const waOrderChat = `https://wa.me/${cleanStoreWa}?text=${encodeURIComponent(
+                    const waOrderChat = cleanStoreWa ? `https://wa.me/${cleanStoreWa}?text=${encodeURIComponent(
                       `Halo CS INABA HIJAB, saya ingin menanyakan status pesanan saya #${order.id.slice(0, 8).toUpperCase()}.`
-                    )}`;
+                    )}` : '';
 
                     return (
                       <div key={order.id} className="dashboard-order-card">

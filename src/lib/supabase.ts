@@ -18,8 +18,18 @@ export const supabase: SupabaseClient | null = isSupabaseConfigured
     })
   : null;
 
-// Allowlist for Admin accounts
-export const ADMIN_ALLOWLIST = ['numanalmuqorrin@gmail.com', 'inabahijab@gmail.com'];
+/** Only render product imagery served from this project's public Supabase Storage bucket. */
+export function isProductStorageUrl(value: unknown): value is string {
+  if (typeof value !== 'string' || !value.trim()) return false;
+  return value.startsWith(`${SUPABASE_URL}/storage/v1/object/public/product-images/`);
+}
+
+/** Only render public site banners served from this project's site-images bucket. */
+export function isSiteStorageUrl(value: unknown): value is string {
+  if (typeof value !== 'string' || !value.trim()) return false;
+  return value.startsWith(`${SUPABASE_URL}/storage/v1/object/public/site-images/`);
+}
+
 
 export function formatRupiah(amount: number): string {
   return new Intl.NumberFormat('id-ID', {

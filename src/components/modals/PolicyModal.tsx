@@ -9,7 +9,7 @@ export const PolicyModal: React.FC = () => {
   if (activeModal !== 'privacyPolicy' && activeModal !== 'termsConditions') return null;
 
   const isPrivacy = activeModal === 'privacyPolicy';
-  const waNumber = cleanPhoneNumber(storeSettings.contact_whatsapp || '6285735144904');
+  const waNumber = cleanPhoneNumber(storeSettings.contact_whatsapp);
   const waContactUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(
     isPrivacy
       ? 'Halo INABA HIJAB, saya ingin bertanya tentang kebijakan privasi.'
@@ -64,7 +64,7 @@ export const PolicyModal: React.FC = () => {
             <div style={{ marginTop: 24, paddingTop: 16, borderTop: '1px solid var(--line)' }}>
               <strong>Kontak Layanan Privasi:</strong>
               <p style={{ margin: '6px 0' }}>
-                WhatsApp: <a href={waContactUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--clay)', fontWeight: 700 }}>+{waNumber} <ArrowUpRight size={13} className="btn-arrow-icon" /></a>
+                WhatsApp: {waNumber ? <a href={waContactUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--clay)', fontWeight: 700 }}>+{waNumber} <ArrowUpRight size={13} className="btn-arrow-icon" /></a> : 'Kontak belum tersedia.'}
               </p>
             </div>
           </div>
@@ -111,7 +111,7 @@ export const PolicyModal: React.FC = () => {
             <div style={{ marginTop: 24, paddingTop: 16, borderTop: '1px solid var(--line)' }}>
               <strong>Layanan Bantuan &amp; Konsultasi WhatsApp:</strong>
               <p style={{ margin: '6px 0' }}>
-                WhatsApp: <a href={waContactUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--clay)', fontWeight: 700 }}>+{waNumber} <ArrowUpRight size={13} className="btn-arrow-icon" /></a>
+                WhatsApp: {waNumber ? <a href={waContactUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--clay)', fontWeight: 700 }}>+{waNumber} <ArrowUpRight size={13} className="btn-arrow-icon" /></a> : 'Kontak belum tersedia.'}
               </p>
             </div>
           </div>

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
-import { supabase, ADMIN_ALLOWLIST } from '../../lib/supabase';
+import { supabase } from '../../lib/supabase';
 import { X, Eye, EyeOff } from 'lucide-react';
 
 export const AuthModal: React.FC = () => {
-  const { activeModal, closeModal, openModal, user, profile, isAdmin, showToast, navigateToView } = useStore();
+  const { activeModal, closeModal, openModal, user, isAdmin, showToast, navigateToView } = useStore();
 
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [fullName, setFullName] = useState('');
@@ -33,13 +33,7 @@ export const AuthModal: React.FC = () => {
 
     setLoading(true);
     try {
-      if (!supabase) {
-        // Fallback local auth simulation
-        setNotice({ type: 'success', text: mode === 'signup' ? 'Akun berhasil dibuat.' : 'Berhasil masuk.' });
-        showToast(mode === 'signup' ? 'Akun dibuat.' : 'Selamat datang kembali.');
-        setTimeout(() => closeModal(), 700);
-        return;
-      }
+      if (!supabase) throw new Error('Koneksi Supabase belum dikonfigurasi. Akun tidak dapat diproses.');
 
       if (mode === 'signup') {
         const { data, error: signUpErr } = await supabase.auth.signUp({
@@ -50,26 +44,25 @@ export const AuthModal: React.FC = () => {
           }
         });
         if (signUpErr) throw signUpErr;
-        setNotice({ type: 'success', text: 'Akun berhasil dibuat! Silakan masuk.' });
-        showToast('Akun berhasil dibuat.');
         if (data.session) {
+          const { data: serverAdmin } = await supabase.rpc('is_admin');
+          setNotice({ type: 'success', text: 'Akun berhasil dibuat.' });
+          showToast('Akun berhasil dibuat.');
           closeModal();
-          const isAdminUser = ADMIN_ALLOWLIST.includes(cleanEmail);
-          navigateToView(isAdminUser ? 'admin' : 'customer');
+          navigateToView(serverAdmin === true ? 'admin' : 'customer', serverAdmin === true);
         } else {
+          setNotice({ type: 'success', text: 'Akun dibuat. Ikuti instruksi email Supabase jika konfirmasi diminta sebelum masuk.' });
           setMode('signin');
         }
       } else {
-        const { error: signInErr } = await supabase.auth.signInWithPassword({
-          email: cleanEmail,
-          password
-        });
+        const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
         if (signInErr) throw signInErr;
+        const { data: serverAdmin, error: roleError } = await supabase.rpc('is_admin');
+        if (roleError) throw roleError;
         setNotice({ type: 'success', text: 'Berhasil masuk.' });
         showToast('Berhasil masuk.');
         closeModal();
-        const isAdminUser = ADMIN_ALLOWLIST.includes(cleanEmail);
-        navigateToView(isAdminUser ? 'admin' : 'customer');
+        navigateToView(serverAdmin === true ? 'admin' : 'customer', serverAdmin === true);
       }
     } catch (err: any) {
       setNotice({
@@ -87,6 +80,7 @@ export const AuthModal: React.FC = () => {
     }
     showToast('Kamu sudah keluar akun.');
     closeModal();
+    navigateToView('store');
   };
 
   return (

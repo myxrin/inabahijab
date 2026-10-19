@@ -3,7 +3,7 @@ import { useStore } from '../../context/StoreContext';
 import { X, ShieldCheck, Clock, MessageSquare, ArrowUpRight } from 'lucide-react';
 
 export const CheckoutModal: React.FC = () => {
-  const { cart, activeModal, closeModal, openModal, createOrder, showToast, profile } = useStore();
+  const { cart, activeModal, closeModal, openModal, createOrder, showToast, profile, user } = useStore();
 
   const [customerName, setCustomerName] = useState(profile?.full_name || '');
   const [customerPhone, setCustomerPhone] = useState('');
@@ -44,7 +44,7 @@ export const CheckoutModal: React.FC = () => {
       });
       openModal('orderSuccess');
     } catch (err: any) {
-      showToast('Gagal memproses pesanan: ' + (err?.message || 'Coba lagi'));
+      showToast(err?.message || 'Pesanan belum dapat diproses. Periksa koneksi lalu coba lagi.');
     } finally {
       setLoading(false);
     }
@@ -69,7 +69,7 @@ export const CheckoutModal: React.FC = () => {
           <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
             <ShieldCheck size={20} style={{ color: 'var(--olive)', flexShrink: 0, marginTop: 2 }} />
             <span style={{ fontSize: 12.5, lineHeight: 1.4 }}>
-              <strong>Terdata Resmi</strong><br />Tersimpan aman di database toko.
+              <strong>Pesanan Tersimpan</strong><br />Dicatat melalui sistem toko.
             </span>
           </div>
           <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>

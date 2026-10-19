@@ -79,14 +79,13 @@ export const OrderSuccessModal: React.FC = () => {
         </div>
 
         <div style={{ display: 'grid', gap: 10, marginTop: 20 }}>
-          <a
-            className="btn btn-full btn-wa"
-            href={lastOrder.waUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <MessageCircle size={16} /> Lanjut Konfirmasi ke WhatsApp <ArrowUpRight size={13} className="btn-arrow-icon" />
-          </a>
+          {lastOrder.waUrl ? (
+            <a className="btn btn-full btn-wa" href={lastOrder.waUrl} target="_blank" rel="noopener noreferrer">
+              <MessageCircle size={16} /> Lanjut Konfirmasi ke WhatsApp <ArrowUpRight size={13} className="btn-arrow-icon" />
+            </a>
+          ) : (
+            <p className="notice">Kontak WhatsApp toko belum diatur. Pesanan tetap tersimpan dengan ID di atas. Admin perlu mengisi kontak di pengaturan toko sebelum konfirmasi WhatsApp digunakan.</p>
+          )}
           <button
             type="button"
             className="btn btn-full btn-ghost"

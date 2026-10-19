@@ -63,7 +63,7 @@ export const CartDrawer: React.FC = () => {
                   </span>
                   <h3 style={{ fontSize: 15, margin: '2px 0 4px', fontWeight: 700 }}>{item.name}</h3>
                   <p style={{ fontSize: 13, color: 'var(--ink-soft)', margin: 0 }}>
-                    {formatRupiah(item.price)} &bull; Pilihan: <strong>{item.size || 'Standar'}</strong>
+                    {formatRupiah(item.price)} &bull; Pilihan: <strong>{item.size || 'Varian belum dipilih'}</strong>
                   </p>
                   {item.school_institution && (
                     <p style={{ fontSize: 11, color: 'var(--olive)', margin: '2px 0 0' }}>

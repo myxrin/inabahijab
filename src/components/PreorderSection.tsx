@@ -5,7 +5,8 @@ import { Check, ArrowUpRight, Calculator, MessageSquare } from 'lucide-react';
 import { cleanPhoneNumber } from '../lib/supabase';
 
 export const PreorderSection: React.FC = () => {
-  const { products, poFilter, setPoFilter, openModal, storeSettings } = useStore();
+  const { products, poFilter, setPoFilter, openModal, storeSettings, showToast, siteImages } = useStore();
+  const preorderBanner = siteImages.find(image => image.key === 'preorder_banner')?.image_url;
 
   const poProducts = products.filter(
     p => p.is_preorder || p.category?.toLowerCase().includes('pre-order')
@@ -20,21 +21,25 @@ export const PreorderSection: React.FC = () => {
     );
   });
 
-  const waNumber = cleanPhoneNumber(storeSettings.contact_whatsapp || '6285735144904');
-  const waConsultUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(
+  const waNumber = cleanPhoneNumber(storeSettings.contact_whatsapp);
+  const waConsultUrl = waNumber ? `https://wa.me/${waNumber}?text=${encodeURIComponent(
     'Halo Admin INABA HIJAB, saya ingin konsultasi pemesanan Pre-Order Seragam Sekolah.'
-  )}`;
+  )}` : '';
 
   return (
     <section className="preorder-section" id="preorder-section">
       <div className="wrap">
         {/* Banner */}
         <div className="preorder-site-banner" id="preorderBannerWrap">
-          <div className="placeholder-banner banner-sm editorial-po-banner" id="preorderBannerPlaceholder">
-            <div className="brand-monogram">INABA<span>SCHOOLWEAR</span></div>
-            <span className="placeholder-title serif">Pre-Order Seragam SDIT, TPQ &amp; Madin Sirimbit</span>
-            <span className="placeholder-sub">Bahan adem, jahitan kuat, dan panduan ukuran terstandar</span>
-          </div>
+          {preorderBanner ? (
+            <img className="site-banner-image" src={preorderBanner} alt="Banner layanan pre-order seragam sekolah INABA" />
+          ) : (
+            <div className="placeholder-banner banner-sm editorial-po-banner" id="preorderBannerPlaceholder">
+              <div className="brand-monogram">INABA<span>SCHOOLWEAR</span></div>
+              <span className="placeholder-title serif">Pre-Order Seragam SDIT, TPQ &amp; Madin Sirimbit</span>
+              <span className="placeholder-sub">Unggah banner melalui panel admin agar foto tampil di sini.</span>
+            </div>
+          )}
         </div>
 
         {/* Highlight Box */}
@@ -84,15 +89,21 @@ export const PreorderSection: React.FC = () => {
             >
               <Calculator size={15} className="btn-icon" /> Kalkulator Rombongan Sekolah <ArrowUpRight size={14} className="btn-arrow-icon" />
             </button>
-            <a
-              className="btn btn-ghost"
-              style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.4)' }}
-              href={waConsultUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <MessageSquare size={15} /> Konsultasi Admin (WA)
-            </a>
+            {waConsultUrl ? (
+              <a
+                className="btn btn-ghost"
+                style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.4)' }}
+                href={waConsultUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <MessageSquare size={15} /> Konsultasi Admin (WA)
+              </a>
+            ) : (
+              <button type="button" className="btn btn-ghost" style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.4)' }} onClick={() => showToast('Kontak WhatsApp toko belum tersedia. Silakan cek kembali nanti.')}>
+                <MessageSquare size={15} /> Kontak belum tersedia
+              </button>
+            )}
           </div>
         </div>
 

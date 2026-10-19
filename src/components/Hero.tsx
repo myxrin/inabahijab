@@ -3,7 +3,8 @@ import { useStore } from '../context/StoreContext';
 import { ArrowRight, Sparkles, GraduationCap, Sun, Table as TableIcon } from 'lucide-react';
 
 export const Hero: React.FC = () => {
-  const { setActiveFilter, selectedDivision, setSelectedDivision } = useStore();
+  const { setActiveFilter, selectedDivision, setSelectedDivision, siteImages } = useStore();
+  const heroImage = siteImages.find(image => image.key === 'hero')?.image_url;
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
@@ -103,7 +104,7 @@ export const Hero: React.FC = () => {
               onClick={() => handleCategoryShortcut('Hijab & Pakaian')}
             >
               <div className="cat-icon-bubble">
-                <Sparkles size={14.5} />
+                <Sparkles size={13} />
               </div>
               <div>
                 <strong>Busana Muslim</strong>
@@ -117,7 +118,7 @@ export const Hero: React.FC = () => {
               onClick={() => handleCategoryShortcut('Seragam Sekolah — Pre-Order')}
             >
               <div className="cat-icon-bubble">
-                <GraduationCap size={14.5} />
+                <GraduationCap size={13} />
               </div>
               <div>
                 <strong>Pre-Order Seragam</strong>
@@ -131,7 +132,7 @@ export const Hero: React.FC = () => {
               onClick={() => handleCategoryShortcut('Perlengkapan Petani')}
             >
               <div className="cat-icon-bubble">
-                <Sun size={14.5} />
+                <Sun size={13} />
               </div>
               <div>
                 <strong>Capel Petani</strong>
@@ -145,7 +146,7 @@ export const Hero: React.FC = () => {
               onClick={() => handleCategoryShortcut('Meja & Perabot')}
             >
               <div className="cat-icon-bubble">
-                <TableIcon size={14.5} />
+                <TableIcon size={13} />
               </div>
               <div>
                 <strong>Meja Lipat</strong>
@@ -157,11 +158,15 @@ export const Hero: React.FC = () => {
 
         {/* Hero Visual Banner */}
         <div className="hero-visual" id="heroVisualWrap">
-          <div className="placeholder-banner editorial-hero-banner" id="heroPlaceholder">
-            <div className="brand-monogram">INABA<span>HIJAB</span></div>
-            <span className="placeholder-title serif">Koleksi Busana Pilihan &amp; Seragam Sekolah</span>
-            <span className="placeholder-sub">Mutu terjamin · Jahitan presisi · Amanah melayani</span>
-          </div>
+          {heroImage ? (
+            <img className="site-banner-image" src={heroImage} alt="Koleksi pilihan INABA HIJAB" />
+          ) : (
+            <div className="placeholder-banner editorial-hero-banner" id="heroPlaceholder">
+              <div className="brand-monogram">INABA<span>HIJAB</span></div>
+              <span className="placeholder-title serif">Koleksi Busana Pilihan &amp; Seragam Sekolah</span>
+              <span className="placeholder-sub">Tambahkan foto utama melalui panel admin untuk menampilkan koleksi toko.</span>
+            </div>
+          )}
           <div className="hero-overlay">
             <span className="hero-pill-tag">INABA HIJAB</span>
             <div className="hero-overlay-bottom">

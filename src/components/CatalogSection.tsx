@@ -13,7 +13,9 @@ export const CatalogSection: React.FC = () => {
     searchText,
     setSearchText,
     sortOption,
-    setSortOption
+    setSortOption,
+    refreshProducts,
+    showToast
   } = useStore();
 
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => {
@@ -37,17 +39,17 @@ export const CatalogSection: React.FC = () => {
   const getCategoryIcon = (iconName?: string) => {
     switch (iconName) {
       case 'sparkles':
-        return <Sparkles size={13.5} className="cat-filter-icon" />;
+        return <Sparkles size={12} className="cat-filter-icon" />;
       case 'graduation-cap':
-        return <GraduationCap size={13.5} className="cat-filter-icon" />;
+        return <GraduationCap size={12} className="cat-filter-icon" />;
       case 'sun':
-        return <Sun size={13.5} className="cat-filter-icon" />;
+        return <Sun size={12} className="cat-filter-icon" />;
       case 'table':
-        return <TableIcon size={13.5} className="cat-filter-icon" />;
+        return <TableIcon size={12} className="cat-filter-icon" />;
       case 'shirt':
-        return <Shirt size={13.5} className="cat-filter-icon" />;
+        return <Shirt size={12} className="cat-filter-icon" />;
       default:
-        return <Package size={13.5} className="cat-filter-icon" />;
+        return <Package size={12} className="cat-filter-icon" />;
     }
   };
 
@@ -196,19 +198,21 @@ export const CatalogSection: React.FC = () => {
                 <ProductCard key={product.id} product={product} />
               ))
             ) : (
-              <div className="products-empty" style={{ gridColumn: '1 / -1' }}>
-                <p>Tidak ditemukan produk yang sesuai dengan filter atau kata kunci ini.</p>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-ghost"
-                  style={{ marginTop: 10 }}
-                  onClick={() => {
-                    setActiveFilter('Semua');
-                    setSearchText('');
-                  }}
-                >
-                  Reset Pencarian &amp; Filter
-                </button>
+              <div className="products-empty catalog-empty-state" style={{ gridColumn: '1 / -1' }}>
+                <Package size={26} aria-hidden="true" />
+                <h3>{products.length === 0 ? 'Katalog sedang disiapkan' : 'Produk tidak ditemukan'}</h3>
+                <p>{products.length === 0
+                  ? 'Produk yang sudah dipublikasikan admin akan tampil di sini. Data katalog dimuat langsung dari Supabase.'
+                  : 'Coba kata kunci atau kategori lain untuk menemukan produk yang sesuai.'}</p>
+                {products.length === 0 ? (
+                  <button type="button" className="btn btn-sm btn-ghost" style={{ marginTop: 10 }} onClick={() => { void refreshProducts().catch(() => showToast('Katalog belum dapat dimuat. Periksa koneksi Supabase.')); }}>
+                    Muat Ulang Katalog
+                  </button>
+                ) : (
+                  <button type="button" className="btn btn-sm btn-ghost" style={{ marginTop: 10 }} onClick={() => { setActiveFilter('Semua'); setSearchText(''); }}>
+                    Reset Pencarian &amp; Filter
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -219,19 +223,21 @@ export const CatalogSection: React.FC = () => {
                 <ProductRowItem key={product.id} product={product} />
               ))
             ) : (
-              <div className="products-empty">
-                <p>Tidak ditemukan produk yang sesuai dengan filter atau kata kunci ini.</p>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-ghost"
-                  style={{ marginTop: 10 }}
-                  onClick={() => {
-                    setActiveFilter('Semua');
-                    setSearchText('');
-                  }}
-                >
-                  Reset Pencarian &amp; Filter
-                </button>
+              <div className="products-empty catalog-empty-state">
+                <Package size={26} aria-hidden="true" />
+                <h3>{products.length === 0 ? 'Katalog sedang disiapkan' : 'Produk tidak ditemukan'}</h3>
+                <p>{products.length === 0
+                  ? 'Produk yang sudah dipublikasikan admin akan tampil di sini. Data katalog dimuat langsung dari Supabase.'
+                  : 'Coba kata kunci atau kategori lain untuk menemukan produk yang sesuai.'}</p>
+                {products.length === 0 ? (
+                  <button type="button" className="btn btn-sm btn-ghost" style={{ marginTop: 10 }} onClick={() => { void refreshProducts().catch(() => showToast('Katalog belum dapat dimuat. Periksa koneksi Supabase.')); }}>
+                    Muat Ulang Katalog
+                  </button>
+                ) : (
+                  <button type="button" className="btn btn-sm btn-ghost" style={{ marginTop: 10 }} onClick={() => { setActiveFilter('Semua'); setSearchText(''); }}>
+                    Reset Pencarian &amp; Filter
+                  </button>
+                )}
               </div>
             )}
           </div>

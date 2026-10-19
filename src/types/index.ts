@@ -56,23 +56,40 @@ export interface OrderItem {
   product_id?: string;
   product_name: string;
   quantity: number;
-  variant_size: string;
+  variant_size?: string;
   unit_price: number;
   is_preorder?: boolean;
   school_institution?: string;
+  image_url?: string;
 }
 
 export interface Order {
   id: string;
+  order_number?: string;
   user_id?: string;
   customer_name: string;
+  customer_email?: string;
   phone: string;
   address: string;
   student_notes?: string;
   notes?: string;
   shipping_pref?: string;
   subtotal: number;
-  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'completed' | 'cancelled';
+  shipping_cost?: number;
+  total?: number;
+  status:
+    | 'Menunggu Pembayaran'
+    | 'Menunggu Diproses'
+    | 'Dikemas'
+    | 'Dikirim'
+    | 'Diterima'
+    | 'Dibatalkan'
+    | 'pending'
+    | 'confirmed'
+    | 'processing'
+    | 'shipped'
+    | 'completed'
+    | 'cancelled';
   created_at: string;
   items?: OrderItem[];
 }

@@ -13,7 +13,7 @@ import {
   Sparkles,
   ClipboardCheck,
   HelpCircle,
-  Info
+  Info,
 } from 'lucide-react';
 
 export const Header: React.FC = () => {
@@ -49,7 +49,7 @@ export const Header: React.FC = () => {
             onClick={toggleMobileMenu}
             aria-label="Buka menu navigasi"
           >
-            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+            {mobileMenuOpen ? <X size={15} /> : <Menu size={15} />}
           </button>
 
           <a
@@ -65,14 +65,14 @@ export const Header: React.FC = () => {
             <span className="brand-desc">Busana Muslim · Seragam Sekolah · Perlengkapan Harian</span>
           </a>
 
-          {/* Navigasi Utama di Samping Tulisan Brand — Bergaya Navigasi Admin List */}
-          <nav className="header-admin-style-nav" aria-label="Navigasi utama">
+          {/* Navigasi Utama di Samping Tulisan Brand (Desktop) — Bergaya Navigasi Admin List */}
+          <nav className="header-admin-style-nav desktop-only" aria-label="Navigasi utama">
             <button
               type="button"
               className="header-admin-nav-item"
               onClick={() => scrollToSection('home')}
             >
-              <Home size={14} className="nav-item-icon" />
+              <Home size={13.5} className="nav-item-icon" />
               <span>Beranda</span>
             </button>
             <button
@@ -80,7 +80,7 @@ export const Header: React.FC = () => {
               className="header-admin-nav-item"
               onClick={() => scrollToSection('preorder-section')}
             >
-              <GraduationCap size={14} className="nav-item-icon" />
+              <GraduationCap size={13.5} className="nav-item-icon" />
               <span>Pre-Order Seragam</span>
               <span className="nav-item-badge">PO</span>
             </button>
@@ -89,7 +89,7 @@ export const Header: React.FC = () => {
               className="header-admin-nav-item"
               onClick={() => scrollToSection('shop')}
             >
-              <Layers size={14} className="nav-item-icon" />
+              <Layers size={13.5} className="nav-item-icon" />
               <span>Katalog Lengkap</span>
             </button>
             <button
@@ -97,7 +97,7 @@ export const Header: React.FC = () => {
               className="header-admin-nav-item"
               onClick={() => scrollToSection('spotlight')}
             >
-              <Sparkles size={14} className="nav-item-icon" />
+              <Sparkles size={13.5} className="nav-item-icon" />
               <span>Capel &amp; Meja</span>
             </button>
             <button
@@ -105,7 +105,7 @@ export const Header: React.FC = () => {
               className="header-admin-nav-item"
               onClick={() => scrollToSection('cara-pesan')}
             >
-              <ClipboardCheck size={14} className="nav-item-icon" />
+              <ClipboardCheck size={13.5} className="nav-item-icon" />
               <span>Cara Pesan</span>
             </button>
             <button
@@ -113,7 +113,7 @@ export const Header: React.FC = () => {
               className="header-admin-nav-item"
               onClick={() => scrollToSection('bantuan')}
             >
-              <HelpCircle size={14} className="nav-item-icon" />
+              <HelpCircle size={13.5} className="nav-item-icon" />
               <span>Bantuan</span>
             </button>
           </nav>
@@ -131,7 +131,7 @@ export const Header: React.FC = () => {
               aria-label="Cari produk"
               title="Cari Produk"
             >
-              <Search size={17} />
+              <Search size={15} />
             </button>
 
             <button
@@ -140,7 +140,7 @@ export const Header: React.FC = () => {
               aria-label={user ? (isAdmin ? 'Admin Dashboard' : 'Akun Saya') : 'Masuk Akun'}
               title={user ? (isAdmin ? 'Admin Dashboard' : 'Akun Saya') : 'Masuk Akun'}
             >
-              <User size={17} />
+              <User size={15} />
               {isAdmin && (
                 <span className="admin-status-dot-header" />
               )}
@@ -152,10 +152,65 @@ export const Header: React.FC = () => {
               aria-label="Keranjang belanja"
               title="Keranjang Belanja"
             >
-              <ShoppingBag size={17} />
+              <ShoppingBag size={15} />
               {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
             </button>
           </div>
+        </div>
+
+        {/* Mobile Admin-Style Navigation Strip (Visible directly under/beside header on phone) */}
+        <div className="header-mobile-admin-strip">
+          <nav className="header-admin-style-nav mobile-strip-nav" aria-label="Navigasi cepat utama">
+            <button
+              type="button"
+              className="header-admin-nav-item"
+              onClick={() => scrollToSection('home')}
+            >
+              <Home size={12} className="nav-item-icon" />
+              <span>Beranda</span>
+            </button>
+            <button
+              type="button"
+              className="header-admin-nav-item"
+              onClick={() => scrollToSection('preorder-section')}
+            >
+              <GraduationCap size={12} className="nav-item-icon" />
+              <span>Pre-Order PO</span>
+              <span className="nav-item-badge">PO</span>
+            </button>
+            <button
+              type="button"
+              className="header-admin-nav-item"
+              onClick={() => scrollToSection('shop')}
+            >
+              <Layers size={12} className="nav-item-icon" />
+              <span>Katalog</span>
+            </button>
+            <button
+              type="button"
+              className="header-admin-nav-item"
+              onClick={() => scrollToSection('spotlight')}
+            >
+              <Sparkles size={12} className="nav-item-icon" />
+              <span>Capel &amp; Meja</span>
+            </button>
+            <button
+              type="button"
+              className="header-admin-nav-item"
+              onClick={() => scrollToSection('cara-pesan')}
+            >
+              <ClipboardCheck size={12} className="nav-item-icon" />
+              <span>Cara Pesan</span>
+            </button>
+            <button
+              type="button"
+              className="header-admin-nav-item"
+              onClick={() => scrollToSection('bantuan')}
+            >
+              <HelpCircle size={12} className="nav-item-icon" />
+              <span>Bantuan</span>
+            </button>
+          </nav>
         </div>
       </header>
 
@@ -254,7 +309,7 @@ export const Header: React.FC = () => {
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           aria-label="Beranda"
         >
-          <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <Home size={14} />
           <span>Beranda</span>
         </button>
 
@@ -263,7 +318,7 @@ export const Header: React.FC = () => {
           onClick={() => scrollToSection('shop')}
           aria-label="Katalog"
         >
-          <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <Layers size={14} />
           <span>Katalog</span>
         </button>
 
@@ -272,7 +327,7 @@ export const Header: React.FC = () => {
           onClick={() => scrollToSection('preorder-section')}
           aria-label="Seragam PO"
         >
-          <svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          <GraduationCap size={14} />
           <span>Seragam PO</span>
         </button>
 
@@ -282,7 +337,7 @@ export const Header: React.FC = () => {
           aria-label="Keranjang"
         >
           <div className="mobile-bottom-icon-wrap">
-            <svg viewBox="0 0 24 24"><path d="M4 8h16l-1.2 12H5.2L4 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>
+            <ShoppingBag size={14} />
             {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
           </div>
           <span>Keranjang</span>
@@ -290,14 +345,14 @@ export const Header: React.FC = () => {
 
         <button
           className="mobile-bottom-item"
-          onClick={handleAccountClick}
-          aria-label={user ? (isAdmin ? 'Admin' : 'Akun') : 'Masuk'}
+          onClick={handleOpenAdmin}
+          aria-label="Admin Dashboard"
         >
           <div className="mobile-bottom-icon-wrap">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/></svg>
-            {isAdmin && <span className="admin-status-dot" />}
+            <LayoutDashboard size={14} />
+            <span className="admin-status-dot" />
           </div>
-          <span>{user ? (isAdmin ? 'Admin' : 'Akun') : 'Masuk'}</span>
+          <span>Admin</span>
         </button>
       </nav>
     </>
