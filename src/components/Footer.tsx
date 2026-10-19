@@ -4,7 +4,7 @@ import { cleanPhoneNumber } from '../lib/supabase';
 import { ArrowUpRight } from 'lucide-react';
 
 export const Footer: React.FC = () => {
-  const { openModal, setActiveFilter, storeSettings, user, isAdmin } = useStore();
+  const { openModal, setActiveFilter, storeSettings, user, isAdmin, navigateToView } = useStore();
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
@@ -65,8 +65,17 @@ export const Footer: React.FC = () => {
             <button className="footer-link-btn" onClick={() => openModal('privacyPolicy')}>
               Kebijakan Privasi
             </button>
-            <button className="footer-link-btn" onClick={() => openModal(user ? 'account' : 'auth')}>
-              {user ? (isAdmin ? 'Dashboard Admin' : 'Akun Saya') : 'Masuk Akun'}
+            <button
+              className="footer-link-btn"
+              onClick={() => {
+                if (user) {
+                  navigateToView(isAdmin ? 'admin' : 'customer');
+                } else {
+                  openModal('auth');
+                }
+              }}
+            >
+              {user ? (isAdmin ? 'Dashboard Admin Toko' : 'Akun Saya') : 'Masuk Akun'}
             </button>
           </div>
 

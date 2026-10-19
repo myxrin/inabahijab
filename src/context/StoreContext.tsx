@@ -27,7 +27,11 @@ export interface LastOrderSummary {
   rawText: string;
 }
 
+export type ViewType = 'store' | 'admin' | 'customer';
+
 interface StoreContextType {
+  currentView: ViewType;
+  navigateToView: (view: ViewType) => void;
   products: Product[];
   categories: Category[];
   storeSettings: StoreSettings;
@@ -93,6 +97,30 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const [user, setUser] = useState<any | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+
+  // View state: 'store' | 'admin' | 'customer'
+  const [currentView, setCurrentView] = useState<ViewType>(() => {
+    const hash = typeof window !== 'undefined' ? window.location.hash.toLowerCase() : '';
+    if (hash === '#admin') return 'admin';
+    if (hash === '#akun' || hash === '#account') return 'customer';
+    return 'store';
+  });
+
+  const navigateToView = useCallback((view: ViewType) => {
+    setCurrentView(view);
+    if (typeof window !== 'undefined') {
+      if (view === 'admin') {
+        window.location.hash = '#admin';
+      } else if (view === 'customer') {
+        window.location.hash = '#akun';
+      } else {
+        if (window.location.hash === '#admin' || window.location.hash === '#akun' || window.location.hash === '#account') {
+          history.pushState(null, '', window.location.pathname + window.location.search);
+        }
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, []);
 
   // Load initial cart from localStorage
   const [cart, setCart] = useState<CartItem[]>(() => {
@@ -214,9 +242,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Modal helpers
   const openModal = useCallback((modal: ModalType) => {
+    if (modal === 'account') {
+      if (user) {
+        navigateToView(isAdmin ? 'admin' : 'customer');
+      } else {
+        setActiveModal('auth');
+        document.body.classList.add('lock');
+      }
+      return;
+    }
     setActiveModal(modal);
     document.body.classList.add('lock');
-  }, []);
+  }, [user, isAdmin, navigateToView]);
 
   const closeModal = useCallback(() => {
     setActiveModal(null);
@@ -405,6 +442,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   return (
     <StoreContext.Provider
       value={{
+        currentView,
+        navigateToView,
         products,
         categories,
         storeSettings,

@@ -3,7 +3,7 @@ import { useStore } from '../context/StoreContext';
 import { ShoppingBag, User, Search, Menu, X, ArrowUpRight } from 'lucide-react';
 
 export const Header: React.FC = () => {
-  const { cartCount, openModal, user, isAdmin } = useStore();
+  const { cartCount, openModal, user, isAdmin, navigateToView } = useStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => setMobileMenuOpen(prev => !prev);
@@ -20,7 +20,7 @@ export const Header: React.FC = () => {
   const handleAccountClick = () => {
     closeMobileMenu();
     if (user) {
-      openModal('account');
+      navigateToView(isAdmin ? 'admin' : 'customer');
     } else {
       openModal('auth');
     }

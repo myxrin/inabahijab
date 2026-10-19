@@ -68,7 +68,9 @@ export interface Order {
   customer_name: string;
   phone: string;
   address: string;
+  student_notes?: string;
   notes?: string;
+  shipping_pref?: string;
   subtotal: number;
   status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'completed' | 'cancelled';
   created_at: string;

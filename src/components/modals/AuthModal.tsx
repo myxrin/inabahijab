@@ -4,7 +4,7 @@ import { supabase, ADMIN_ALLOWLIST } from '../../lib/supabase';
 import { X, Eye, EyeOff } from 'lucide-react';
 
 export const AuthModal: React.FC = () => {
-  const { activeModal, closeModal, openModal, user, profile, isAdmin, showToast } = useStore();
+  const { activeModal, closeModal, openModal, user, profile, isAdmin, showToast, navigateToView } = useStore();
 
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [fullName, setFullName] = useState('');
@@ -42,30 +42,34 @@ export const AuthModal: React.FC = () => {
       }
 
       if (mode === 'signup') {
-        const { data, error } = await supabase.auth.signUp({
+        const { data, error: signUpErr } = await supabase.auth.signUp({
           email: cleanEmail,
           password,
           options: {
             data: { full_name: fullName.trim() }
           }
         });
-        if (error) throw error;
+        if (signUpErr) throw signUpErr;
         setNotice({ type: 'success', text: 'Akun berhasil dibuat! Silakan masuk.' });
         showToast('Akun berhasil dibuat.');
         if (data.session) {
           closeModal();
+          const isAdminUser = ADMIN_ALLOWLIST.includes(cleanEmail);
+          navigateToView(isAdminUser ? 'admin' : 'customer');
         } else {
           setMode('signin');
         }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { error: signInErr } = await supabase.auth.signInWithPassword({
           email: cleanEmail,
           password
         });
-        if (error) throw error;
+        if (signInErr) throw signInErr;
         setNotice({ type: 'success', text: 'Berhasil masuk.' });
         showToast('Berhasil masuk.');
         closeModal();
+        const isAdminUser = ADMIN_ALLOWLIST.includes(cleanEmail);
+        navigateToView(isAdminUser ? 'admin' : 'customer');
       }
     } catch (err: any) {
       setNotice({
