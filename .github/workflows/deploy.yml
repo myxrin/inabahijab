@@ -26,7 +26,10 @@ jobs:
           node-version: 20
 
       - run: npm install
-      - run: npm run build
+      - name: Build for GitHub Pages
+        run: npm run build
+        env:
+          GITHUB_PAGES: 'true'
 
       - uses: actions/upload-pages-artifact@v3
         with:
