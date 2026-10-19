@@ -1,8 +1,0 @@
-{
-  "name": "INABA Hijab — Busana Muslim, Seragam & Kebutuhan Harian",
-  "description": "INABA Hijab: busana muslim ready stock, pre-order seragam sekolah (SDIT, TPQ, Madin), perlengkapan topi capel petani, dan meja lipat serbaguna.",
-  "permissions": [],
-  "capabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
-}
