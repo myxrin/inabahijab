@@ -65,6 +65,8 @@ interface StoreContextType {
   toastMessage: string | null;
   showToast: (msg: string) => void;
   refreshProducts: () => Promise<void>;
+  saveProduct: (productData: Partial<Product>, isEditingId?: string) => Promise<{ success: boolean; backendSuccess: boolean; backendError?: string | null; product: Product }>;
+  deleteProductItem: (id: string) => Promise<{ success: boolean; backendError?: string | null }>;
   createOrder: (orderData: {
     customerName: string;
     phone: string;
@@ -78,9 +80,24 @@ interface StoreContextType {
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 const CART_STORAGE_KEY = 'inaba_cart_items_v2';
+const CUSTOM_PRODUCTS_STORAGE_KEY = 'inaba_custom_products_v2';
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [products, setProducts] = useState<Product[]>(DEFAULT_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>(() => {
+    try {
+      const saved = localStorage.getItem(CUSTOM_PRODUCTS_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const ids = new Set(parsed.map(p => p.id));
+          return [...parsed, ...DEFAULT_PRODUCTS.filter(p => !ids.has(p.id))];
+        }
+      }
+    } catch (e) {
+      console.warn('Could not load custom products from storage', e);
+    }
+    return DEFAULT_PRODUCTS;
+  });
   const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
   const [storeSettings, setStoreSettings] = useState<StoreSettings>(DEFAULT_STORE_SETTINGS);
 
@@ -167,7 +184,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         .order('created_at', { ascending: false });
 
       if (!prodError && prodData && prodData.length > 0) {
-        setProducts(prodData);
+        setProducts(prev => {
+          const supabaseIds = new Set(prodData.map(p => p.id));
+          const localOnly = prev.filter(p => !supabaseIds.has(p.id));
+          const merged = [...localOnly, ...prodData];
+          try {
+            localStorage.setItem(CUSTOM_PRODUCTS_STORAGE_KEY, JSON.stringify(merged));
+          } catch {}
+          return merged;
+        });
       }
 
       // Fetch store settings
@@ -439,6 +464,108 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return summary;
   }, [cart, user, storeSettings, clearCart]);
 
+  // Save Product (insert or update with Supabase + local persistence)
+  const saveProduct = useCallback(async (productData: Partial<Product>, isEditingId?: string) => {
+    let savedProduct: Product | null = null;
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    let backendError: string | null = null;
+    let backendSuccess = false;
+
+    if (supabase) {
+      try {
+        if (isEditingId && uuidRegex.test(isEditingId)) {
+          const { data, error } = await supabase.from('products').update(productData).eq('id', isEditingId).select().single();
+          if (error) {
+            backendError = error.message;
+          } else if (data) {
+            backendSuccess = true;
+            savedProduct = data;
+          }
+        } else {
+          const insertPayload: any = { ...productData };
+          if (insertPayload.id && !uuidRegex.test(insertPayload.id)) {
+            delete insertPayload.id;
+          }
+          const { data, error } = await supabase.from('products').insert([insertPayload]).select().single();
+          if (error) {
+            backendError = error.message;
+          } else if (data) {
+            backendSuccess = true;
+            savedProduct = data;
+          }
+        }
+      } catch (err: any) {
+        backendError = err?.message || 'Gagal koneksi database';
+      }
+    }
+
+    if (!savedProduct) {
+      savedProduct = {
+        id: isEditingId || ('prod_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)),
+        name: productData.name || '',
+        slug: productData.slug || ('prod-' + Date.now().toString(36)),
+        category: productData.category || 'Hijab & Pakaian',
+        price: Number(productData.price) || 0,
+        stock: productData.is_preorder ? 0 : Number(productData.stock) || 0,
+        is_preorder: Boolean(productData.is_preorder),
+        preorder_status: productData.preorder_status || 'open',
+        school_institution: productData.school_institution || '',
+        estimated_delivery: productData.estimated_delivery || '',
+        min_order: Number(productData.min_order) || 1,
+        description: productData.description || '',
+        variants: productData.variants || ['Standar'],
+        size_guide: productData.size_guide || '',
+        badge: productData.badge || null,
+        image_url: productData.image_url || null,
+        is_active: productData.is_active !== undefined ? productData.is_active : true,
+        created_at: new Date().toISOString()
+      };
+    }
+
+    const finalProduct = savedProduct;
+    setProducts(prev => {
+      let next: Product[];
+      const idx = prev.findIndex(p => p.id === finalProduct.id || (p.slug && p.slug === finalProduct.slug));
+      if (idx !== -1) {
+        next = [...prev];
+        next[idx] = finalProduct;
+      } else {
+        next = [finalProduct, ...prev];
+      }
+      try {
+        localStorage.setItem(CUSTOM_PRODUCTS_STORAGE_KEY, JSON.stringify(next));
+      } catch (e) {
+        console.warn(e);
+      }
+      return next;
+    });
+
+    return { success: true, backendSuccess, backendError, product: finalProduct };
+  }, []);
+
+  // Delete product
+  const deleteProductItem = useCallback(async (id: string) => {
+    let backendError: string | null = null;
+    if (supabase) {
+      try {
+        const { error } = await supabase.from('products').delete().eq('id', id);
+        if (error) backendError = error.message;
+      } catch (e: any) {
+        backendError = e.message;
+      }
+    }
+    setProducts(prev => {
+      const next = prev.filter(p => p.id !== id);
+      try {
+        localStorage.setItem(CUSTOM_PRODUCTS_STORAGE_KEY, JSON.stringify(next));
+      } catch (e) {
+        console.warn(e);
+      }
+      return next;
+    });
+    return { success: true, backendError };
+  }, []);
+
   return (
     <StoreContext.Provider
       value={{
@@ -477,6 +604,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         toastMessage,
         showToast,
         refreshProducts,
+        saveProduct,
+        deleteProductItem,
         createOrder
       }}
     >

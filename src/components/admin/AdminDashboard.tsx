@@ -36,6 +36,8 @@ export const AdminDashboard: React.FC = () => {
     profile,
     showToast,
     refreshProducts,
+    saveProduct,
+    deleteProductItem,
     storeSettings,
     products: contextProducts,
     categories: contextCategories
@@ -73,7 +75,8 @@ export const AdminDashboard: React.FC = () => {
     description: '',
     variants: 'S | M | L | XL',
     size_guide: '',
-    badge: ''
+    badge: '',
+    image_url: ''
   });
 
   // Category editor state
@@ -107,11 +110,21 @@ export const AdminDashboard: React.FC = () => {
         supabase.from('newsletter_subscribers').select('email, created_at').order('created_at', { ascending: false })
       ]);
 
-      if (pRes.status === 'fulfilled' && pRes.value.data) setAdminProducts(pRes.value.data);
-      else setAdminProducts(contextProducts);
+      if (pRes.status === 'fulfilled' && pRes.value.data && pRes.value.data.length > 0) {
+        const supabaseIds = new Set(pRes.value.data.map((p: any) => p.id));
+        const localOnly = contextProducts.filter(p => !supabaseIds.has(p.id));
+        setAdminProducts([...localOnly, ...pRes.value.data]);
+      } else {
+        setAdminProducts(contextProducts);
+      }
 
-      if (cRes.status === 'fulfilled' && cRes.value.data) setAdminCategories(cRes.value.data);
-      else setAdminCategories(contextCategories);
+      if (cRes.status === 'fulfilled' && cRes.value.data && cRes.value.data.length > 0) {
+        const supabaseSlugs = new Set(cRes.value.data.map((c: any) => c.slug));
+        const localOnly = contextCategories.filter(c => !supabaseSlugs.has(c.slug));
+        setAdminCategories([...cRes.value.data, ...localOnly]);
+      } else {
+        setAdminCategories(contextCategories);
+      }
 
       if (oRes.status === 'fulfilled' && oRes.value.data) setAdminOrders(oRes.value.data);
       if (nRes.status === 'fulfilled' && nRes.value.data) setAdminNewsletter(nRes.value.data);
@@ -135,7 +148,10 @@ export const AdminDashboard: React.FC = () => {
   };
 
   // Product CRUD
+  const [savingProduct, setSavingProduct] = useState(false);
+
   const openNewProductForm = () => {
+    setActiveTab('products');
     setEditingProduct(null);
     setProdForm({
       name: '',
@@ -150,7 +166,8 @@ export const AdminDashboard: React.FC = () => {
       description: '',
       variants: 'S | M | L | XL',
       size_guide: '',
-      badge: ''
+      badge: '',
+      image_url: ''
     });
     setShowProductEditor(true);
   };
@@ -170,7 +187,8 @@ export const AdminDashboard: React.FC = () => {
       description: p.description || '',
       variants: Array.isArray(p.variants) ? p.variants.join(' | ') : '',
       size_guide: p.size_guide || '',
-      badge: p.badge || ''
+      badge: p.badge || '',
+      image_url: p.image_url || ''
     });
     setShowProductEditor(true);
   };
@@ -182,63 +200,73 @@ export const AdminDashboard: React.FC = () => {
       return;
     }
     const variantsArray = prodForm.variants.split(/[|\r\n]+/).map(v => v.trim()).filter(Boolean);
-    const slug = prodForm.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + (editingProduct ? '' : '-' + Date.now().toString(36));
+    const slugBase = prodForm.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'produk';
+    const slug = editingProduct?.slug || `${slugBase}-${Date.now().toString(36)}`;
 
     const payload: Partial<Product> = {
       name: prodForm.name.trim(),
-      slug: editingProduct?.slug || slug,
-      category: prodForm.category,
-      price: Number(prodForm.price) || 0,
-      stock: prodForm.is_preorder ? 0 : Number(prodForm.stock) || 0,
-      is_preorder: prodForm.is_preorder,
+      slug,
+      category: prodForm.category || (adminCategories[0]?.name || 'Hijab & Pakaian'),
+      price: Math.max(0, Number(prodForm.price) || 0),
+      stock: prodForm.is_preorder ? 0 : Math.max(0, Number(prodForm.stock) || 0),
+      is_preorder: Boolean(prodForm.is_preorder),
       preorder_status: prodForm.is_preorder ? prodForm.preorder_status : 'open',
-      school_institution: prodForm.is_preorder ? prodForm.school_institution : '',
-      estimated_delivery: prodForm.is_preorder ? prodForm.estimated_delivery : '',
-      min_order: prodForm.is_preorder ? Number(prodForm.min_order) || 1 : 1,
+      school_institution: prodForm.is_preorder ? prodForm.school_institution.trim() : '',
+      estimated_delivery: prodForm.is_preorder ? prodForm.estimated_delivery.trim() : '',
+      min_order: prodForm.is_preorder ? Math.min(50, Math.max(1, Number(prodForm.min_order) || 1)) : 1,
       description: prodForm.description.trim(),
       variants: variantsArray.length ? variantsArray : ['Standar'],
       size_guide: prodForm.size_guide.trim(),
       badge: prodForm.badge.trim() || null,
+      image_url: prodForm.image_url.trim() || null,
       is_active: editingProduct ? editingProduct.is_active : true
     };
 
-    if (supabase) {
-      try {
-        if (editingProduct) {
-          await supabase.from('products').update(payload).eq('id', editingProduct.id);
-        } else {
-          await supabase.from('products').insert(payload);
-        }
-        showToast('Produk berhasil disimpan ke database!');
-      } catch (err: any) {
-        showToast('Gagal simpan produk: ' + (err?.message || 'Error'));
+    setSavingProduct(true);
+    try {
+      const res = await saveProduct(payload, editingProduct?.id);
+      if (res.backendSuccess) {
+        showToast('Produk berhasil disimpan ke database Supabase!');
+      } else if (res.backendError) {
+        showToast(`Produk disimpan ke katalog toko (Catatan: ${res.backendError})`);
+      } else {
+        showToast('Produk berhasil disimpan ke katalog!');
       }
-    } else {
-      showToast('Produk tersimpan di katalog lokal.');
-    }
 
-    setShowProductEditor(false);
-    loadAdminData();
-    refreshProducts();
+      setAdminProducts(prev => {
+        const idx = prev.findIndex(p => p.id === res.product.id || (p.slug && p.slug === res.product.slug));
+        if (idx !== -1) {
+          const next = [...prev];
+          next[idx] = res.product;
+          return next;
+        }
+        return [res.product, ...prev];
+      });
+
+      setShowProductEditor(false);
+    } catch (err: any) {
+      showToast('Gagal menyimpan: ' + (err?.message || 'Error'));
+    } finally {
+      setSavingProduct(false);
+    }
   };
 
   const handleDeleteProduct = async (id: string, name: string) => {
     if (!window.confirm(`Hapus produk "${name}" secara permanen?`)) return;
-    if (supabase) {
-      await supabase.from('products').delete().eq('id', id);
+    const res = await deleteProductItem(id);
+    setAdminProducts(prev => prev.filter(p => p.id !== id));
+    if (res.backendError) {
+      showToast(`Produk dihapus dari katalog (Catatan: ${res.backendError})`);
+    } else {
+      showToast(`Produk "${name}" berhasil dihapus.`);
     }
-    showToast('Produk berhasil dihapus.');
-    loadAdminData();
-    refreshProducts();
   };
 
   const handleToggleProduct = async (p: Product) => {
-    if (supabase) {
-      await supabase.from('products').update({ is_active: !p.is_active }).eq('id', p.id);
-    }
+    const updated = { ...p, is_active: !p.is_active };
+    await saveProduct(updated, p.id);
+    setAdminProducts(prev => prev.map(item => item.id === p.id ? { ...item, is_active: !p.is_active } : item));
     showToast(`Status "${p.name}" diperbarui.`);
-    loadAdminData();
-    refreshProducts();
   };
 
   // Category Handlers
@@ -839,18 +867,45 @@ export const AdminDashboard: React.FC = () => {
                     </div>
 
                     <div className="field">
-                      <label>Catatan Panduan Ukuran (Opsional)</label>
+                      <label>URL Foto Produk (Opsional)</label>
                       <input
                         type="text"
-                        value={prodForm.size_guide}
-                        onChange={(e) => setProdForm(prev => ({ ...prev, size_guide: e.target.value }))}
-                        placeholder="Contoh: Ukuran M: LD 100cm, PB 135cm | L: LD 106cm, PB 138cm"
+                        value={prodForm.image_url}
+                        onChange={(e) => setProdForm(prev => ({ ...prev, image_url: e.target.value }))}
+                        placeholder="https://... atau tautan foto produk"
                       />
+                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6, alignItems: 'center' }}>
+                        <span style={{ fontSize: 11.5, color: 'var(--muted)' }}>Contoh Preset Foto:</span>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-ghost"
+                          style={{ fontSize: 11, padding: '3px 8px' }}
+                          onClick={() => setProdForm(prev => ({ ...prev, image_url: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&auto=format&fit=crop&q=80' }))}
+                        >
+                          Gamis
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-ghost"
+                          style={{ fontSize: 11, padding: '3px 8px' }}
+                          onClick={() => setProdForm(prev => ({ ...prev, image_url: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&auto=format&fit=crop&q=80' }))}
+                        >
+                          Seragam
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-ghost"
+                          style={{ fontSize: 11, padding: '3px 8px' }}
+                          onClick={() => setProdForm(prev => ({ ...prev, image_url: 'https://images.unsplash.com/photo-1578932750294-f5075e85f44a?w=800&auto=format&fit=crop&q=80' }))}
+                        >
+                          Anyaman
+                        </button>
+                      </div>
                     </div>
 
                     <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
-                      <button className="btn btn-clay" type="submit">
-                        Simpan Produk ke Katalog
+                      <button className="btn btn-clay" type="submit" disabled={savingProduct}>
+                        {savingProduct ? 'Menyimpan Produk...' : (editingProduct ? 'Perbarui Produk' : 'Simpan Produk ke Katalog')}
                       </button>
                       <button
                         className="btn btn-ghost"
@@ -901,6 +956,15 @@ export const AdminDashboard: React.FC = () => {
                     Pre-Order ({adminProducts.filter(p => p.is_preorder).length})
                   </button>
                 </div>
+
+                <button
+                  type="button"
+                  className="btn btn-sm btn-clay toolbar-add-btn"
+                  onClick={openNewProductForm}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexShrink: 0 }}
+                >
+                  <Plus size={15} /> Tambah Produk
+                </button>
               </div>
 
               {/* Products Table */}

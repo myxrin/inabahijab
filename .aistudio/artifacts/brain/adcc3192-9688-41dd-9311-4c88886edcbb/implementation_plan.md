@@ -1,71 +1,75 @@
-# Halaman Layar Penuh (Full-Page) untuk Dashboard Admin & Akun Pelanggan
+# Penyempurnaan Tampilan Mobile, Ikon Presisi & Penyelarasan Menu Navigasi Header
 
-Transformasi antarmuka akun dari modal pop-up yang sempit menjadi halaman penuh (*full-page view*) dengan sidebar navigasi kiri untuk admin dan portal terpadu untuk pelanggan, memberikan ruang kerja yang leluasa, terstruktur, dan profesional.
+Penyempurnaan menyeluruh antarmuka mobile (HP) agar proporsional dan elegan: memperkecil seluruh ikon yang menumpuk (header, bottom nav, dan filter kategori), menyelaraskan gaya daftar menu di samping header INABA HIJAB dengan visual modern list admin, serta memastikan fitur penambahan produk baru berfungsi 100% tanpa hambatan.
 
 ### User Review & Critical Decisions
 
 > [!IMPORTANT]
-> Keputusan desain berikut telah dikonfirmasi melalui sesi tanya jawab sebelumnya:
-> - **Tata Letak Admin**: Menggunakan layout dashboard layar penuh dengan **sidebar navigasi di sebelah kiri (240px–260px)** dan area kerja utama yang luas.
-> - **Tampilan Akun Pelanggan**: Menggunakan **tampilan layar penuh** untuk semua jenis akun (baik admin toko maupun pelanggan umum non-admin), menggantikan dialog modal bertumpuk.
-> - **Mekanisme Navigasi**: Menggunakan *hash-based routing* (`#admin`, `#akun`) dan integrasi *view state* di React sehingga pengguna dapat beralih secara mulus ke tampilan toko ("Kembali ke Toko") dan memanfaatkan tombol navigasi browser (*back/forward*).
+> Ringkasan keputusan penting yang dikonfirmasi oleh pengguna pada tahap klarifikasi:
+> - **Ukuran & Kerapian Ikon**: Semua kelompok ikon (header aksi, bottom navigation bar mobile, dan filter kategori) diperkecil secara proporsional (14px–17px) dengan stroke tipis elegan (1.5–1.7) agar tidak lagi menumpuk atau terasa sesak di layar smartphone.
+> - **Daftar Menu Navigasi Utama**: Menu navigasi di samping tulisan header "INABA HIJAB" (Beranda, Pre-Order, Katalog, Capel & Meja, Cara Pesan, Bantuan) diubah dari teks polos menjadi format item berpita/tab modern menyerupai *admin navigation list* dengan indikator aktif, padding halus, sudut rounded, dan mikro-ikon pendamping.
+> - **Kelancaran Tambah Produk Admin**: Memperbaiki alur penambahan produk di admin dashboard dengan validasi input yang luwes, penyelarasan schema payload ke Supabase (beserta fallback sinkronisasi instan ke storage lokal), serta penambahan tombol akses cepat "+ Tambah Produk" yang mudah dijangkau di semua tab dan tampilan HP.
 
 ---
 
 ### 1. Overview & Core Concept
 
-- **Apa yang Dibangun**:
-  1. **Admin Full-Page Dashboard**: Halaman khusus satu layar penuh dengan sidebar vertikal di kiri untuk mengelola katalog produk, kategori pakaian/seragam, antrean pesanan masuk (dengan pengubah status dan tombol direct WhatsApp), pengaturan nomor toko & rekening transfer, serta daftar email *newsletter*.
-  2. **Customer Full-Page Portal**: Halaman akun khusus pelanggan dengan sidebar ringkas (profil, riwayat transaksi pesanan, status pembuatan seragam pre-order, dan tautan kembali belanja).
-  3. **Navigasi Mulus**: Tombol "Kembali ke Toko" / "Lihat Toko" yang persisten untuk kembali ke beranda e-commerce tanpa kehilangan sesi atau status belanja.
-- **Target Pengguna**:
-  - **Admin / Pemilik Toko**: Membutuhkan ruang visual yang lapang untuk input produk baru, spesifikasi ukuran pre-order, pemantauan pesanan pelanggan, dan pengelolaan operasional harian tanpa terhalang dialog modal sempit.
-  - **Pelanggan Umum**: Memerlukan kejelasan daftar pesanan, nomor resi/status produksi jahit, serta kemudahan akses profil akun.
-- **Nilai Utama**: Menghilangkan batasan modal pop-up vertikal yang sesak (*cramped modal sheet*), meningkatkan efisiensi kerja admin secara drastis, dan memberikan pengalaman e-commerce modern setara SaaS e-commerce ternama.
+- **What It Does**: Memberikan penyegaran visual tingkat tinggi pada antarmuka smartphone dan desktop:
+  1. Header brand dan navigasi samping kini berpadu harmonis dengan item list bergaya dashboard admin (pill rounded, background hover lembut, mikro-ikon berpresisi tinggi).
+  2. Seluruh ikon di smartphone (bar bawah, top bar, chip kategori) dibuat ringkas, proporsional, dan nyaman di mata (anti-numpuk).
+  3. Alur pengelolaan katalog produk admin (tambah, edit, simpan status PO/Ready) menjadi tangguh dan instan terlihat di katalog toko.
+- **Target Audience / Persona**: Pelanggan muslim, wali murid santri pre-order seragam, pembeli perlengkapan harian via smartphone, serta pengelola toko INABA Hijab yang mengelola inventaris langsung dari HP maupun laptop.
+- **Key Value**: Pengalaman visual premium bernuansa butik islami modern yang lapang, tidak sesak di layar kecil, serta fungsi penambahan produk toko yang teruji andal.
 
 ---
 
 ### 2. User Experience & Visual Design
 
-#### A. Alur Pengguna (User Flows)
-1. **Akses Dashboard Admin**:
-   - Admin login melalui tombol akun di header atau langsung via URL `#admin`.
-   - Layar bertransisi ke tampilan *Full Page Admin Workspace*.
-   - Sidebar kiri menampilkan tab navigasi aktif (Ringkasan, Katalog Produk, Kategori, Pesanan Masuk, Pengaturan Toko, Email Newsletter).
-   - Saat memilih "Katalog Produk", admin dapat memfilter atau membuka form tambah/edit produk dengan tata letak formulir lapang berdampingan (*side-by-side / wide form grid*).
-   - Tombol "Kembali ke Beranda Toko" selalu tersedia di bagian bawah sidebar maupun breadcrumb atas.
-2. **Akses Portal Pelanggan**:
-   - Pelanggan login atau mengklik profil akun.
-   - Layar menampilkan *Full Page Customer Dashboard* dengan rangkuman profil, kartu riwayat pesanan yang jelas beserta rincian produk, estimasi masa PO, dan tombol WhatsApp CS.
+#### Key User Flows
+1. **Navigasi Header (Desktop & Mobile)**:
+   - Pengunjung melihat logo brand **INABA HIJAB** dengan daftar menu di sampingnya yang berpenampilan sleek layaknya admin navigation (tiap item memiliki mikro-ikon halus, label teks jelas, background hover hangat, dan indikator aktif).
+   - Di mobile, menekan hamburger menu membuka drawer dengan list rapi berformat baris berikon dan badge status seragam.
+2. **Eksplorasi Katalog di Smartphone**:
+   - Filter kategori dan division switcher tampil dengan ikon mini (13px–14px), teks proporsional, dan scroll horizontal mulus tanpa patahan atau penumpukan.
+   - Bottom navigation bar melayang di bawah layar dengan tinggi pas (52px), ikon 16px, label 9.5px, serta safe-area iPhone/Android yang nyaman disentuh tanpa menghalangi konten.
+3. **Pengelolaan Produk oleh Admin**:
+   - Admin dapat menekan tombol "+ Tambah Produk" langsung dari tab Produk, tab Ringkasan, maupun tombol aksi cepat mobile.
+   - Form editor terbuka dengan input harga, stok, foto, dan opsi Pre-Order Seragam.
+   - Saat disimpan, produk langsung masuk ke daftar admin dan etalase toko secara sinkron.
 
-#### B. Identitas Visual & Tema
-- **Aesthetic**: *Clean Editorial Utility* yang selaras dengan palet hangat INABA Hijab:
-  - Warna Kanvas: `#f8f4ec` (Paper) dan `#ffffff` (White Card Surfaces).
-  - Aksen Utama: `#b84f36` (Terracotta Clay) untuk tombol aksi utama dan `#426247` (Forest Olive) untuk status aktif.
-  - Garis Pembatas: Hairline border 1px halus `#ded8ca` tanpa bayangan tebal yang mengganggu.
-- **Tipografi**:
-  - Judul & Brand: `Newsreader` (serif anggun) dan `Figtree` (sans modern berbobot mantap).
-  - Data Numerik & Keuangan: Angka harga rupiah dan kode pesanan menggunakan *tabular numerals* (`tabular-nums`) agar sejajar rapi.
-- **Layout Responsif**:
-  - Layar Desktop ($\ge 1024\text{px}$): Sidebar kiri terfiksasi setinggi layar (100vh) dengan scroll mandiri pada konten utama.
-  - Layar Tablet & Ponsel: Header bar admin dengan tombol hamburger drawer untuk membuka navigasi samping, menjamin operasional dari ponsel tetap nyaman.
+#### Visual Identity & Theme
+- **Aesthetic Direction**: *Warm Islamic Editorial & Clean Artisanal* — tenang, teratur, bersahaja namun berkelas tinggi tanpa elemen dekoratif berlebihan.
+- **Color Palette**:
+  - Primary Accent: Terracotta Clay (`#b84f36`) & Warm Sand (`#c99738`).
+  - Surface Background: Soft Alabaster Paper (`#f8f5ee` / `#ffffff`).
+  - Active Nav Item: `rgba(184, 79, 54, 0.08)` dengan border tipis `rgba(184, 79, 54, 0.18)` dan teks kontras.
+  - Line Borders: Subtle warm hairline (`#e7ded0`).
+- **Typography & Scale**:
+  - Brand Header: Serif klasik Playfair Display / Cormorant Garamond.
+  - Nav Items: Sans-serif Plus Jakarta Sans / Inter (13px di desktop, weight 600).
+  - Mobile Bottom Labels: 9.5px–10px tabular font, letter-spacing tight.
+- **Iconography Standards**:
+  - Ukuran ikon header aksi: 17px (dari sebelumnya 20px) di dalam wadah sentuh 38px.
+  - Ukuran ikon bottom navigation: 16px (dari sebelumnya 20px) dengan stroke 1.6px.
+  - Ukuran ikon kategori filter: 13px–14px seimbang dengan teks 13px.
 
 ---
 
 ### 3. Key Product Decisions & Trade-Offs
 
-- **Keputusan 1: Full-Page View Mode di React vs Modals Overlay**
-  - *Pendekatan*: Mengganti pembungkus sheet pop-up `<div className="overlay">` pada `AccountModal` dengan komponen tampilan penuh mandiri (`AdminDashboardView` dan `CustomerDashboardView`) yang dirender bersyarat di level `App.tsx`.
-  - *Alasan*: Modal sheet memiliki batas lebar dan tinggi yang memaksa admin scroll ganda (*scroll inside scroll*). Halaman penuh memanfaatkan 100% resolusi layar secara ergonomis.
-  - *Alternatif yang Ditinggalkan*: Memperlebar modal sheet menjadi `width: 95vw`—ditolak karena tetap terasa seperti pop-up melayang dan tidak menyelesaikan masalah navigasi berlapis.
+- **Decision 1: Transformasi Daftar Menu Header Mengikuti Style List Admin**
+  - *Chosen Approach*: Mengubah tag navigasi samping header dari tautan teks telanjang menjadi sistem list horizontal bersegmen (segmented pill list) dengan mikro-ikon (Home, GraduationCap, Grid, Table, ShieldCheck, MessageCircle). Pada tampilan mobile drawer, tautan diubah menjadi list kartu bertingkat identik dengan sidebar admin.
+  - *Why*: Menghadirkan kesatuan desain (*design continuity*) antara halaman depan dan dashboard manajemen, tampak modern dan profesional.
+  - *Alternatives Considered*: Membiarkan navigasi teks standar garis bawah (terkesan generik dan kurang terstruktur).
 
-- **Keputusan 2: Hash Routing (`#admin`, `#akun`) & Sinkronisasi History**
-  - *Pendekatan*: Menggunakan hash browser dan state sinkron di `StoreContext`.
-  - *Alasan*: Menjaga kompatibilitas SPA Vite tanpa membutuhkan konfigurasi server rewrite khusus, serta memungkinkan bookmarking dan penggunaan tombol Back browser secara intuitif.
+- **Decision 2: Optimalisasi Ergonomi Ikon & Bottom Bar HP**
+  - *Chosen Approach*: Menurunkan dimensi ikon sebesar ~20-25% dan memperluas jarak antar item (*hitbox* tetap 44px untuk kemudahan tap).
+  - *Why*: Layar smartphone Indonesia rata-rata memiliki lebar 360px–393px; ikon besar membuat teks turun baris dan saling menumpuk.
+  - *Alternatives Considered*: Menghilangkan label teks bawah dan hanya menyisakan ikon (dapat membingungkan pengguna awam).
 
-- **Keputusan 3: Manajemen Status Pesanan & Chat WhatsApp Langsung**
-  - *Pendekatan*: Setiap kartu atau baris pesanan menampilkan detail pemesan, item belanja, total rupiah, *dropdown* status pesanan instan, serta tombol pintas "Chat WA Pelanggan" dengan pesan salam otomatis.
-  - *Alasan*: Alur operasional bisnis busana muslim & seragam di Indonesia sangat bergantung pada komunikasi WhatsApp untuk konfirmasi ukuran atau bukti pembayaran.
+- **Decision 3: Ketahanan & Fleksibilitas Simpan Produk (Supabase + Local Dual-Sync)**
+  - *Chosen Approach*: Menyempurnakan `saveProduct` di `StoreContext` agar melakukan pembersihan payload (sanitasi tipe data array/string), menangkap respon Supabase secara aman, serta memastikan sinkronisasi langsung ke `adminProducts` dan `localStorage` sehingga produk langsung muncul di tabel admin dan etalase toko meskipun ada pembatasan RLS Supabase.
+  - *Why*: Mencegah kegagalan simpan produk dan memastikan admin selalu melihat hasil inputnya seketika.
 
 ---
 
@@ -73,35 +77,56 @@ Transformasi antarmuka akun dari modal pop-up yang sempit menjadi halaman penuh 
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│                                App.tsx                                 │
-│                                                                        │
-│  currentView === 'store'               currentView === 'account'       │
-│  ┌───────────────────────────────┐     ┌─────────────────────────────┐ │
-│  │ Header (Top Bar Nav)          │     │ isUserAdmin ?               │ │
-│  │ Main Sections (Hero, Catalog) │     │ ├─ AdminDashboard (Full)    │ │
-│  │ Footer                        │     │ └─ CustomerDashboard (Full) │ │
-│  └───────────────────────────────┘     └─────────────────────────────┘ │
+│                        INABA HIJAB STOREFRONT                          │
+├────────────────────────────────────────────────────────────────────────┤
+│  [Top Header]                                                          │
+│  ┌──────────────┐   ┌──────────────────────────────────────────────┐   │
+│  │ INABA HIJAB  │   │  [Beranda]  [PO Seragam]  [Katalog]  [Capel] │   │  <-- Styled like Admin List
+│  └──────────────┘   └──────────────────────────────────────────────┘   │
+│                     ┌───────────┐ ┌──────────┐ ┌───────────────────┐   │
+│                     │ 🔍 Search │ │ 👤 Akun  │ │ 🛍️ Tas Belanja   │   │  <-- Mini Compact Icons (17px)
+│                     └───────────┘ └──────────┘ └───────────────────┘   │
+├────────────────────────────────────────────────────────────────────────┤
+│  [Mobile Viewport: Filters & Catalog Feed]                             │
+│  ┌──────────────────────────────────────────────────────────────────┐  │
+│  │ [✨ Semua]  [👗 Busana]  [🎓 Seragam PO]  [☀️ Capel]  [🪑 Meja]    │  │  <-- 13px Micro-Icons
+│  └──────────────────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────────────────┐  │
+│  │  Produk List / Grid Tampilan HP Rapi & Bebas Overlap             │  │
+│  └──────────────────────────────────────────────────────────────────┘  │
+├────────────────────────────────────────────────────────────────────────┤
+│  [Floating Mobile Bottom Navigation Bar (52px)]                        │
+│  ┌──────────────┬──────────────┬──────────────┬──────────────┬───────┐ │
+│  │ 🏠 Beranda   │ 🛍️ Katalog   │ 🎓 Seragam   │ 💬 Bantuan   │ 👤 Akun│ │  <-- Compact 16px Icons
+│  └──────────────┴──────────────┴──────────────┴──────────────┴───────┘ │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                      ADMIN DASHBOARD & PERSISTENCE                     │
+├────────────────────────────────────────────────────────────────────────┤
+│  • Tombol Cepat: "+ Tambah Produk" di Header & Tab Toolbar             │
+│  • Form Editor: Validasi lengkap, foto preset, varian S-XXL           │
+│  • Dual-Storage Engine: Supabase DB + Instant Local Catalog Sync      │
+│  • Reactive State: Update seketika di admin table & storefront feed    │
 └────────────────────────────────────────────────────────────────────────┘
-                               │
-            ┌──────────────────┴──────────────────┐
-            ▼                                     ▼
-┌───────────────────────────────┐   ┌───────────────────────────────┐
-│ Admin Sidebar (240px)         │   │ Admin Content Canvas          │
-│ • Profil & Role Admin         │   │ • Top Bar: Breadcrumb + Action│
-│ • Tab 1: Ringkasan & Statistik│   │ • Tab 1: 4 Metrik + Pesanan   │
-│ • Tab 2: Katalog Produk       │   │ • Tab 2: Tabel + Form Editor  │
-│ • Tab 3: Kategori             │   │ • Tab 3: Tambah & Urutkan     │
-│ • Tab 4: Pesanan Masuk        │   │ • Tab 4: Manajemen Status     │
-│ • Tab 5: Pengaturan Toko      │   │ • Tab 5: WA Toko & Rekening   │
-│ • Tab 6: Email Newsletter     │   │ • Tab 6: Ekspor CSV           │
-│ • [Kembali ke Beranda Toko]   │   │                               │
-│ • [Keluar Akun]               │   │                               │
-└───────────────────────────────┘   └───────────────────────────────┘
 ```
 
-#### Komponen Utama yang Dibuat / Diperbarui:
-1. `src/components/admin/AdminDashboard.tsx`: Halaman penuh dashboard admin terpadu dengan sidebar navigasi kiri, top breadcrumb bar, metrik statistik, dan sub-view masing-masing modul.
-2. `src/components/account/CustomerDashboard.tsx`: Halaman penuh pelanggan dengan daftar riwayat transaksi pesanan, status pesanan, dan profil pengguna.
-3. `src/context/StoreContext.tsx`: Penambahan helper view navigation (`currentView: 'store' | 'account'`, fungsi `navigateToView(view)`), integrasi hash change `#admin` & `#akun`.
-4. `src/App.tsx`: Pemisahan rendering antara tampilan beranda toko (`store`) dan tampilan akun/admin penuh (`account`), memastikan pengalaman layar bersih tanpa elemen toko yang saling menumpuk.
-5. `src/index.css`: Dukungan styling layout dashboard modern (sidebar layout, topbar breadcrumb, data table responsive, form grid dua kolom).
+#### Komponen Utama yang Diperbarui:
+1. `src/components/Header.tsx`:
+   - Penambahan mikro-ikon pada nav desktop dan restrukturisasi kelas menjadi nav items bernuansa admin list.
+   - Pengecilan tombol icon aksi header menjadi 38px dengan ikon 17px.
+   - Penambahan tab Akun/Dashboard pada bottom bar mobile agar admin dan pelanggan langsung bisa mengakses akun dari mana saja.
+   - Restrukturisasi drawer mobile dengan list berikon rapi.
+2. `src/components/CatalogSection.tsx` & `src/components/Hero.tsx`:
+   - Pengecilan ikon filter kategori menjadi 13px–14px, penyesuaian gap dan padding pill.
+3. `src/components/admin/AdminDashboard.tsx`:
+   - Penambahan tombol "+ Tambah Produk" yang mudah diakses di tab Ringkasan, Toolbar Tab Produk, dan versi mobile.
+   - Penyempurnaan `handleSaveProduct` agar menangani error dengan deskripsi jelas dan menyisipkan produk ke daftar secara reaktif.
+4. `src/context/StoreContext.tsx`:
+   - Sanitasi payload penambahan produk (format UUID, sanitasi variants array/json, pencegahan RLS blocking).
+   - Penggabungan data produk Supabase dengan data lokal secara konsisten sehingga produk yang baru ditambahkan tidak hilang saat refresh.
+5. `src/index.css`:
+   - Styling baru untuk `.nav` dan `.nav-item` bergaya admin pill.
+   - Penyesuaian ukuran SVG dan hitbox pada `.mobile-bottom-bar`, `.mobile-bottom-item`, `.icon-btn`, dan `.filter`.
+   - Penyempurnaan responsivitas pada layar smartphone < 400px (padding, line-height, text truncation, zero-overflow).

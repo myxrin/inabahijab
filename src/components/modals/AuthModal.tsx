@@ -90,8 +90,8 @@ export const AuthModal: React.FC = () => {
   };
 
   return (
-    <div className="overlay open" role="dialog" aria-modal="true" onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}>
-      <section className="sheet" style={{ maxWidth: 460, borderTop: '2px solid var(--olive)' }}>
+    <div className="overlay overlay-centered open" role="dialog" aria-modal="true" onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}>
+      <section className="sheet sheet-centered" style={{ maxWidth: 440, borderTop: '3px solid var(--olive)' }}>
         <div className="sheet-handle" aria-hidden="true"></div>
         <div className="sheet-head">
           <div>

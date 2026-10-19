@@ -103,7 +103,7 @@ export const Hero: React.FC = () => {
               onClick={() => handleCategoryShortcut('Hijab & Pakaian')}
             >
               <div className="cat-icon-bubble">
-                <Sparkles size={18} />
+                <Sparkles size={14.5} />
               </div>
               <div>
                 <strong>Busana Muslim</strong>
@@ -117,7 +117,7 @@ export const Hero: React.FC = () => {
               onClick={() => handleCategoryShortcut('Seragam Sekolah — Pre-Order')}
             >
               <div className="cat-icon-bubble">
-                <GraduationCap size={18} />
+                <GraduationCap size={14.5} />
               </div>
               <div>
                 <strong>Pre-Order Seragam</strong>
@@ -131,7 +131,7 @@ export const Hero: React.FC = () => {
               onClick={() => handleCategoryShortcut('Perlengkapan Petani')}
             >
               <div className="cat-icon-bubble">
-                <Sun size={18} />
+                <Sun size={14.5} />
               </div>
               <div>
                 <strong>Capel Petani</strong>
@@ -145,7 +145,7 @@ export const Hero: React.FC = () => {
               onClick={() => handleCategoryShortcut('Meja & Perabot')}
             >
               <div className="cat-icon-bubble">
-                <TableIcon size={18} />
+                <TableIcon size={14.5} />
               </div>
               <div>
                 <strong>Meja Lipat</strong>

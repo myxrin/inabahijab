@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
 import { ProductCard } from './ProductCard';
-import { ArrowUpRight, Sparkles, GraduationCap, Sun, Table as TableIcon, Package, Shirt } from 'lucide-react';
+import { ProductRowItem } from './ProductRowItem';
+import { ArrowUpRight, Sparkles, GraduationCap, Sun, Table as TableIcon, Package, Shirt, LayoutGrid, List } from 'lucide-react';
 
 export const CatalogSection: React.FC = () => {
   const {
@@ -15,20 +16,38 @@ export const CatalogSection: React.FC = () => {
     setSortOption
   } = useStore();
 
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => {
+    try {
+      const saved = localStorage.getItem('inaba_catalog_view_mode');
+      return (saved === 'list' || saved === 'grid') ? saved : 'grid';
+    } catch {
+      return 'grid';
+    }
+  });
+
+  const handleViewChange = (mode: 'grid' | 'list') => {
+    setViewMode(mode);
+    try {
+      localStorage.setItem('inaba_catalog_view_mode', mode);
+    } catch (e) {
+      console.warn('Could not save view mode preference', e);
+    }
+  };
+
   const getCategoryIcon = (iconName?: string) => {
     switch (iconName) {
       case 'sparkles':
-        return <Sparkles size={16} />;
+        return <Sparkles size={13.5} className="cat-filter-icon" />;
       case 'graduation-cap':
-        return <GraduationCap size={16} />;
+        return <GraduationCap size={13.5} className="cat-filter-icon" />;
       case 'sun':
-        return <Sun size={16} />;
+        return <Sun size={13.5} className="cat-filter-icon" />;
       case 'table':
-        return <TableIcon size={16} />;
+        return <TableIcon size={13.5} className="cat-filter-icon" />;
       case 'shirt':
-        return <Shirt size={16} />;
+        return <Shirt size={13.5} className="cat-filter-icon" />;
       default:
-        return <Package size={16} />;
+        return <Package size={13.5} className="cat-filter-icon" />;
     }
   };
 
@@ -120,7 +139,7 @@ export const CatalogSection: React.FC = () => {
           </span>
         </div>
 
-        {/* Search & Sort Bar */}
+        {/* Search, Sort & View Switcher Bar */}
         <div className="catalog-tools" aria-label="Cari dan urutkan produk">
           <input
             id="productSearchInput"
@@ -143,31 +162,80 @@ export const CatalogSection: React.FC = () => {
             <option value="ready-first">Ready Stock Dulu</option>
             <option value="po-first">Pre-Order Dulu</option>
           </select>
+
+          {/* Grid vs List View Mode Toggle */}
+          <div className="catalog-view-switcher" role="radiogroup" aria-label="Pilihan tampilan grid atau list">
+            <button
+              type="button"
+              className={`view-switch-btn ${viewMode === 'grid' ? 'active' : ''}`}
+              onClick={() => handleViewChange('grid')}
+              aria-label="Tampilan Grid"
+              title="Tampilan Grid"
+            >
+              <LayoutGrid size={16} />
+              <span className="view-switch-label">Grid</span>
+            </button>
+            <button
+              type="button"
+              className={`view-switch-btn ${viewMode === 'list' ? 'active' : ''}`}
+              onClick={() => handleViewChange('list')}
+              aria-label="Tampilan List"
+              title="Tampilan List"
+            >
+              <List size={16} />
+              <span className="view-switch-label">List</span>
+            </button>
+          </div>
         </div>
 
-        {/* Products Grid */}
-        <div className="products" aria-live="polite">
-          {list.length > 0 ? (
-            list.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))
-          ) : (
-            <div className="products-empty" style={{ gridColumn: '1 / -1' }}>
-              <p>Tidak ditemukan produk yang sesuai dengan filter atau kata kunci ini.</p>
-              <button
-                type="button"
-                className="btn btn-sm btn-ghost"
-                style={{ marginTop: 10 }}
-                onClick={() => {
-                  setActiveFilter('Semua');
-                  setSearchText('');
-                }}
-              >
-                Reset Pencarian &amp; Filter
-              </button>
-            </div>
-          )}
-        </div>
+        {/* Products Display (Grid or List) */}
+        {viewMode === 'grid' ? (
+          <div className="products" aria-live="polite">
+            {list.length > 0 ? (
+              list.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))
+            ) : (
+              <div className="products-empty" style={{ gridColumn: '1 / -1' }}>
+                <p>Tidak ditemukan produk yang sesuai dengan filter atau kata kunci ini.</p>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-ghost"
+                  style={{ marginTop: 10 }}
+                  onClick={() => {
+                    setActiveFilter('Semua');
+                    setSearchText('');
+                  }}
+                >
+                  Reset Pencarian &amp; Filter
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="product-row-list" aria-live="polite">
+            {list.length > 0 ? (
+              list.map((product) => (
+                <ProductRowItem key={product.id} product={product} />
+              ))
+            ) : (
+              <div className="products-empty">
+                <p>Tidak ditemukan produk yang sesuai dengan filter atau kata kunci ini.</p>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-ghost"
+                  style={{ marginTop: 10 }}
+                  onClick={() => {
+                    setActiveFilter('Semua');
+                    setSearchText('');
+                  }}
+                >
+                  Reset Pencarian &amp; Filter
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );
