@@ -1,20 +1,32 @@
-# INABA HIJAB — Toko Busana Muslim & Seragam Pre-Order
+# INABA HIJAB — Toko Busana Muslim, Seragam Pre-Order & Perlengkapan Harian
 
-Toko online satu halaman (`index.html`, HTML + CSS + JavaScript module) dengan backend **Supabase** (Auth tautan email, PostgreSQL, Storage). Pesanan disimpan di server, lalu pembeli melanjutkan konfirmasi lewat **WhatsApp**.
+Aplikasi e-commerce modern dibangun menggunakan **React 19**, **TypeScript**, dan **Vite**, terhubung dengan backend **Supabase** (Auth, PostgreSQL, Storage, RLS) serta konfirmasi pemesanan terintegrasi langsung ke **WhatsApp**.
 
-## Yang ada di toko
-- Katalog produk per kategori dengan status Ready Stock atau Pre-Order, pencarian, dan filter lini (Modest, Schoolwear, Living & Craft).
-- Keranjang untuk akun yang masuk lewat tautan email (tersimpan di Supabase), checkout, dan pengiriman rincian ke WhatsApp.
-- Kalkulator rombongan sekolah/lembaga, panduan ukuran per produk, dan alur pemesanan.
-- Dashboard admin (produk, kategori, foto, pesanan, pengaturan) yang hanya terbuka untuk email di `admin_email_allowlist`.
-- Tata letak responsif: menu hamburger untuk HP/tablet (di bawah 1100 px), menu penuh di desktop, bilah navigasi bawah di HP.
+## Fitur Utama
 
-## Struktur berkas
-- `index.html` — aplikasi utama
-- `kebijakan-privasi.html`, `ketentuan-pemesanan.html` — halaman legal
-- `supabase_setup.sql` — satu-satunya skrip database
-- `_headers` — header keamanan (Cloudflare Pages)
-- `robots.txt`, `sitemap.xml`, `favicon.svg`
+- **Katalog Multikategori & Filter Lini:**
+  - 3 Lini Spesialis: INABA Modest (Busana Muslim & Hijab), INABA Schoolwear (Pre-Order Seragam SDIT, TPQ, Madin), INABA Living & Craft (Topi Capel Petani Tradisional & Meja Lipat).
+  - Pencarian instan dan pengurutan (Unggulan, Harga, Nama A-Z, Ready Stock, Pre-Order).
+- **Layanan Pre-Order Resmi Seragam Sekolah:**
+  - Filter institusi (SDIT, Santri TPQ/TPA, Madrasah Diniyah Sirimbit).
+  - Kalkulator Rombongan Sekolah/Lembaga dengan diskon bertingkat (5% - 15%) dan perhitungan DP 50%.
+  - Tabel panduan ukuran terstandar.
+- **Keranjang Belanja & Checkout Atomik:**
+  - Pilihan varian ukuran, stepper kuantitas dengan batas minimal/maksimal.
+  - Alur checkout dengan catatan identitas santri & pilihan pengiriman terpadu (kirim sekaligus atau terpisah).
+  - Penghasil pesan WhatsApp terformat otomatis dengan nomor resi unik pesanan `#INB-XXXXXX`.
+- **Dashboard Pengelola Toko (Admin):**
+  - Hanya dapat diakses oleh admin terdaftar di allowlist (`numanalmuqorrin@gmail.com`, `inabahijab@gmail.com`).
+  - Pengelolaan katalog produk, kategori, status pesanan, pengaturan nomor WhatsApp & rekening pembayaran, serta ekspor pelanggan warta newsletter ke CSV.
+- **Antarmuka Responsif & Cepat:**
+  - Header dengan menu drawer mobile dan bilah navigasi cepat bawah (mobile bottom bar) untuk kenyamanan pengguna smartphone.
 
-## Peluncuran
-Ikuti `README-LAUNCH.md` sampai semua kotak tercentang. Varian, harga, stok, dan nomor WhatsApp diisi lewat dashboard/Supabase; produk tanpa varian tidak bisa dipesan.
+## Pengembangan Lokal
+
+```bash
+# Menjalankan dev server di port 3000
+npm run dev
+
+# Membangun produksi
+npm run build
+```

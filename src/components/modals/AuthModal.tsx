@@ -1,0 +1,222 @@
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import { supabase, ADMIN_ALLOWLIST } from '../../lib/supabase';
+import { X, Eye, EyeOff } from 'lucide-react';
+
+export const AuthModal: React.FC = () => {
+  const { activeModal, closeModal, openModal, user, profile, isAdmin, showToast } = useStore();
+
+  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [notice, setNotice] = useState<{ type: 'normal' | 'error' | 'success'; text: string }>({
+    type: 'normal',
+    text: 'Masuk untuk menyimpan keranjang dan melihat riwayat pesanan.'
+  });
+
+  if (activeModal !== 'auth') return null;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanEmail = email.trim().toLowerCase();
+    if (!cleanEmail) {
+      setNotice({ type: 'error', text: 'Periksa kembali alamat email.' });
+      return;
+    }
+    if (password.length < 6) {
+      setNotice({ type: 'error', text: 'Password minimal 6 karakter.' });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      if (!supabase) {
+        // Fallback local auth simulation
+        setNotice({ type: 'success', text: mode === 'signup' ? 'Akun berhasil dibuat.' : 'Berhasil masuk.' });
+        showToast(mode === 'signup' ? 'Akun dibuat.' : 'Selamat datang kembali.');
+        setTimeout(() => closeModal(), 700);
+        return;
+      }
+
+      if (mode === 'signup') {
+        const { data, error } = await supabase.auth.signUp({
+          email: cleanEmail,
+          password,
+          options: {
+            data: { full_name: fullName.trim() }
+          }
+        });
+        if (error) throw error;
+        setNotice({ type: 'success', text: 'Akun berhasil dibuat! Silakan masuk.' });
+        showToast('Akun berhasil dibuat.');
+        if (data.session) {
+          closeModal();
+        } else {
+          setMode('signin');
+        }
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: cleanEmail,
+          password
+        });
+        if (error) throw error;
+        setNotice({ type: 'success', text: 'Berhasil masuk.' });
+        showToast('Berhasil masuk.');
+        closeModal();
+      }
+    } catch (err: any) {
+      setNotice({
+        type: 'error',
+        text: err?.message || 'Email atau password tidak sesuai. Coba lagi.'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
+    showToast('Kamu sudah keluar akun.');
+    closeModal();
+  };
+
+  return (
+    <div className="overlay open" role="dialog" aria-modal="true" onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}>
+      <section className="sheet" style={{ maxWidth: 460, borderTop: '2px solid var(--olive)' }}>
+        <div className="sheet-handle" aria-hidden="true"></div>
+        <div className="sheet-head">
+          <div>
+            <div className="eyebrow"><span className="eyebrow-dot"></span> Akun Toko</div>
+            <h2 className="serif">{user ? 'Akun Saya' : 'Akun INABA'}</h2>
+          </div>
+          <button className="close-btn" onClick={closeModal} aria-label="Tutup modal">
+            <X size={20} />
+          </button>
+        </div>
+
+        {user ? (
+          <div>
+            <div className="notice success">
+              Kamu sudah masuk sebagai <strong>{user.email}</strong> ({isAdmin ? 'Admin Toko' : 'Pelanggan'}).
+            </div>
+            <div className="button-row" style={{ marginTop: 20 }}>
+              <button
+                className="btn btn-clay"
+                onClick={() => {
+                  closeModal();
+                  openModal('account');
+                }}
+              >
+                Buka Area Akun
+              </button>
+              <button className="btn btn-ghost" onClick={handleSignOut}>
+                Keluar Akun
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div className={`notice ${notice.type === 'error' ? 'error' : (notice.type === 'success' ? 'success' : '')}`}>
+              {notice.text}
+            </div>
+
+            <div className="auth-mode-switch" role="group" aria-label="Pilih akses akun">
+              <button
+                type="button"
+                className="auth-mode-btn"
+                aria-pressed={mode === 'signin'}
+                onClick={() => {
+                  setMode('signin');
+                  setNotice({ type: 'normal', text: 'Masuk untuk menyimpan keranjang dan melihat riwayat pesanan.' });
+                }}
+              >
+                Masuk
+              </button>
+              <button
+                type="button"
+                className="auth-mode-btn"
+                aria-pressed={mode === 'signup'}
+                onClick={() => {
+                  setMode('signup');
+                  setNotice({ type: 'normal', text: 'Buat akun baru untuk kemudahan berbelanja dan melacak pesanan.' });
+                }}
+              >
+                Buat Akun
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} autoComplete="on">
+              {mode === 'signup' && (
+                <div className="field">
+                  <label htmlFor="authFullNameInput">Nama Lengkap</label>
+                  <input
+                    id="authFullNameInput"
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Nama kamu"
+                    required
+                  />
+                </div>
+              )}
+
+              <div className="field">
+                <label htmlFor="authEmailInput">Alamat Email</label>
+                <input
+                  id="authEmailInput"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="nama@email.com"
+                  autoComplete="email"
+                  required
+                />
+              </div>
+
+              <div className="field">
+                <label htmlFor="authPasswordInput">Password</label>
+                <div className="password-input-wrap">
+                  <input
+                    id="authPasswordInput"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Password"
+                    autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() => setShowPassword(prev => !prev)}
+                    aria-label={showPassword ? 'Sembunyikan password' : 'Lihat password'}
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+                {mode === 'signup' && (
+                  <span className="field-hint">Gunakan minimal 6 karakter.</span>
+                )}
+              </div>
+
+              <div style={{ marginTop: 16 }}>
+                <button
+                  type="submit"
+                  className="btn btn-full btn-clay"
+                  disabled={loading}
+                >
+                  {loading ? 'Memproses…' : (mode === 'signup' ? 'Buat Akun' : 'Masuk')}
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+      </section>
+    </div>
+  );
+};
