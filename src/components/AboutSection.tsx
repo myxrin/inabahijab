@@ -1,19 +1,11 @@
 import React from 'react';
 
-export const AboutSection: React.FC = () => {
-  return (
-    <section className="section" id="cerita">
-      <div className="wrap">
-        <div className="section-head">
-          <div>
-            <div className="eyebrow"><span className="eyebrow-dot"></span> Nilai &amp; Amanah Toko</div>
-            <h2 className="serif">Melayani Kebutuhan Nyata Masyarakat</h2>
-            <p className="section-intro">
-              INABA Hijab melayani kebutuhan busana muslim, seragam pendidikan islami, serta perlengkapan fungsional untuk kegiatan sehari-hari. Kami mengutamakan informasi produk yang jelas, proses pemesanan yang transparan, dan pelayanan yang amanah.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
+export const AboutSection: React.FC = () => (
+  <section className="section about-compact" id="cerita">
+    <div className="wrap about-compact-inner">
+      <div className="eyebrow"><span className="eyebrow-dot" />Tentang INABA</div>
+      <h2 className="serif">Satu toko untuk kebutuhan keluarga.</h2>
+      <p>INABA HIJAB menyediakan busana muslim, seragam sekolah, dan perlengkapan harian dengan informasi produk yang jelas.</p>
+    </div>
+  </section>
+);

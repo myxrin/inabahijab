@@ -1629,3 +1629,26 @@
 .ref-site-upload-btn:focus-within { outline: 2px solid var(--clay, #244b3a); outline-offset: 2px; }
 .ref-site-upload-btn.is-loading { opacity: .65; cursor: wait; }
 @media (max-width: 540px) { .ref-site-assets-grid { grid-template-columns: 1fr; } .ref-site-asset-card { display: grid; grid-template-columns: 100px 1fr; column-gap: 12px; } .ref-site-asset-preview { grid-row: span 4; aspect-ratio: 1; } .ref-site-upload-btn { justify-self: start; padding: 8px 12px; } }
+
+/* Clear, text-labelled logout action for dashboard users. */
+.ref-logout-text-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 40px;
+  padding: 9px 12px;
+  border: 1px solid #ead8d3;
+  border-radius: 9px;
+  background: #fff8f6;
+  color: #9a3e32;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.ref-logout-text-btn:hover { background: #fbe9e5; border-color: #e2bcb4; }
+.ref-logout-text-btn svg { width: 15px; height: 15px; }

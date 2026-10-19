@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
 import { supabase } from '../lib/supabase';
-import { ArrowUpRight } from 'lucide-react';
 
 export const NewsletterSection: React.FC = () => {
   const { showToast } = useStore();
@@ -22,15 +21,14 @@ export const NewsletterSection: React.FC = () => {
         } else if (error) {
           throw error;
         } else {
-          showToast('Alhamdulillah, email Anda berhasil terdaftar untuk kabar INABA!');
+          showToast('Email berhasil didaftarkan.');
           setEmail('');
         }
       } else {
-        showToast('Alhamdulillah, email Anda berhasil dicatat untuk warta toko!');
-        setEmail('');
+        throw new Error('Koneksi Supabase belum tersedia.');
       }
     } catch (err: any) {
-      showToast('Pendaftaran email gagal: ' + (err?.message || 'Silakan coba lagi.'));
+      showToast(err?.message || 'Pendaftaran email gagal. Coba lagi.');
     } finally {
       setLoading(false);
     }
@@ -39,11 +37,9 @@ export const NewsletterSection: React.FC = () => {
   return (
     <section className="wrap">
       <div className="newsletter-card">
-        <div className="eyebrow"><span className="eyebrow-dot"></span> Warta &amp; Jadwal Batch PO</div>
-        <h2 className="serif">Dapatkan Kabar Batch Pre-Order &amp; Stok Baru</h2>
-        <p>
-          Daftarkan emailmu untuk info pembukaan pre-order seragam sekolah, promo cuci gudang ready stock, dan kedatangan produk baru.
-        </p>
+        <div className="eyebrow"><span className="eyebrow-dot" />Info produk</div>
+        <h2 className="serif">Kabar stok dan pre-order terbaru</h2>
+        <p>Masukkan email jika ingin menerima kabar dari INABA.</p>
         <form className="newsletter-form" onSubmit={handleSubmit}>
           <input
             type="email"
@@ -55,7 +51,7 @@ export const NewsletterSection: React.FC = () => {
             disabled={loading}
           />
           <button type="submit" className="btn btn-clay" disabled={loading}>
-            {loading ? 'Mendaftarkan…' : 'Daftarkan Email'} <ArrowUpRight size={14} className="btn-arrow-icon" />
+            {loading ? 'Mendaftarkan…' : 'Daftar'}
           </button>
         </form>
       </div>

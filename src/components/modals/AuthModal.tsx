@@ -4,7 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { X, Eye, EyeOff } from 'lucide-react';
 
 export const AuthModal: React.FC = () => {
-  const { activeModal, closeModal, openModal, user, isAdmin, showToast, navigateToView } = useStore();
+  const { activeModal, closeModal, user, isAdmin, showToast, navigateToView } = useStore();
 
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [fullName, setFullName] = useState('');
@@ -48,7 +48,7 @@ export const AuthModal: React.FC = () => {
           const { data: serverAdmin } = await supabase.rpc('is_admin');
           setNotice({ type: 'success', text: 'Akun berhasil dibuat.' });
           showToast('Akun berhasil dibuat.');
-          closeModal();
+          closeModal({ restoreHistory: false });
           navigateToView(serverAdmin === true ? 'admin' : 'customer', serverAdmin === true);
         } else {
           setNotice({ type: 'success', text: 'Akun dibuat. Ikuti instruksi email Supabase jika konfirmasi diminta sebelum masuk.' });
@@ -61,7 +61,7 @@ export const AuthModal: React.FC = () => {
         if (roleError) throw roleError;
         setNotice({ type: 'success', text: 'Berhasil masuk.' });
         showToast('Berhasil masuk.');
-        closeModal();
+        closeModal({ restoreHistory: false });
         navigateToView(serverAdmin === true ? 'admin' : 'customer', serverAdmin === true);
       }
     } catch (err: any) {
@@ -79,18 +79,18 @@ export const AuthModal: React.FC = () => {
       await supabase.auth.signOut();
     }
     showToast('Kamu sudah keluar akun.');
-    closeModal();
+    closeModal({ restoreHistory: false });
     navigateToView('store');
   };
 
   return (
     <div className="overlay overlay-centered open" role="dialog" aria-modal="true" onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}>
-      <section className="sheet sheet-centered" style={{ maxWidth: 440, borderTop: '3px solid var(--olive)' }}>
+      <section className="sheet sheet-centered auth-sheet">
         <div className="sheet-handle" aria-hidden="true"></div>
         <div className="sheet-head">
           <div>
-            <div className="eyebrow"><span className="eyebrow-dot"></span> Akun Toko</div>
-            <h2 className="serif">{user ? 'Akun Saya' : 'Akun INABA'}</h2>
+            <div className="eyebrow"><span className="eyebrow-dot"></span> INABA HIJAB</div>
+            <h2 className="serif">{user ? 'Akun Saya' : 'Masuk atau daftar'}</h2>
           </div>
           <button className="close-btn" onClick={closeModal} aria-label="Tutup modal">
             <X size={20} />
@@ -102,15 +102,15 @@ export const AuthModal: React.FC = () => {
             <div className="notice success">
               Kamu sudah masuk sebagai <strong>{user.email}</strong> ({isAdmin ? 'Admin Toko' : 'Pelanggan'}).
             </div>
-            <div className="button-row" style={{ marginTop: 20 }}>
+            <div className="button-row auth-account-actions">
               <button
                 className="btn btn-clay"
                 onClick={() => {
-                  closeModal();
-                  openModal('account');
+                  closeModal({ restoreHistory: false });
+                  navigateToView(isAdmin ? 'admin' : 'customer');
                 }}
               >
-                Buka Area Akun
+                {isAdmin ? 'Buka Dashboard Admin' : 'Buka Akun Saya'}
               </button>
               <button className="btn btn-ghost" onClick={handleSignOut}>
                 Keluar Akun
@@ -119,9 +119,11 @@ export const AuthModal: React.FC = () => {
           </div>
         ) : (
           <div>
-            <div className={`notice ${notice.type === 'error' ? 'error' : (notice.type === 'success' ? 'success' : '')}`}>
-              {notice.text}
-            </div>
+            {notice.type !== 'normal' && (
+              <div className={`notice ${notice.type === 'error' ? 'error' : 'success'}`} role="status">
+                {notice.text}
+              </div>
+            )}
 
             <div className="auth-mode-switch" role="group" aria-label="Pilih akses akun">
               <button
@@ -144,13 +146,13 @@ export const AuthModal: React.FC = () => {
                   setNotice({ type: 'normal', text: 'Buat akun baru untuk kemudahan berbelanja dan melacak pesanan.' });
                 }}
               >
-                Buat Akun
+                Daftar
               </button>
             </div>
 
             <form onSubmit={handleSubmit} autoComplete="on">
               {mode === 'signup' && (
-                <div className="field">
+                <div className="field auth-field">
                   <label htmlFor="authFullNameInput">Nama Lengkap</label>
                   <input
                     id="authFullNameInput"
@@ -163,7 +165,7 @@ export const AuthModal: React.FC = () => {
                 </div>
               )}
 
-              <div className="field">
+              <div className="field auth-field">
                 <label htmlFor="authEmailInput">Alamat Email</label>
                 <input
                   id="authEmailInput"
@@ -176,7 +178,7 @@ export const AuthModal: React.FC = () => {
                 />
               </div>
 
-              <div className="field">
+              <div className="field auth-field">
                 <label htmlFor="authPasswordInput">Password</label>
                 <div className="password-input-wrap">
                   <input
@@ -198,17 +200,17 @@ export const AuthModal: React.FC = () => {
                   </button>
                 </div>
                 {mode === 'signup' && (
-                  <span className="field-hint">Gunakan minimal 6 karakter.</span>
+                  <span className="field-hint">Minimal 6 karakter.</span>
                 )}
               </div>
 
-              <div style={{ marginTop: 16 }}>
+              <div className="auth-submit-wrap">
                 <button
                   type="submit"
-                  className="btn btn-full btn-clay"
+                  className="btn btn-full btn-clay auth-submit"
                   disabled={loading}
                 >
-                  {loading ? 'Memproses…' : (mode === 'signup' ? 'Buat Akun' : 'Masuk')}
+                  {loading ? 'Memproses…' : 'Lanjutkan'}
                 </button>
               </div>
             </form>

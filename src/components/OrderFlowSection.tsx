@@ -10,9 +10,7 @@ export const OrderFlowSection: React.FC = () => {
           <div>
             <div className="eyebrow"><span className="eyebrow-dot"></span> Panduan Praktis</div>
             <h2 className="serif">Alur Pemesanan Transparan</h2>
-            <p className="section-intro">
-              Kami membedakan alur pemesanan produk Ready Stock dan Pre-Order agar pelanggan merasa nyaman dan tidak ada kekeliruan jadwal.
-            </p>
+            <p className="section-intro">Tiga langkah sederhana dari memilih produk sampai konfirmasi.</p>
           </div>
         </div>
 
@@ -22,14 +20,14 @@ export const OrderFlowSection: React.FC = () => {
             className={`order-flow-tab ${activeTab === 'ready' ? 'active' : ''}`}
             onClick={() => setActiveTab('ready')}
           >
-            Alur Barang Ready Stock
+            Ready stock
           </button>
           <button
             type="button"
             className={`order-flow-tab ${activeTab === 'po' ? 'active' : ''}`}
             onClick={() => setActiveTab('po')}
           >
-            Alur Barang Pre-Order (PO)
+            Pre-order
           </button>
         </div>
 
@@ -40,21 +38,21 @@ export const OrderFlowSection: React.FC = () => {
               <div className="step-number">1</div>
               <div>
                 <h3>Pilih Produk &amp; Ukuran</h3>
-                <p>Pilih busana, capel petani, atau meja lipat yang ready stock. Tentukan jumlah dan masukkan ke keranjang belanja.</p>
+                <p>Pilih produk, tentukan varian dan jumlah, lalu masukkan ke keranjang.</p>
               </div>
             </div>
             <div className="step-card">
               <div className="step-number">2</div>
               <div>
                 <h3>Checkout &amp; Kirim WhatsApp</h3>
-                <p>Isi alamat pengiriman lengkap. Sistem membuat ringkasan pesanan dan mengarahkan konfirmasi ke WhatsApp admin.</p>
+                <p>Isi data pengiriman dan periksa ringkasan pesanan.</p>
               </div>
             </div>
             <div className="step-card">
               <div className="step-number">3</div>
               <div>
                 <h3>Ongkir Pasti, Transfer &amp; Kirim</h3>
-                <p>Admin memastikan stok barang dan menghitung ongkir termurah. Pelanggan transfer, lalu barang segera dikirim.</p>
+                <p>Konfirmasi stok dan ongkir dengan admin sebelum pembayaran.</p>
               </div>
             </div>
           </div>
@@ -67,21 +65,21 @@ export const OrderFlowSection: React.FC = () => {
               <div className="step-number po">1</div>
               <div>
                 <h3>Pilih Seragam &amp; Ukuran Santri</h3>
-                <p>Buka bagian Pre-Order, pilih lembaga (SDIT, TPQ, Madin). Sesuaikan ukuran berdasarkan tabel panduan ukuran yang disediakan.</p>
+                <p>Pilih seragam serta ukuran lewat panduan yang tersedia.</p>
               </div>
             </div>
             <div className="step-card">
               <div className="step-number po">2</div>
               <div>
                 <h3>Form Pemesanan &amp; Catatan Khusus</h3>
-                <p>Tuliskan nama siswa/santri, kelas, atau permintaan bordir nama (bila ada). Kirim pesanan ke WhatsApp admin.</p>
+                <p>Sampaikan kebutuhan, jumlah, dan catatan khusus ke admin.</p>
               </div>
             </div>
             <div className="step-card">
               <div className="step-number po">3</div>
               <div>
                 <h3>Konfirmasi Batch PO &amp; Produksi</h3>
-                <p>Admin mengonfirmasi jadwal penutupan batch PO, DP/pembayaran, dan waktu pengerjaan (10-21 hari kerja) hingga siap dikirim.</p>
+                <p>Tunggu konfirmasi jadwal, biaya, dan estimasi pengerjaan dari admin.</p>
               </div>
             </div>
           </div>

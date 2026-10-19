@@ -57,7 +57,7 @@ interface StoreContextType {
   isAdmin: boolean;
   activeModal: ModalType;
   openModal: (modal: ModalType) => void;
-  closeModal: () => void;
+  closeModal: (options?: { restoreHistory?: boolean }) => void;
   detailProduct: Product | null;
   openProductDetail: (product: Product) => void;
   lastOrder: LastOrderSummary | null;
@@ -270,25 +270,64 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
   }, [refreshProducts]);
 
-  // Modal helpers
+  // Modal history: browser Back closes the active dialog before leaving the store.
   const openModal = useCallback((modal: ModalType) => {
     if (modal === 'account') {
       if (user) {
         navigateToView(isAdmin ? 'admin' : 'customer');
-      } else {
-        setActiveModal('auth');
-        document.body.classList.add('lock');
+        return;
       }
-      return;
+      modal = 'auth';
+    }
+    if (modal === null) return;
+    if (!activeModal && typeof window !== 'undefined') {
+      const currentState = window.history.state && typeof window.history.state === 'object'
+        ? window.history.state
+        : {};
+      if (!currentState.__inabaModal) {
+        window.history.pushState({ ...currentState, __inabaModal: true }, '', window.location.href);
+      }
     }
     setActiveModal(modal);
     document.body.classList.add('lock');
-  }, [user, isAdmin, navigateToView]);
+  }, [activeModal, user, isAdmin, navigateToView]);
 
-  const closeModal = useCallback(() => {
+  const closeModal = useCallback((options: { restoreHistory?: boolean } = {}) => {
     setActiveModal(null);
     document.body.classList.remove('lock');
+    if (typeof window === 'undefined' || !window.history.state?.__inabaModal) return;
+
+    if (options.restoreHistory === false) {
+      const nextState = { ...(window.history.state || {}) };
+      delete nextState.__inabaModal;
+      window.history.replaceState(Object.keys(nextState).length ? nextState : null, '', window.location.href);
+    } else {
+      window.history.back();
+    }
   }, []);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      if (activeModal) {
+        setActiveModal(null);
+        document.body.classList.remove('lock');
+      } else if (currentView !== 'store' && !window.location.hash) {
+        setCurrentView('store');
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && activeModal) {
+        event.preventDefault();
+        closeModal();
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [activeModal, currentView, closeModal]);
 
   const openProductDetail = useCallback((product: Product) => {
     setDetailProduct(product);

@@ -29,6 +29,19 @@ Web toko menggunakan React + Vite dan Supabase Auth, Postgres, RLS, RPC transaks
 6. Uji signup pelanggan, login/logout, akses langsung `#admin`, upload foto, tambah/edit/hapus produk, setiap status pesanan, stok ready-stock, keranjang lama, checkout, dan riwayat pesanan di desktop serta ponsel. Checkout memakai RPC `create_order`, yang membaca harga dan stok di database lalu membuat pesanan secara atomik.
 7. Periksa teks kebijakan, informasi pengiriman/retur, kontak toko, konfigurasi HTTPS, domain, URL redirect Auth dan header keamanan hosting. File `_headers` hanya berlaku di Cloudflare Pages; hosting lainnya butuh pengaturan header setara di panel/server hosting.
 
+## Perubahan UI/UX pada revisi ini
+
+- Navigasi pengguna diringkas menjadi Beranda, Katalog, Keranjang, dan Akun.
+- Akun admin yang sudah diverifikasi diarahkan ke dashboard admin, bukan dashboard transaksi pelanggan.
+- Detail produk, form autentikasi, kontrol pencarian, dan tombol logout mendapat styling yang konsisten dan responsif.
+- Tombol Kembali/Escape dan browser Back digunakan untuk menutup dialog sebelum pengguna keluar dari halaman toko.
+
+## Migrasi untuk tabel lama `tailoring_requests`
+
+Skrip `supabase_setup.sql` sekarang menambahkan kolom release terbaru dengan `ADD COLUMN IF NOT EXISTS` sebelum memakai kolom-kolom tersebut. Ini ditujukan untuk kasus ketika tabel sudah ada tetapi belum mempunyai `customer_name`, `address`, atau field release baru lain. Migrasi tidak menghapus tabel atau baris lama.
+
+Jika baris historis belum punya nilai yang diperlukan, beberapa kolom akan diberi placeholder seperti `Permintaan lama`, `Tidak tersedia`, atau `Alamat belum tersedia`. Placeholder ini bukan data pelanggan yang benar; review dan koreksi melalui sumber bisnis yang sah bila diperlukan. Pastikan backup tersedia sebelum menjalankan SQL, periksa output query, lalu uji insert/select/update melalui akun uji.
+
 ## Keamanan dan batasan
 
 - Publishable key Supabase yang tertanam di frontend memang dapat dilihat publik; **jangan pernah** memasukkan service-role key atau secret key ke kode browser. Perlindungan akses bergantung pada RLS, fungsi server `is_admin()`, metadata admin yang ditetapkan operator, dan validasi RPC—bukan tombol yang disembunyikan.

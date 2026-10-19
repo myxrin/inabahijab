@@ -576,21 +576,19 @@ export const AdminDashboard: React.FC = () => {
         {/* Administrator Identity & Logout at Bottom */}
         <div className="ref-sidebar-footer">
           <div className="ref-admin-user-profile">
-            <div className="ref-avatar-circle">AD</div>
+            <div className="ref-avatar-circle">{(profile?.full_name || user?.email || 'A').slice(0, 1).toUpperCase()}</div>
             <div className="ref-admin-user-details">
               <strong>Admin</strong>
-              <span>{user?.email || 'admin@inaba.id'}</span>
+              <span>{user?.email || 'Admin toko'}</span>
             </div>
-            <button
-              type="button"
-              className="ref-logout-btn"
-              onClick={handleSignOut}
-              title="Keluar Akun Admin"
-              aria-label="Keluar Akun Admin"
-            >
-              <LogOut size={16} />
-            </button>
           </div>
+          <button
+            type="button"
+            className="ref-logout-text-btn"
+            onClick={handleSignOut}
+          >
+            <LogOut size={16} aria-hidden="true" /> Keluar akun
+          </button>
         </div>
       </aside>
 
