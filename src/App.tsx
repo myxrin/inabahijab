@@ -25,7 +25,7 @@ import { PolicyModal } from './components/modals/PolicyModal';
 export const App: React.FC = () => {
   const {
     products, openProductDetail, openModal, user, isAdmin,
-    currentView, navigateToView
+    currentView, navigateToView, activeStoreTab
   } = useStore();
 
   const productsRef = useRef(products);
@@ -70,21 +70,28 @@ export const App: React.FC = () => {
       {(currentView === 'store' || (currentView === 'admin' && !isAdmin) || (currentView === 'customer' && !user)) && (
         <>
           <Header />
-          <main id="main">
-            <Hero />
-            <TrustStrip />
-            <PreorderSection />
-            <CatalogSection />
-            <SpotlightSection />
-            <OrderFlowSection />
-            <AboutSection />
-            <NewsletterSection />
-          </main>
+          {activeStoreTab === 'keranjang' ? (
+            <CartDrawer />
+          ) : activeStoreTab === 'katalog' ? (
+            <main id="main" className="storefront-tab-page">
+              <CatalogSection />
+            </main>
+          ) : (
+            <main id="main">
+              <Hero />
+              <TrustStrip />
+              <PreorderSection />
+              <CatalogSection />
+              <SpotlightSection />
+              <OrderFlowSection />
+              <AboutSection />
+              <NewsletterSection />
+            </main>
+          )}
           <Footer />
         </>
       )}
       <ProductDetailModal />
-      <CartDrawer />
       <CheckoutModal />
       <OrderSuccessModal />
       <PoCalculatorModal />

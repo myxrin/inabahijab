@@ -1,38 +1,33 @@
-# INABA HIJAB — Audit Teknis Paket Peluncuran
+# INABA HIJAB — Laporan Audit Revisi Responsif
 
-## Perubahan inti dalam revisi ini
+## Perubahan utama
 
-- Menghapus tombol publik untuk membuka panel admin, toolbar pergantian mode developer, autentikasi admin palsu berbasis browser, dan persistensi katalog/pesanan demo. Tampilan admin dirender hanya setelah `public.is_admin()` menyatakan pengguna berhak. RLS database tetap menjadi kontrol keamanan utama.
-- Mengamankan promosi admin: allowlist email tidak lagi cukup untuk memperoleh hak admin secara otomatis. Akun baru selalu dimulai sebagai pelanggan; hak admin membutuhkan `inaba_admin=true` pada `auth.users.raw_app_meta_data`, ditetapkan manual oleh operator proyek.
-- Katalog, kategori, setelan toko, pesanan, dan data dashboard dipanggil dari Supabase; bila katalog kosong atau gagal dimuat, aplikasi memberi status kosong dan tidak mengganti hasil dengan barang contoh.
-- Checkout memakai RPC `create_order` yang membaca harga, varian, status pre-order, dan stok dari PostgreSQL; harga dari browser tidak dijadikan otoritas. Riwayat/struk diambil kembali dari pesanan yang benar-benar tercatat.
-- Akses produk dan pesanan dipagari RLS; upload, perubahan, dan penghapusan foto dilakukan oleh admin yang server-verified. Foto produk harus berada di bucket publik `product-images`, dan galeri dibatasi maksimal lima foto pada UI dan SQL.
-- Menghapus fallback foto luar serta nomor WhatsApp contoh. Nomor kontak dan rekening perlu diisi admin sebelum komunikasi toko digunakan.
-- Merapikan pesan katalog kosong, placeholder foto, informasi status ready-stock/pre-order, tanggal pesanan nyata, dan alur keluar akun.
+- Navigasi storefront menggunakan `?tab=beranda`, `?tab=katalog`, dan `?tab=keranjang`; setiap perpindahan tab menjadi entri history supaya browser Back kembali ke tab sebelumnya.
+- Dashboard admin bisa membuka drawer sidebar pada layar sempit. Drawer dibatasi tinggi viewport, menu internal dapat digulir, dan pilihan menu menutup drawer setelah dipilih.
+- Dashboard admin memakai grid fleksibel, kartu berukuran adaptif, tabel dengan area scroll horizontal sendiri, serta pembungkus teks agar konten tidak memotong lebar viewport.
+- Editor produk menyimpan input harga/stok sebagai teks selama pengetikan; angka divalidasi ketika disimpan. Ini menghindari field berubah ke `0` ketika pengguna sedang mengosongkan input.
+- Detail pesanan tidak mengarang email, nomor telepon, atau alamat pelanggan; data yang tidak tersedia ditandai dengan jelas.
+- Keranjang menjadi halaman penuh dengan ringkasan subtotal, pengubah kuantitas, hapus item, tombol checkout, serta header/footer dan navbar mobile tetap ada.
+- Area pelanggan memiliki navbar bawah mobile dengan Beranda, Katalog, Keranjang, dan Akun.
+- SQL menambahkan kolom kompatibilitas untuk instalasi lama pada `tailoring_requests`, menormalkan status lama sebelum constraint saat ini dipasang, dan mempertahankan data tabel.
+- Workflow GitHub Pages tetap ada dengan base path khusus Pages; concurrency group dibuat khusus untuk proyek INABA HIJAB agar tidak memakai nama umum `pages` yang berpotensi bertabrakan dengan workflow Pages lain. Konfigurasi Cloudflare Pages (`npm run build`, output `dist`) tidak diganti.
 
-## Pemeriksaan statis
+## Pemeriksaan statis terakhir
 
-| Pemeriksaan | Status saat paket disiapkan |
-|---|---|
-| Referensi produk/foto Unsplash/demo dari source frontend | Tidak ditemukan setelah seed demo dihapus |
-| Nomor WhatsApp fallback di frontend | Dihapus; nomor disimpan melalui pengaturan Supabase |
-| Jalan pintas `loginAsAdmin`/localStorage admin | Tidak ditemukan |
-| Tombol publik “Kelola Toko” | Dihapus |
-| Kumpulan foto produk | Maksimal 5, diunggah ke Storage Supabase |
-| Validasi varian/harga/stok saat checkout | RPC database |
-| RLS dan Storage policy | Disediakan di satu SQL setup; skrip menghapus policy pada `storage.objects` sebelum membuat policy bucket toko |
+- 29 file TypeScript/TSX diparse dengan TypeScript `transpileModule`: 0 error sintaks.
+- Pemeriksaan import relatif: 0 import lokal hilang.
+- `src/index.css` dan `src/adminRef.css` diparse oleh TinyCSS2: 0 error parser top-level.
+- `.github/workflows/deploy.yml` berhasil diparse sebagai YAML dan memiliki job `build` dan `deploy`.
+- `supabase_setup.sql` berisi 1.043 baris dan lulus pemeriksaan keseimbangan kutip, dollar-quote, dan tanda kurung.
+- Arsip ZIP final diuji ulang dengan `unzip -t`.
 
-## Yang belum dapat dikonfirmasi dari lingkungan ini
+## Batas verifikasi
 
-- Skrip SQL belum dijalankan pada database Supabase live; validitas final SQL harus dibuktikan melalui SQL Editor sebelum situs dipublikasikan.
-- Tidak tersedia sesi login administrator live untuk tes CRUD Storage/RLS dan checkout sungguhan.
-- Perlu tes visual langsung pada browser target serta tes di ponsel.
-- Build produksi penuh belum bisa dijalankan: dependensi npm belum tersedia di lingkungan dan registry tidak merespons pada percobaan pemasangan. Pemeriksaan parser TypeScript/TSX berhasil pada semua 29 file sumber (0 diagnostic syntax), tetapi itu bukan pengganti build penuh.
+Build produksi penuh (`npm run build`) belum dapat diverifikasi. Instalasi dependensi npm di lingkungan ini gagal karena registry tidak dapat diakses (`EAI_AGAIN`) dan `node_modules` yang tersedia tidak lengkap. SQL belum dijalankan terhadap project Supabase live. Oleh karena itu, laporan ini tidak menyatakan bahwa build/deploy atau migrasi live sudah berhasil.
 
-## Peringatan operasional
+## Checklist sebelum rilis
 
-`supabase_setup.sql` mereset seluruh policy pada `storage.objects` sebelum menetapkan policy dua bucket milik toko. Pastikan project Supabase bukan project bersama untuk aplikasi lain atau sesuaikan skrip setelah backup. Jangan masukkan service-role key ke frontend.
-| Parser TypeScript/TSX | 29 file lolos; 0 syntax diagnostic |
-| Impor lokal relatif | 29 file dicek; 0 impor lokal hilang |
-
-Catatan: pemeriksaan di atas adalah pemeriksaan statis. Tidak ada klaim bahwa aplikasi telah menjalani build produksi, tes browser, pengujian transaksi di Supabase live, atau deployment.
+1. Pada salinan proyek dan lingkungan dengan koneksi registry npm, jalankan `npm ci` kemudian `npm run build`.
+2. Buat backup database sebelum menjalankan SQL.
+3. Baca catatan SQL: skrip ini mengganti policy terkait tabel aplikasi INABA HIJAB dan mereset policy `storage.objects`; bila project Supabase turut digunakan oleh aplikasi/bucket lain, tinjau bagian Storage dan sesuaikan sebelum eksekusi.
+4. Verifikasi login admin dan pelanggan, navigasi browser Back, drawer admin mobile, edit/penyimpanan harga-stok, upload maksimal lima foto, checkout, RLS, dan deployment live.

@@ -9,6 +9,10 @@
 -- 5. Transaksi Atomik Checkout (create_order) & Pemulihan Stok Pembatalan (handle_order_cancellation)
 -- 6. Storage Bucket untuk Foto Produk & Banner Website
 -- 7. Row-Level Security (RLS) Menyeluruh & Aman
+-- PENTING: skrip ini mengganti policy RLS pada tabel aplikasi di atas dan mereset
+-- policy storage.objects agar izin lama yang permisif tidak tetap aktif melalui OR.
+-- Jika project Supabase ini dipakai aplikasi lain/bucket lain, backup dan tinjau
+-- bagian policy Storage sebelum menjalankan. Data tabel dan file Storage tidak dihapus.
 -- ====================================================================
 
 create extension if not exists pgcrypto;
@@ -21,6 +25,11 @@ create table if not exists public.profiles (
   role text not null default 'customer',
   created_at timestamptz not null default now()
 );
+alter table public.profiles
+  add column if not exists email text not null default '',
+  add column if not exists full_name text not null default '',
+  add column if not exists role text not null default 'customer',
+  add column if not exists created_at timestamptz not null default now();
 
 -- 2. TABEL KATEGORI DINAMIS
 create table if not exists public.categories (
@@ -33,6 +42,24 @@ create table if not exists public.categories (
   is_active boolean not null default true,
   created_at timestamptz not null default now()
 );
+
+-- Backward-compatible additions for older category tables.
+alter table public.categories
+  add column if not exists description text not null default '',
+  add column if not exists icon text not null default 'package',
+  add column if not exists display_order integer not null default 0,
+  add column if not exists is_active boolean not null default true,
+  add column if not exists created_at timestamptz not null default now(),
+  add column if not exists slug text;
+
+update public.categories
+set slug = lower(trim(both '-' from regexp_replace(
+  coalesce(nullif(btrim(name), ''), 'kategori') || '-' || left(id::text, 8),
+  '[^a-zA-Z0-9]+', '-', 'g'
+)))
+where slug is null or btrim(slug) = '';
+
+alter table public.categories alter column slug set not null;
 
 create index if not exists categories_order_idx on public.categories (display_order asc, name asc);
 
@@ -62,6 +89,41 @@ create table if not exists public.products (
   variants jsonb not null default '[]'::jsonb,
   created_at timestamptz not null default now()
 );
+
+-- Backward-compatible additions for older product tables. This block must run
+-- before constraints and indexes reference fields introduced by newer releases.
+alter table public.products
+  add column if not exists name text not null default 'Produk lama',
+  add column if not exists slug text,
+  add column if not exists category text not null default 'Produk Lainnya',
+  add column if not exists description text not null default '',
+  add column if not exists price bigint not null default 0,
+  add column if not exists image_url text,
+  add column if not exists badge text,
+  add column if not exists featured boolean not null default false,
+  add column if not exists is_active boolean not null default true,
+  add column if not exists stock integer not null default 0,
+  add column if not exists is_preorder boolean not null default false,
+  add column if not exists preorder_status text not null default 'open',
+  add column if not exists preorder_start timestamptz,
+  add column if not exists preorder_end timestamptz,
+  add column if not exists estimated_delivery text default '',
+  add column if not exists school_institution text default '',
+  add column if not exists min_order integer not null default 1,
+  add column if not exists size_guide text default '',
+  add column if not exists specifications jsonb default '{}'::jsonb,
+  add column if not exists gallery_urls jsonb default '[]'::jsonb,
+  add column if not exists variants jsonb not null default '[]'::jsonb,
+  add column if not exists created_at timestamptz not null default now();
+
+update public.products
+set slug = lower(trim(both '-' from regexp_replace(
+  coalesce(nullif(btrim(name), ''), 'produk') || '-' || left(id::text, 8),
+  '[^a-zA-Z0-9]+', '-', 'g'
+)))
+where slug is null or btrim(slug) = '';
+
+alter table public.products alter column slug set not null;
 
 -- Penyesuaian skema produk jika tabel lama sudah ada sebelumnya.
 -- NOT VALID menjaga migrasi tidak langsung gagal bila data legacy berada di luar batas;
@@ -174,6 +236,28 @@ create table if not exists public.order_items (
   created_at timestamptz not null default now()
 );
 
+-- Keep legacy order records while adding fields used by current storefront/admin UI.
+alter table public.orders
+  add column if not exists user_id text,
+  add column if not exists customer_name text,
+  add column if not exists phone text,
+  add column if not exists address text,
+  add column if not exists notes text not null default '',
+  add column if not exists subtotal bigint not null default 0,
+  add column if not exists status text not null default 'pending',
+  add column if not exists created_at timestamptz not null default now();
+
+alter table public.order_items
+  add column if not exists order_id uuid,
+  add column if not exists product_id uuid,
+  add column if not exists product_name text not null default 'Produk lama',
+  add column if not exists quantity integer not null default 1,
+  add column if not exists variant_size text,
+  add column if not exists unit_price bigint not null default 0,
+  add column if not exists is_preorder boolean not null default false,
+  add column if not exists school_institution text default '',
+  add column if not exists created_at timestamptz not null default now();
+
 alter table public.order_items drop constraint if exists order_items_variant_size_check;
 alter table public.order_items alter column variant_size drop default;
 alter table public.order_items add column if not exists is_preorder boolean not null default false;
@@ -202,6 +286,16 @@ create table if not exists public.cart_items (
   updated_at timestamptz not null default now(),
   unique(user_id, product_id, size)
 );
+
+alter table public.cart_items
+  add column if not exists user_id text,
+  add column if not exists product_id uuid,
+  add column if not exists quantity integer not null default 1,
+  add column if not exists size text,
+  add column if not exists is_preorder boolean not null default false,
+  add column if not exists school_institution text default '',
+  add column if not exists created_at timestamptz not null default now(),
+  add column if not exists updated_at timestamptz not null default now();
 
 -- Hapus default varian statis lama dan batas lama yang terlalu longgar.
 alter table public.cart_items alter column size drop default;
@@ -289,6 +383,23 @@ alter table public.tailoring_requests
   add column if not exists created_at timestamptz default now();
 
 -- Keep legacy rows in place while allowing them to meet the current required fields.
+-- Drop legacy status CHECK constraints before normalizing older status labels.
+-- Constraint names can differ between older schema versions; detect them by definition.
+do $$
+declare
+  status_constraint record;
+begin
+  for status_constraint in
+    select conname
+    from pg_constraint
+    where conrelid = 'public.tailoring_requests'::regclass
+      and contype = 'c'
+      and pg_get_constraintdef(oid) ilike '%status%'
+  loop
+    execute format('alter table public.tailoring_requests drop constraint %I', status_constraint.conname);
+  end loop;
+end $$;
+
 update public.tailoring_requests
 set customer_name = coalesce(nullif(btrim(customer_name), ''), 'Permintaan lama'),
     phone = coalesce(nullif(btrim(phone), ''), 'Tidak tersedia'),
@@ -348,6 +459,10 @@ create table if not exists public.site_images (
   image_url text not null,
   updated_at timestamptz not null default now()
 );
+alter table public.site_images
+  add column if not exists label text not null default '',
+  add column if not exists image_url text not null default '',
+  add column if not exists updated_at timestamptz not null default now();
 alter table public.site_images drop constraint if exists site_images_key_check;
 alter table public.site_images add constraint site_images_key_check
   check (key in ('hero', 'preorder_banner', 'farmer_banner', 'table_banner')) not valid;
@@ -376,6 +491,9 @@ create table if not exists public.store_settings (
   value jsonb not null,
   updated_at timestamptz not null default now()
 );
+alter table public.store_settings
+  add column if not exists value jsonb not null default 'null'::jsonb,
+  add column if not exists updated_at timestamptz not null default now();
 
 -- Allowlist tambahan untuk admin yang boleh diprovisikan operator; ini bukan bukti kepemilikan akun.
 -- Tabel ini tidak dapat dibaca/diubah lewat API browser.
@@ -653,7 +771,7 @@ drop policy if exists "Read own profile or admin reads all" on public.profiles;
 
 create policy "Read own profile or admin reads all" on public.profiles
   for select to authenticated
-  using (id = (select auth.uid())::text or (select public.is_admin()));
+  using (id::text = (select auth.uid())::text or (select public.is_admin()));
 -- Profile role/email are managed only by trusted Auth triggers, never by a client update.
 
 -- 2. Categories

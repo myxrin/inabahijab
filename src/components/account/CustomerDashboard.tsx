@@ -4,6 +4,8 @@ import { supabase, formatRupiah, cleanPhoneNumber } from '../../lib/supabase';
 import { Order } from '../../types';
 import {
   ShoppingBag,
+  Home,
+  LayoutGrid,
   ArrowLeft,
   LogOut,
   MessageCircle,
@@ -17,7 +19,7 @@ import {
 } from 'lucide-react';
 
 export const CustomerDashboard: React.FC = () => {
-  const { user, profile, navigateToView, showToast, storeSettings } = useStore();
+  const { user, profile, navigateToView, navigateToStoreTab, showToast, storeSettings } = useStore();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -55,6 +57,11 @@ export const CustomerDashboard: React.FC = () => {
   };
 
   const cleanStoreWa = cleanPhoneNumber(storeSettings.contact_whatsapp);
+
+  const goToStoreTab = (tab: 'beranda' | 'katalog' | 'keranjang') => {
+    navigateToView('store');
+    navigateToStoreTab(tab);
+  };
 
   return (
     <div className="fullpage-dashboard">
@@ -253,6 +260,21 @@ export const CustomerDashboard: React.FC = () => {
           </div>
         </div>
       </main>
+
+      <nav className="member-mobile-bottom-nav" aria-label="Navigasi toko dan akun">
+        <button type="button" onClick={() => goToStoreTab('beranda')}>
+          <Home size={19} aria-hidden="true" /><span>Beranda</span>
+        </button>
+        <button type="button" onClick={() => goToStoreTab('katalog')}>
+          <LayoutGrid size={19} aria-hidden="true" /><span>Katalog</span>
+        </button>
+        <button type="button" onClick={() => goToStoreTab('keranjang')}>
+          <ShoppingBag size={19} aria-hidden="true" /><span>Keranjang</span>
+        </button>
+        <button type="button" className="active" aria-current="page">
+          <UserIcon size={19} aria-hidden="true" /><span>Akun</span>
+        </button>
+      </nav>
     </div>
   );
 };

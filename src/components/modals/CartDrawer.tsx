@@ -1,144 +1,90 @@
 import React from 'react';
 import { useStore } from '../../context/StoreContext';
 import { formatRupiah } from '../../lib/supabase';
-import { X, Minus, Plus, ShoppingBag, ArrowUpRight } from 'lucide-react';
+import { Minus, Plus, ShoppingBag, ArrowUpRight, ArrowLeft, Trash2 } from 'lucide-react';
 
 export const CartDrawer: React.FC = () => {
-  const { cart, activeModal, closeModal, openModal, updateCartQty, removeFromCart, cartSubtotal } = useStore();
+  const { cart, activeStoreTab, navigateToStoreTab, openModal, updateCartQty, removeFromCart, cartSubtotal } = useStore();
 
-  if (activeModal !== 'cart') return null;
+  if (activeStoreTab !== 'keranjang') return null;
 
   const hasPreorder = cart.some(item => item.is_preorder);
 
   return (
-    <div className="overlay open" role="dialog" aria-modal="true" onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}>
-      <section className="sheet sheet-wide">
-        <div className="sheet-handle" aria-hidden="true"></div>
-        <div className="sheet-head">
-          <div>
-            <div className="eyebrow"><span className="eyebrow-dot"></span> Pilihan Belanja</div>
-            <h2 className="serif">Keranjang Belanja</h2>
-          </div>
-          <button className="close-btn" onClick={closeModal} aria-label="Tutup keranjang">
-            <X size={20} />
+    <main id="main" className="cart-page section" aria-labelledby="cart-page-title">
+      <div className="wrap cart-page-wrap">
+        <div className="cart-page-heading">
+          <button type="button" className="cart-back-link" onClick={() => navigateToStoreTab('katalog')}>
+            <ArrowLeft size={17} aria-hidden="true" /> Lanjut belanja
           </button>
+          <div>
+            <div className="eyebrow"><span className="eyebrow-dot" /> Keranjang</div>
+            <h1 id="cart-page-title" className="serif">Keranjang Belanja</h1>
+            <p>{cart.length} jenis produk dalam keranjang</p>
+          </div>
         </div>
 
         {cart.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px 16px' }}>
-            <ShoppingBag size={48} style={{ color: 'var(--muted)', margin: '0 auto 12px' }} strokeWidth={1.5} />
-            <h3 className="serif" style={{ fontSize: 24, margin: '0 0 8px' }}>Keranjang Belanja Kosong</h3>
-            <p style={{ fontSize: 14, color: 'var(--muted)', margin: '0 0 20px' }}>
-              Silakan pilih produk ready stock atau ajukan pre-order seragam sekolah pilihan Anda.
-            </p>
-            <button
-              className="btn btn-clay"
-              onClick={() => {
-                closeModal();
-                const shopEl = document.getElementById('shop');
-                if (shopEl) shopEl.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              Jelajahi Katalog Toko <ArrowUpRight size={14} className="btn-arrow-icon" />
+          <section className="cart-page-empty" aria-live="polite">
+            <ShoppingBag size={42} aria-hidden="true" />
+            <h2 className="serif">Keranjang masih kosong</h2>
+            <p>Pilih produk yang diperlukan, lalu tambahkan ke keranjang.</p>
+            <button type="button" className="btn btn-clay" onClick={() => navigateToStoreTab('katalog')}>
+              Jelajahi katalog <ArrowUpRight size={15} aria-hidden="true" />
             </button>
-          </div>
+          </section>
         ) : (
-          <div>
-            {cart.map((item) => (
-              <div key={item.cart_item_id} className="cart-line">
-                <div className="cart-thumb">
-                  {item.image_url ? (
-                    <img src={item.image_url} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
-                    <div className="boutique-brand-mark" style={{ height: '100%', fontSize: 9 }}>
-                      <span className="mark-sub">INABA</span>
-                      <span className="mark-main">HIJAB</span>
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  <span className={`cart-item-tag ${item.is_preorder ? 'tag-po' : 'tag-ready'}`}>
-                    {item.is_preorder ? 'PRE-ORDER' : 'READY STOCK'}
-                  </span>
-                  <h3 style={{ fontSize: 15, margin: '2px 0 4px', fontWeight: 700 }}>{item.name}</h3>
-                  <p style={{ fontSize: 13, color: 'var(--ink-soft)', margin: 0 }}>
-                    {formatRupiah(item.price)} &bull; Pilihan: <strong>{item.size || 'Varian belum dipilih'}</strong>
-                  </p>
-                  {item.school_institution && (
-                    <p style={{ fontSize: 11, color: 'var(--olive)', margin: '2px 0 0' }}>
-                      Lembaga: {item.school_institution}
-                    </p>
-                  )}
-
-                  <div className="qty-row">
-                    <button
-                      type="button"
-                      onClick={() => updateCartQty(item.cart_item_id, -1)}
-                      aria-label="Kurang kuantitas"
-                    >
-                      <Minus size={12} />
-                    </button>
-                    <span style={{ fontSize: 13, fontWeight: 700, minWidth: 20, textAlign: 'center' }}>
-                      {item.quantity}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => updateCartQty(item.cart_item_id, 1)}
-                      aria-label="Tambah kuantitas"
-                    >
-                      <Plus size={12} />
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-remove-item"
-                      onClick={() => removeFromCart(item.cart_item_id)}
-                    >
-                      Hapus
-                    </button>
+          <div className="cart-page-layout">
+            <section className="cart-page-items" aria-label="Produk yang dipilih">
+              {cart.map(item => (
+                <article key={item.cart_item_id} className="cart-page-line">
+                  <div className="cart-thumb">
+                    {item.image_url ? (
+                      <img src={item.image_url} alt={item.name} loading="lazy" />
+                    ) : (
+                      <div className="boutique-brand-mark" aria-hidden="true">
+                        <span className="mark-sub">INABA</span><span className="mark-main">HIJAB</span>
+                      </div>
+                    )}
                   </div>
-                </div>
+                  <div className="cart-page-item-info">
+                    <span className={`cart-item-tag ${item.is_preorder ? 'tag-po' : 'tag-ready'}`}>
+                      {item.is_preorder ? 'PRE-ORDER' : 'READY STOCK'}
+                    </span>
+                    <h2>{item.name}</h2>
+                    <p className="cart-page-item-meta">{formatRupiah(item.price)} · Varian: <strong>{item.size || 'Belum dipilih'}</strong></p>
+                    {item.school_institution && <p className="cart-page-item-meta">Lembaga: {item.school_institution}</p>}
+                    <div className="qty-row cart-page-qty-row">
+                      <button type="button" onClick={() => updateCartQty(item.cart_item_id, -1)} aria-label={`Kurangi jumlah ${item.name}`}><Minus size={14} /></button>
+                      <span aria-live="polite">{item.quantity}</span>
+                      <button type="button" onClick={() => updateCartQty(item.cart_item_id, 1)} aria-label={`Tambah jumlah ${item.name}`}><Plus size={14} /></button>
+                      <button type="button" className="btn-remove-item" onClick={() => removeFromCart(item.cart_item_id)}><Trash2 size={14} aria-hidden="true" /> Hapus</button>
+                    </div>
+                  </div>
+                  <strong className="cart-page-line-total tabular-nums">{formatRupiah(item.price * item.quantity)}</strong>
+                </article>
+              ))}
+            </section>
 
-                <div style={{ fontWeight: 800, fontSize: 14, whiteSpace: 'nowrap', textAlign: 'right' }}>
-                  {formatRupiah(item.price * item.quantity)}
-                </div>
-              </div>
-            ))}
-
-            <div className="cart-total-box">
-              <div className="cart-total-line">
-                <span>Subtotal Barang:</span>
-                <span style={{ fontWeight: 800, fontSize: 16, color: 'var(--clay)' }}>
-                  {formatRupiah(cartSubtotal)}
-                </span>
-              </div>
-              <div className="cart-total-note">
-                {hasPreorder && (
-                  <>
-                    &bull; Memuat pesanan Pre-Order Seragam: Pengerjaan mengikuti jadwal produksi 10–21 hari kerja.<br />
-                  </>
-                )}
-                &bull; Ongkos kirim dihitung berdasarkan alamat dan dikonfirmasi admin melalui WhatsApp sebelum pembayaran.
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gap: 10 }}>
-              <button
-                className="btn btn-full btn-clay"
-                onClick={() => openModal('checkout')}
-              >
-                Lanjutkan Pemesanan <ArrowUpRight size={14} className="btn-arrow-icon" />
+            <aside className="cart-page-summary" aria-label="Ringkasan keranjang">
+              <h2>Ringkasan Belanja</h2>
+              <div className="cart-page-summary-line"><span>Jenis produk</span><span>{cart.length}</span></div>
+              <div className="cart-page-summary-line"><span>Total barang</span><span>{cart.reduce((sum, item) => sum + item.quantity, 0)}</span></div>
+              <div className="cart-page-summary-total"><span>Subtotal</span><strong className="tabular-nums">{formatRupiah(cartSubtotal)}</strong></div>
+              <p className="cart-total-note">
+                {hasPreorder ? 'Produk pre-order mengikuti estimasi produksi yang tercantum pada produk. ' : ''}
+                Ongkir akan dikonfirmasi berdasarkan alamat sebelum pembayaran.
+              </p>
+              <button type="button" className="btn btn-full btn-clay" onClick={() => openModal('checkout')}>
+                Lanjutkan pemesanan <ArrowUpRight size={15} aria-hidden="true" />
               </button>
-              <button
-                className="btn btn-full btn-ghost"
-                onClick={closeModal}
-              >
-                Tambah Produk Lain
+              <button type="button" className="btn btn-full btn-ghost" onClick={() => navigateToStoreTab('katalog')}>
+                Tambah produk lain
               </button>
-            </div>
+            </aside>
           </div>
         )}
-      </section>
-    </div>
+      </div>
+    </main>
   );
 };

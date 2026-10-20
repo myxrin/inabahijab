@@ -27,10 +27,19 @@ export interface LastOrderSummary {
 }
 
 export type ViewType = 'store' | 'admin' | 'customer';
+export type StorefrontTab = 'beranda' | 'katalog' | 'keranjang';
+
+function readStorefrontTabFromUrl(): StorefrontTab {
+  if (typeof window === 'undefined') return 'beranda';
+  const value = new URLSearchParams(window.location.search).get('tab');
+  return value === 'katalog' || value === 'keranjang' || value === 'beranda' ? value : 'beranda';
+}
 
 interface StoreContextType {
   currentView: ViewType;
   navigateToView: (view: ViewType, serverVerifiedAdmin?: boolean) => void;
+  activeStoreTab: StorefrontTab;
+  navigateToStoreTab: (tab: StorefrontTab) => void;
   products: Product[];
   categories: Category[];
   siteImages: SiteImage[];
@@ -109,6 +118,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // View state: 'store' | 'admin' | 'customer'
   const [currentView, setCurrentView] = useState<ViewType>('store');
+  const [activeStoreTab, setActiveStoreTab] = useState<StorefrontTab>(readStorefrontTabFromUrl);
   const [isAdmin, setIsAdmin] = useState(false);
 
   const navigateToView = useCallback((view: ViewType, serverVerifiedAdmin = false) => {
@@ -116,17 +126,60 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setCurrentView(safeView);
     if (typeof window !== 'undefined') {
       if (safeView === 'admin') {
-        window.location.hash = '#admin';
+        // Use a query parameter for the admin panel so the URL can be shared
+        // and browser Back can leave the dashboard without re-opening a legacy hash.
+        const params = new URLSearchParams(window.location.search);
+        const currentPanel = params.get('panel');
+        params.set('panel', 'admin');
+        const query = params.toString();
+        const adminUrl = window.location.pathname + (query ? `?${query}` : '');
+        const state = window.history.state && typeof window.history.state === 'object' ? window.history.state : {};
+        if (window.location.hash) {
+          window.history.replaceState({ ...state, __inabaView: 'admin' }, '', adminUrl);
+        } else if (currentPanel !== 'admin') {
+          window.history.pushState({ ...state, __inabaView: 'admin' }, '', adminUrl);
+        }
       } else if (safeView === 'customer') {
         window.location.hash = '#akun';
       } else {
-        if (window.location.hash === '#admin' || window.location.hash === '#akun' || window.location.hash === '#account') {
-          history.replaceState(null, '', window.location.pathname + window.location.search);
+        const params = new URLSearchParams(window.location.search);
+        params.delete('panel');
+        const query = params.toString();
+        const cleanUrl = window.location.pathname + (query ? `?${query}` : '');
+        if (window.location.hash === '#admin' || window.location.hash === '#akun' || window.location.hash === '#account' || window.location.hash) {
+          window.history.replaceState(null, '', cleanUrl);
+        } else if (window.location.search !== (query ? `?${query}` : '')) {
+          window.history.replaceState(null, '', cleanUrl);
         }
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [isAdmin]);
+
+  // Store tabs are real history entries so browser Back returns to the previous tab.
+  const navigateToStoreTab = useCallback((tab: StorefrontTab) => {
+    setActiveModal(null);
+    if (typeof document !== 'undefined') document.body.classList.remove('lock');
+    setActiveStoreTab(tab);
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      params.delete('panel');
+      params.set('tab', tab);
+      const nextUrl = `${window.location.pathname}?${params.toString()}`;
+      const state = window.history.state && typeof window.history.state === 'object' ? window.history.state : {};
+      const currentParams = new URLSearchParams(window.location.search);
+      const currentTabParam = currentParams.get('tab');
+      const currentTab = currentTabParam || 'beranda';
+      if (currentTabParam === null && tab === 'beranda' && !window.location.hash) {
+        // Normalize the initial home URL without creating a duplicate history entry.
+        window.history.replaceState({ ...state, __inabaStoreTab: tab }, '', nextUrl);
+      } else if (currentTab !== tab || window.location.hash) {
+        // Each actual tab change creates a history entry, so Back returns to the previous tab.
+        window.history.pushState({ ...state, __inabaStoreTab: tab }, '', nextUrl);
+      }
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }
+  }, []);
 
   // A cart preference is not authoritative order data. Final pricing/inventory always comes from Supabase.
   // Load initial cart from localStorage
@@ -312,6 +365,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     const handlePopState = () => {
+      setActiveStoreTab(readStorefrontTabFromUrl());
       if (activeModal) {
         setActiveModal(null);
         document.body.classList.remove('lock');
@@ -587,6 +641,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       value={{
         currentView,
         navigateToView,
+        activeStoreTab,
+        navigateToStoreTab,
         products,
         categories,
         siteImages,

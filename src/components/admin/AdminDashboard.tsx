@@ -34,7 +34,7 @@ import {
   Download
 } from 'lucide-react';
 
-type ProductEditorForm = { name: string; category: string; price: number; stock: number; is_active: boolean; description: string; image_url: string; gallery_urls: string[]; variants: string; is_preorder: boolean; school_institution: string; estimated_delivery: string };
+type ProductEditorForm = { name: string; category: string; price: string; stock: string; is_active: boolean; description: string; image_url: string; gallery_urls: string[]; variants: string; is_preorder: boolean; school_institution: string; estimated_delivery: string };
 
 export const AdminDashboard: React.FC = () => {
   const {
@@ -130,8 +130,8 @@ export const AdminDashboard: React.FC = () => {
   const [prodForm, setProdForm] = useState<ProductEditorForm>({
     name: '',
     category: '',
-    price: 0,
-    stock: 0,
+    price: '',
+    stock: '',
     is_active: true,
     description: '',
     image_url: '',
@@ -255,8 +255,8 @@ export const AdminDashboard: React.FC = () => {
     setProdForm({
       name: '',
       category: adminCategories.find(category => category.is_active !== false)?.name || '',
-      price: 0,
-      stock: 0,
+      price: '',
+      stock: '',
       is_active: true,
       description: '',
       image_url: '',
@@ -276,8 +276,8 @@ export const AdminDashboard: React.FC = () => {
     setProdForm({
       name: p.name,
       category: p.category || adminCategories.find(category => category.is_active !== false)?.name || '',
-      price: p.price,
-      stock: p.stock ?? 0,
+      price: String(p.price ?? 0),
+      stock: String(p.stock ?? 0),
       is_active: p.is_active !== false,
       description: p.description || '',
       image_url: isProductStorageUrl(p.image_url) ? p.image_url : '',
@@ -297,6 +297,16 @@ export const AdminDashboard: React.FC = () => {
       return;
     }
     if (!prodForm.name.trim()) { showToast('Nama produk wajib diisi.'); return; }
+    const priceValue = Number(prodForm.price);
+    const stockValue = Number(prodForm.stock);
+    if (!prodForm.price.trim() || !/^\d+$/.test(prodForm.price) || !Number.isSafeInteger(priceValue) || priceValue < 0 || priceValue > 100000000000) {
+      showToast('Harga harus berupa angka bulat dari Rp0 sampai Rp100.000.000.000.');
+      return;
+    }
+    if (!prodForm.is_preorder && (!prodForm.stock.trim() || !/^\d+$/.test(prodForm.stock) || !Number.isSafeInteger(stockValue) || stockValue < 0 || stockValue > 2147483647)) {
+      showToast('Stok harus berupa angka bulat antara 0 dan 2.147.483.647.');
+      return;
+    }
     const variantsArray = prodForm.variants.split(/[|\r\n]+/).map(v => v.trim()).filter(Boolean).slice(0, 100);
     if (!variantsArray.length) { showToast('Tambahkan minimal satu ukuran atau varian produk.'); return; }
     if (prodForm.gallery_urls.length + pendingImageFiles.length < 1) { showToast('Tambahkan minimal satu foto produk.'); return; }
@@ -321,8 +331,8 @@ export const AdminDashboard: React.FC = () => {
       const gallery = [...prodForm.gallery_urls, ...uploadedUrls].slice(0, 5);
       const payload: Partial<Product> = {
         name: prodForm.name.trim(), slug, category: prodForm.category,
-        price: Math.max(0, Math.floor(Number(prodForm.price) || 0)),
-        stock: prodForm.is_preorder ? 0 : Math.max(0, Math.floor(Number(prodForm.stock) || 0)),
+        price: priceValue,
+        stock: prodForm.is_preorder ? 0 : stockValue,
         is_active: prodForm.is_active, description: prodForm.description.trim(),
         variants: variantsArray, image_url: gallery[0] || null, gallery_urls: gallery,
         is_preorder: prodForm.is_preorder, school_institution: prodForm.school_institution.trim(),
@@ -527,10 +537,10 @@ export const AdminDashboard: React.FC = () => {
           DESKTOP & MOBILE SIDEBAR
           ========================================================================= */}
       {mobileSidebarOpen && (
-        <div className="ref-sidebar-backdrop" onClick={() => setMobileSidebarOpen(false)} />
+        <button type="button" className="ref-sidebar-backdrop" onClick={() => setMobileSidebarOpen(false)} aria-label="Tutup menu admin" />
       )}
 
-      <aside className={`ref-sidebar ${mobileSidebarOpen ? 'open' : ''}`}>
+      <aside className={`ref-sidebar ${mobileSidebarOpen ? 'open' : ''}`} aria-label="Menu admin">
         {/* Brand Wordmark & Leaf Icon */}
         <div className="ref-sidebar-brand">
           <div className="ref-brand-logo-wrap">
@@ -559,6 +569,7 @@ export const AdminDashboard: React.FC = () => {
                   setIsEditingProduct(false);
                   setSelectedOrderForDetail(null);
                   setMobileSidebarOpen(false);
+                  window.scrollTo({ top: 0, behavior: 'auto' });
                 }}
               >
                 <div className="ref-nav-item-left">
@@ -797,12 +808,17 @@ export const AdminDashboard: React.FC = () => {
                         <div className="ref-form-group">
                           <label className="ref-form-label">Stok</label>
                           <input
-                            type="number"
-                            min="0"
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            autoComplete="off"
                             className="ref-form-input tabular-nums"
                             value={prodForm.stock}
-                            onChange={e => setProdForm(prev => ({ ...prev, stock: Number(e.target.value) }))}
+                            aria-describedby="product-stock-help"
+                            placeholder="Contoh: 25"
+                            onChange={e => setProdForm(prev => ({ ...prev, stock: e.target.value.replace(/\D/g, '') }))}
                           />
+                          <p id="product-stock-help" className="ref-field-help">Jumlah unit tersedia, pakai angka saja.</p>
                         </div>
                       </div>
 
@@ -811,14 +827,18 @@ export const AdminDashboard: React.FC = () => {
                         <div className="ref-form-group">
                           <label className="ref-form-label">Harga (IDR)</label>
                           <input
-                            type="number"
-                            min="0"
-                            step="1000"
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            autoComplete="off"
                             className="ref-form-input tabular-nums"
                             value={prodForm.price}
-                            onChange={e => setProdForm(prev => ({ ...prev, price: Number(e.target.value) }))}
+                            aria-describedby="product-price-help"
+                            placeholder="Contoh: 75000"
+                            onChange={e => setProdForm(prev => ({ ...prev, price: e.target.value.replace(/\D/g, '') }))}
                             required
                           />
+                          <p id="product-price-help" className="ref-field-help">Angka tanpa titik. Tampilan harga: {prodForm.price.trim() ? formatRupiah(Number(prodForm.price)) : 'belum diisi'}.</p>
                         </div>
 
                         <div className="ref-form-group">
@@ -983,13 +1003,13 @@ export const AdminDashboard: React.FC = () => {
                     <div className="ref-info-item">
                       <Mail size={16} className="ref-info-icon" />
                       <div>
-                        <span>{selectedOrderForDetail.customer_email || 'auliarahma@gmail.com'}</span>
+                        <span>{selectedOrderForDetail.customer_email || 'Email belum tersedia'}</span>
                       </div>
                     </div>
                     <div className="ref-info-item">
                       <Phone size={16} className="ref-info-icon" />
                       <div>
-                        <span className="tabular-nums">{selectedOrderForDetail.phone || '+62 812 3456 7890'}</span>
+                        <span className="tabular-nums">{selectedOrderForDetail.phone || 'Nomor telepon belum tersedia'}</span>
                       </div>
                     </div>
                   </div>
@@ -1000,7 +1020,7 @@ export const AdminDashboard: React.FC = () => {
                     <div className="ref-info-item">
                       <MapPin size={16} className="ref-info-icon" style={{ marginTop: 2 }} />
                       <div style={{ whiteSpace: 'pre-line', lineHeight: 1.5 }}>
-                        {selectedOrderForDetail.address || 'Jl. Melati No. 12, Kec. Sukajadi\nKota Bandung, Jawa Barat 40162'}
+                        {selectedOrderForDetail.address || 'Alamat pengiriman belum tersedia'}
                       </div>
                     </div>
                   </div>
@@ -1156,7 +1176,7 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               </div>
 
-              {/* Two Column Section: Pesanan Terbaru & Produk Terlaris */}
+              {/* Two Column Section: Pesanan Terbaru & Stok Produk */}
               <div className="ref-dashboard-split-grid">
                 {/* Left Column: Pesanan Terbaru */}
                 <div className="ref-card ref-recent-orders-card">
@@ -1228,10 +1248,10 @@ export const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Right Column: Produk Terlaris */}
+                {/* Right Column: Stok Produk */}
                 <div className="ref-card ref-bestseller-card">
                   <div className="ref-card-header-bar">
-                    <h2 className="ref-card-title">Produk Terlaris</h2>
+                    <h2 className="ref-card-title">Stok Produk</h2>
                     <button
                       type="button"
                       className="ref-text-link"
@@ -1243,7 +1263,7 @@ export const AdminDashboard: React.FC = () => {
 
                   <div className="ref-bestseller-list">
                     {adminProducts.slice(0, 5).map((p, idx) => {
-                      const salesCount = Number(p.stock || 0);
+                      const stockCount = Number(p.stock || 0);
                       return (
                         <div
                           key={p.id}
@@ -1258,7 +1278,7 @@ export const AdminDashboard: React.FC = () => {
                           />
                           <div className="ref-bestseller-info">
                             <strong>{p.name}</strong>
-                            <span>{salesCount} stok tersedia</span>
+                            <span>{stockCount} stok tersedia</span>
                           </div>
                           <div className="ref-bestseller-trend-icon">
                             <TrendingUp size={15} />
