@@ -154,6 +154,8 @@ export const AdminDashboard: React.FC = () => {
   );
   const [pendingImageFiles, setPendingImageFiles] = useState<File[]>([]);
   const [pendingImagePreviews, setPendingImagePreviews] = useState<string[]>([]);
+  const [selectedPreviewUrl, setSelectedPreviewUrl] = useState<string | null>(null);
+  const [coverIsPending, setCoverIsPending] = useState(false);
   const [siteImageUploading, setSiteImageUploading] = useState<string | null>(null);
 
 
@@ -252,6 +254,8 @@ export const AdminDashboard: React.FC = () => {
     setActiveTab('products');
     setEditingProduct(null);
     setPendingImageFiles([]);
+    setSelectedPreviewUrl(null);
+    setCoverIsPending(false);
     setProdForm({
       name: '',
       category: adminCategories.find(category => category.is_active !== false)?.name || '',
@@ -273,6 +277,8 @@ export const AdminDashboard: React.FC = () => {
     setActiveTab('products');
     setEditingProduct(p);
     setPendingImageFiles([]);
+    setSelectedPreviewUrl(p.image_url || null);
+    setCoverIsPending(false);
     setProdForm({
       name: p.name,
       category: p.category || adminCategories.find(category => category.is_active !== false)?.name || '',
@@ -288,6 +294,53 @@ export const AdminDashboard: React.FC = () => {
       estimated_delivery: p.estimated_delivery || ''
     });
     setIsEditingProduct(true);
+  };
+
+  const allAvailablePhotos = useMemo(() => {
+    return [...prodForm.gallery_urls, ...pendingImagePreviews];
+  }, [prodForm.gallery_urls, pendingImagePreviews]);
+
+  const mainDisplayUrl = useMemo(() => {
+    if (selectedPreviewUrl && allAvailablePhotos.includes(selectedPreviewUrl)) {
+      return selectedPreviewUrl;
+    }
+    if (coverIsPending && pendingImagePreviews[0]) {
+      return pendingImagePreviews[0];
+    }
+    return prodForm.image_url || prodForm.gallery_urls[0] || pendingImagePreviews[0] || null;
+  }, [selectedPreviewUrl, allAvailablePhotos, coverIsPending, prodForm.image_url, prodForm.gallery_urls, pendingImagePreviews]);
+
+  const currentCoverUrl = useMemo(() => {
+    if (coverIsPending && pendingImagePreviews[0]) {
+      return pendingImagePreviews[0];
+    }
+    return prodForm.gallery_urls[0] || pendingImagePreviews[0] || null;
+  }, [coverIsPending, pendingImagePreviews, prodForm.gallery_urls]);
+
+  const handleSetCover = (targetUrl: string) => {
+    if (!targetUrl) return;
+    if (prodForm.gallery_urls.includes(targetUrl)) {
+      setProdForm(prev => ({
+        ...prev,
+        image_url: targetUrl,
+        gallery_urls: [targetUrl, ...prev.gallery_urls.filter(item => item !== targetUrl)]
+      }));
+      setCoverIsPending(false);
+      setSelectedPreviewUrl(targetUrl);
+      showToast('Foto sampul berhasil diatur.');
+      return;
+    }
+    const pIdx = pendingImagePreviews.indexOf(targetUrl);
+    if (pIdx !== -1) {
+      setPendingImageFiles(prev => {
+        const file = prev[pIdx];
+        if (!file) return prev;
+        return [file, ...prev.filter((_, i) => i !== pIdx)];
+      });
+      setCoverIsPending(true);
+      setSelectedPreviewUrl(targetUrl);
+      showToast('Foto baru ini diatur sebagai sampul utama.');
+    }
   };
 
   const handleSaveProductSubmit = async (e?: React.FormEvent) => {
@@ -328,7 +381,9 @@ export const AdminDashboard: React.FC = () => {
         uploadedPaths.push(path);
         uploadedUrls.push(supabase.storage.from('product-images').getPublicUrl(path).data.publicUrl);
       }
-      const gallery = [...prodForm.gallery_urls, ...uploadedUrls].slice(0, 5);
+      const gallery = coverIsPending
+        ? [...uploadedUrls, ...prodForm.gallery_urls].slice(0, 5)
+        : [...prodForm.gallery_urls, ...uploadedUrls].slice(0, 5);
       const payload: Partial<Product> = {
         name: prodForm.name.trim(), slug, category: prodForm.category,
         price: priceValue,
@@ -343,6 +398,8 @@ export const AdminDashboard: React.FC = () => {
         ? (editingProduct ? prev.map(p => p.id === res.product.id ? res.product : p) : prev)
         : [res.product, ...prev.filter(p => p.id !== res.product.id)]);
       setPendingImageFiles([]);
+      setSelectedPreviewUrl(null);
+      setCoverIsPending(false);
       showToast(editingProduct ? 'Perubahan produk tersimpan di Supabase.' : 'Produk baru tersimpan di Supabase.');
       setIsEditingProduct(false);
       setActiveTab('products');
@@ -713,33 +770,85 @@ export const AdminDashboard: React.FC = () => {
                 <div className="ref-product-edit-left">
                   <div className="ref-card ref-image-preview-card">
                     <div className="ref-main-image-wrap">
-                      {prodForm.image_url ? (
-                        <img src={prodForm.image_url} alt="Preview produk" className="ref-main-preview-img" />
-                      ) : pendingImagePreviews[0] ? (
-                        <img src={pendingImagePreviews[0]} alt="Preview foto baru" className="ref-main-preview-img" />
+                      {mainDisplayUrl ? (
+                        <>
+                          <img src={mainDisplayUrl} alt="Preview produk" className="ref-main-preview-img" />
+                          {mainDisplayUrl === currentCoverUrl ? (
+                            <span className="ref-main-cover-badge">Foto Sampul</span>
+                          ) : (
+                            <button
+                              type="button"
+                              className="ref-set-cover-btn"
+                              onClick={() => handleSetCover(mainDisplayUrl)}
+                            >
+                              Jadikan Foto Sampul
+                            </button>
+                          )}
+                        </>
                       ) : (
-                        <div className="ref-main-preview-empty" role="img" aria-label="Belum ada foto produk">
+                        <label
+                          htmlFor="productImagesInput"
+                          className="ref-main-preview-empty"
+                          style={{ cursor: 'pointer' }}
+                        >
                           <Package size={42} strokeWidth={1.3} />
                           <span>Foto produk belum ditambahkan</span>
-                        </div>
+                          <span className="ref-preview-upload-hint">+ Klik di sini untuk memilih foto</span>
+                        </label>
                       )}
                     </div>
 
                     <div className="ref-thumbnails-row" aria-label="Galeri foto produk">
                       {prodForm.gallery_urls.map((url, idx) => (
-                        <div key={url} className={`ref-thumbnail-slot ${prodForm.image_url === url ? 'active' : ''}`} style={{ position: 'relative' }}>
-                          <button type="button" onClick={() => setProdForm(prev => ({ ...prev, image_url: url, gallery_urls: [url, ...prev.gallery_urls.filter(item => item !== url)] }))} aria-label={`Jadikan foto ${idx + 1} sebagai sampul`} style={{ border: 0, padding: 0, background: 'transparent', width: '100%', height: '100%' }}>
+                        <div key={url} className={`ref-thumbnail-slot ${mainDisplayUrl === url ? 'active' : ''}`}>
+                          <button
+                            type="button"
+                            className="ref-thumb-select-btn"
+                            onClick={() => setSelectedPreviewUrl(url)}
+                            aria-label={`Pilih foto ${idx + 1}`}
+                          >
                             <img src={url} alt={`Foto produk ${idx + 1}`} />
+                            {url === currentCoverUrl && <span className="ref-cover-badge">Sampul</span>}
                           </button>
-                          <button type="button" aria-label={`Hapus foto ${idx + 1}`} onClick={() => setProdForm(prev => { const next = prev.gallery_urls.filter(item => item !== url); return { ...prev, gallery_urls: next, image_url: next[0] || '' }; })} style={{ position: 'absolute', top: 2, right: 2, border: 0, borderRadius: 20, background: '#fff', color: '#8d3b34', width: 22, height: 22, display: 'grid', placeItems: 'center', boxShadow: '0 1px 4px #0002' }}>
+                          <button
+                            type="button"
+                            aria-label={`Hapus foto ${idx + 1}`}
+                            className="ref-thumb-delete-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (selectedPreviewUrl === url) setSelectedPreviewUrl(null);
+                              setProdForm(prev => {
+                                const next = prev.gallery_urls.filter(item => item !== url);
+                                return { ...prev, gallery_urls: next, image_url: next[0] || '' };
+                              });
+                            }}
+                          >
                             <X size={12} />
                           </button>
                         </div>
                       ))}
+
                       {pendingImagePreviews.map((url, idx) => (
-                        <div key={`${pendingImageFiles[idx]?.name}-${idx}`} className="ref-thumbnail-slot" style={{ position: 'relative' }}>
-                          <img src={url} alt={`Foto baru ${idx + 1}`} />
-                          <button type="button" aria-label={`Batalkan foto baru ${idx + 1}`} onClick={() => setPendingImageFiles(prev => prev.filter((_, index) => index !== idx))} style={{ position: 'absolute', top: 2, right: 2, border: 0, borderRadius: 20, background: '#fff', color: '#8d3b34', width: 22, height: 22, display: 'grid', placeItems: 'center', boxShadow: '0 1px 4px #0002' }}>
+                        <div key={`${pendingImageFiles[idx]?.name}-${idx}`} className={`ref-thumbnail-slot ${mainDisplayUrl === url ? 'active' : ''}`}>
+                          <button
+                            type="button"
+                            className="ref-thumb-select-btn"
+                            onClick={() => setSelectedPreviewUrl(url)}
+                            aria-label={`Lihat foto baru ${idx + 1}`}
+                          >
+                            <img src={url} alt={`Foto baru ${idx + 1}`} />
+                            {url === currentCoverUrl && <span className="ref-cover-badge">Sampul</span>}
+                          </button>
+                          <button
+                            type="button"
+                            aria-label={`Batalkan foto baru ${idx + 1}`}
+                            className="ref-thumb-delete-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (selectedPreviewUrl === url) setSelectedPreviewUrl(null);
+                              setPendingImageFiles(prev => prev.filter((_, index) => index !== idx));
+                            }}
+                          >
                             <X size={12} />
                           </button>
                         </div>
@@ -1179,7 +1288,7 @@ export const AdminDashboard: React.FC = () => {
               {/* Two Column Section: Pesanan Terbaru & Stok Produk */}
               <div className="ref-dashboard-split-grid">
                 {/* Left Column: Pesanan Terbaru */}
-                <div className="ref-card ref-recent-orders-card">
+                <div className="ref-card ref-recent-orders-card ref-card-has-mobile-view">
                   <div className="ref-card-header-bar">
                     <h2 className="ref-card-title">Pesanan Terbaru</h2>
                     <button
@@ -1354,7 +1463,7 @@ export const AdminDashboard: React.FC = () => {
               </div>
 
               {/* Product Table matching reference */}
-              <div className="ref-card ref-table-card">
+              <div className="ref-card ref-table-card ref-card-has-mobile-view">
                 <div className="ref-table-responsive">
                   <table className="ref-data-table ref-product-table">
                     <thead>
@@ -1432,6 +1541,97 @@ export const AdminDashboard: React.FC = () => {
                       })}
                     </tbody>
                   </table>
+                </div>
+
+                {/* Mobile Products List for screen width <= 640px */}
+                <div className="ref-mobile-products-list">
+                  {filteredProducts.length === 0 ? (
+                    <div className="ref-empty-state-card" style={{ padding: '32px 16px', textAlign: 'center' }}>
+                      <Package size={36} style={{ color: 'var(--ref-text-muted, #777C76)', margin: '0 auto 8px' }} />
+                      <p style={{ margin: 0, fontWeight: 500, color: 'var(--ref-text, #252B27)' }}>Tidak ada produk ditemukan</p>
+                      <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'var(--ref-text-muted, #777C76)' }}>Coba ubah kata kunci pencarian atau filter.</p>
+                    </div>
+                  ) : (
+                    filteredProducts.map(p => {
+                      const isOutOfStock = p.is_active === false || (!p.is_preorder && p.stock === 0);
+                      return (
+                        <div key={p.id} className="ref-mobile-product-card-item">
+                          <div
+                            className="ref-mobile-product-main-clickable"
+                            onClick={() => handleOpenEditProduct(p)}
+                          >
+                            <div className="ref-mobile-product-thumb-wrap">
+                              {p.image_url ? (
+                                <img src={p.image_url} alt={p.name} className="ref-mobile-product-thumb" />
+                              ) : (
+                                <div className="ref-mobile-product-thumb ref-admin-order-placeholder" aria-hidden="true">
+                                  <Package size={20} />
+                                </div>
+                              )}
+                            </div>
+                            <div className="ref-mobile-product-info">
+                              <strong className="ref-mobile-product-title">{p.name}</strong>
+                              <div className="ref-mobile-product-meta">
+                                <span className="ref-mobile-product-cat">{p.category || 'Tanpa Kategori'}</span>
+                                <span className="ref-mobile-meta-dot">•</span>
+                                <span className="ref-mobile-product-stock">
+                                  {p.is_preorder ? 'Pre-Order' : `Stok: ${p.stock ?? 0}`}
+                                </span>
+                              </div>
+                              <div className="ref-mobile-product-price tabular-nums">
+                                {formatRupiah(p.price)}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="ref-mobile-product-bottom-bar">
+                            <div className="ref-mobile-product-status">
+                              {renderStatusBadge(isOutOfStock ? 'Stok Habis' : 'Aktif', true)}
+                            </div>
+                            <div className="ref-mobile-product-actions">
+                              <button
+                                type="button"
+                                className="ref-mobile-btn-edit"
+                                onClick={() => handleOpenEditProduct(p)}
+                                aria-label={`Edit ${p.name}`}
+                              >
+                                <Edit size={14} />
+                                <span>Edit</span>
+                              </button>
+                              <button
+                                type="button"
+                                className="ref-action-dots-btn"
+                                onClick={() =>
+                                  setActionMenuProductId(prev => (prev === p.id ? null : p.id))
+                                }
+                                aria-label="Aksi Lainnya"
+                              >
+                                <MoreVertical size={16} />
+                              </button>
+
+                              {actionMenuProductId === p.id && (
+                                <div className="ref-row-dropdown">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleToggleProductStatus(p)}
+                                  >
+                                    {p.is_active ? 'Set Nonaktif' : 'Set Aktif'}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="ref-dropdown-delete"
+                                    onClick={() => handleDeleteProduct(p)}
+                                  >
+                                    <Trash2 size={14} /> Hapus Produk
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
                 </div>
               </div>
             </div>
@@ -1540,7 +1740,7 @@ export const AdminDashboard: React.FC = () => {
               </div>
 
               {/* Desktop Order Table */}
-              <div className="ref-card ref-table-card">
+              <div className="ref-card ref-table-card ref-card-has-mobile-view">
                 <div className="ref-table-responsive">
                   <table className="ref-data-table">
                     <thead>
@@ -1605,58 +1805,124 @@ export const AdminDashboard: React.FC = () => {
             /* ===================================================================
                CATEGORIES TAB
                =================================================================== */
-            <div className="ref-card" style={{ padding: 24 }}>
-              <h2 className="ref-page-title" style={{ marginBottom: 16 }}>Kategori Produk Toko</h2>
-              <div className="ref-table-responsive">
-                <table className="ref-data-table">
-                  <thead>
-                    <tr>
-                      <th>Nama Kategori</th>
-                      <th>Slug</th>
-                      <th>Keterangan</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {adminCategories.map(c => (
-                      <tr key={c.slug}>
-                        <td><strong>{c.name}</strong></td>
-                        <td><code>{c.slug}</code></td>
-                        <td>{c.description || '-'}</td>
-                        <td>{c.is_active === false ? <span className="ref-status-badge status-habis">Nonaktif</span> : <span className="ref-status-badge status-aktif">Aktif</span>}</td>
+            <div className="ref-manage-categories-view">
+              <div className="ref-manage-header-row">
+                <div>
+                  <h1 className="ref-page-title">Kategori Produk Toko</h1>
+                  <p className="ref-page-subtitle">Daftar kategori aktif untuk katalog produk INABA Hijab.</p>
+                </div>
+              </div>
+
+              <div className="ref-card ref-table-card ref-card-has-mobile-view">
+                <div className="ref-table-responsive">
+                  <table className="ref-data-table">
+                    <thead>
+                      <tr>
+                        <th>Nama Kategori</th>
+                        <th>Slug</th>
+                        <th>Keterangan</th>
+                        <th>Status</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {adminCategories.map(c => (
+                        <tr key={c.slug}>
+                          <td><strong>{c.name}</strong></td>
+                          <td><code>{c.slug}</code></td>
+                          <td>{c.description || '-'}</td>
+                          <td>{c.is_active === false ? <span className="ref-status-badge status-habis">Nonaktif</span> : <span className="ref-status-badge status-aktif">Aktif</span>}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile Categories List */}
+                <div className="ref-mobile-categories-list">
+                  {adminCategories.length === 0 ? (
+                    <div className="ref-empty-state-card" style={{ padding: '32px 16px', textAlign: 'center' }}>
+                      <p style={{ margin: 0, fontWeight: 500, color: 'var(--ref-text, #252B27)' }}>Belum ada kategori</p>
+                    </div>
+                  ) : (
+                    adminCategories.map(c => (
+                      <div key={c.slug} className="ref-mobile-category-card">
+                        <div className="ref-mobile-cat-header">
+                          <strong className="ref-mobile-cat-name">{c.name}</strong>
+                          {c.is_active === false ? (
+                            <span className="ref-status-badge status-habis">Nonaktif</span>
+                          ) : (
+                            <span className="ref-status-badge status-aktif">Aktif</span>
+                          )}
+                        </div>
+                        <div className="ref-mobile-cat-slug">
+                          <code>{c.slug}</code>
+                        </div>
+                        {c.description && (
+                          <p className="ref-mobile-cat-desc">{c.description}</p>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
             </div>
           ) : activeTab === 'customers' ? (
             /* ===================================================================
                CUSTOMERS TAB
                =================================================================== */
-            <div className="ref-card" style={{ padding: 24 }}>
-              <h2 className="ref-page-title" style={{ marginBottom: 16 }}>Daftar Pelanggan</h2>
-              <div className="ref-table-responsive">
-                <table className="ref-data-table">
-                  <thead>
-                    <tr>
-                      <th>Nama Pelanggan</th>
-                      <th>Email</th>
-                      <th>ID Akun</th>
-                      <th>Tanggal Bergabung</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {adminCustomers.map(customer => (
-                      <tr key={customer.id}>
-                        <td><strong>{customer.full_name || customer.email.split('@')[0]}</strong></td>
-                        <td>{customer.email}</td>
-                        <td><code>{customer.id.slice(0, 8)}</code></td>
-                        <td>{customer.created_at ? new Date(customer.created_at).toLocaleDateString('id-ID') : '—'}</td>
+            <div className="ref-manage-customers-view">
+              <div className="ref-manage-header-row">
+                <div>
+                  <h1 className="ref-page-title">Daftar Pelanggan</h1>
+                  <p className="ref-page-subtitle">Pelanggan yang terdaftar di akun toko INABA Hijab.</p>
+                </div>
+              </div>
+
+              <div className="ref-card ref-table-card ref-card-has-mobile-view">
+                <div className="ref-table-responsive">
+                  <table className="ref-data-table">
+                    <thead>
+                      <tr>
+                        <th>Nama Pelanggan</th>
+                        <th>Email</th>
+                        <th>ID Akun</th>
+                        <th>Tanggal Bergabung</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {adminCustomers.map(customer => (
+                        <tr key={customer.id}>
+                          <td><strong>{customer.full_name || customer.email.split('@')[0]}</strong></td>
+                          <td>{customer.email}</td>
+                          <td><code>{customer.id.slice(0, 8)}</code></td>
+                          <td>{customer.created_at ? new Date(customer.created_at).toLocaleDateString('id-ID') : '—'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile Customers List */}
+                <div className="ref-mobile-customers-list">
+                  {adminCustomers.length === 0 ? (
+                    <div className="ref-empty-state-card" style={{ padding: '32px 16px', textAlign: 'center' }}>
+                      <p style={{ margin: 0, fontWeight: 500, color: 'var(--ref-text, #252B27)' }}>Belum ada pelanggan terdaftar</p>
+                    </div>
+                  ) : (
+                    adminCustomers.map(customer => (
+                      <div key={customer.id} className="ref-mobile-customer-card">
+                        <div className="ref-mobile-customer-top">
+                          <strong>{customer.full_name || customer.email.split('@')[0]}</strong>
+                          <small className="ref-mobile-time">
+                            {customer.created_at ? new Date(customer.created_at).toLocaleDateString('id-ID') : '—'}
+                          </small>
+                        </div>
+                        <div className="ref-mobile-customer-email">{customer.email}</div>
+                        <div className="ref-mobile-customer-id">ID: <code>{customer.id.slice(0, 8)}</code></div>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
             </div>
           ) : activeTab === 'newsletter' ? (

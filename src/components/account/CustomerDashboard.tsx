@@ -4,22 +4,17 @@ import { supabase, formatRupiah, cleanPhoneNumber } from '../../lib/supabase';
 import { Order } from '../../types';
 import {
   ShoppingBag,
-  Home,
-  LayoutGrid,
   ArrowLeft,
   LogOut,
-  MessageCircle,
   Clock,
-  CheckCircle2,
   Package,
   ArrowUpRight,
-  User as UserIcon,
   HelpCircle,
-  ExternalLink
+  MessageCircle
 } from 'lucide-react';
 
 export const CustomerDashboard: React.FC = () => {
-  const { user, profile, navigateToView, navigateToStoreTab, showToast, storeSettings } = useStore();
+  const { user, profile, navigateToView, showToast, storeSettings } = useStore();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -58,21 +53,13 @@ export const CustomerDashboard: React.FC = () => {
 
   const cleanStoreWa = cleanPhoneNumber(storeSettings.contact_whatsapp);
 
-  const goToStoreTab = (tab: 'beranda' | 'katalog' | 'keranjang') => {
-    navigateToView('store');
-    navigateToStoreTab(tab);
-  };
-
   return (
     <div className="fullpage-dashboard">
       {/* Sidebar for Customer */}
       <aside className="dashboard-sidebar">
         <div className="dashboard-sidebar-header">
           <div className="dashboard-brand-block">
-            <span className="brand-title" style={{ fontSize: 18 }}>
-              INABA<span>HIJAB</span>
-            </span>
-            <div className="dashboard-role-badge" style={{ background: '#eaf2e8', color: 'var(--olive)' }}>
+            <div className="dashboard-role-badge" style={{ background: '#eaf2e8', color: 'var(--olive)', marginTop: 0 }}>
               <span className="dashboard-role-dot" style={{ background: 'var(--olive)' }}></span> Akun Pelanggan
             </div>
           </div>
@@ -123,42 +110,88 @@ export const CustomerDashboard: React.FC = () => {
               <span>{user?.email}</span>
             </div>
           </div>
-          <button type="button" className="dashboard-logout-text-btn" onClick={handleSignOut}>
-            <LogOut size={16} aria-hidden="true" /> Keluar akun
-          </button>
         </div>
       </aside>
 
       {/* Main Content Canvas */}
       <main className="dashboard-main">
-        <header className="dashboard-topbar">
-          <div className="dashboard-breadcrumbs">
-            <span>Area Pelanggan</span>
-            <span className="breadcrumb-separator">/</span>
-            <strong>Riwayat Pesanan Saya</strong>
-          </div>
-
-          <div className="dashboard-topbar-actions">
-            <button
-              className="btn btn-sm btn-clay"
-              onClick={() => navigateToView('store')}
-            >
-              <ShoppingBag size={14} /> Belanja Produk Lainnya
-            </button>
-          </div>
-        </header>
-
         <div className="dashboard-content-area">
           <div className="dashboard-section-stack">
-            {/* Greeting Card */}
-            <div className="dashboard-welcome-banner">
-              <div>
-                <h2 className="serif" style={{ margin: 0, fontSize: 26, fontWeight: 700 }}>
-                  Selamat Datang, {profile?.full_name || user?.email?.split('@')[0]}
-                </h2>
-                <p style={{ margin: '6px 0 0', color: 'var(--muted)', fontSize: 14 }}>
-                  Di sini Anda dapat melacak status pesanan busana muslim, seragam pre-order sekolah, dan menghubungi CS jika ada perubahan.
-                </p>
+            {/* Account Profile, Menus & Logout Action */}
+            <div className="dashboard-account-card dashboard-panel">
+              <div className="account-card-header">
+                <div className="account-avatar-large">
+                  {(profile?.full_name || user?.email || 'P')[0].toUpperCase()}
+                </div>
+                <div className="account-user-details">
+                  <div className="dashboard-role-badge" style={{ background: '#eaf2e8', color: 'var(--olive)' }}>
+                    <span className="dashboard-role-dot" style={{ background: 'var(--olive)' }}></span> Akun Pelanggan
+                  </div>
+                  <h2 className="serif account-user-name">
+                    Selamat Datang, {profile?.full_name || user?.email?.split('@')[0]}
+                  </h2>
+                  <span className="account-user-email">{user?.email}</span>
+                </div>
+              </div>
+
+              <p className="account-user-desc">
+                Di sini Anda dapat melacak status pesanan busana muslim, seragam pre-order sekolah, dan menghubungi CS jika ada perubahan.
+              </p>
+
+              <div className="account-quick-menus">
+                <div className="account-menu-item account-menu-stat">
+                  <ShoppingBag size={17} className="account-menu-icon" aria-hidden="true" />
+                  <div className="account-menu-content">
+                    <span className="account-menu-title">Riwayat Pesanan</span>
+                    <span className="account-menu-subtitle">{orders.length} pesanan tercatat</span>
+                  </div>
+                </div>
+
+                {cleanStoreWa ? (
+                  <a
+                    href={`https://wa.me/${cleanStoreWa}?text=${encodeURIComponent('Halo Admin INABA HIJAB, saya ingin bertanya tentang pesanan/katalog.')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="account-menu-item account-menu-link"
+                  >
+                    <HelpCircle size={17} className="account-menu-icon" aria-hidden="true" />
+                    <div className="account-menu-content">
+                      <span className="account-menu-title">Bantuan &amp; Konsultasi CS</span>
+                      <span className="account-menu-subtitle">Hubungi via WhatsApp</span>
+                    </div>
+                    <ArrowUpRight size={14} className="account-menu-arrow" aria-hidden="true" />
+                  </a>
+                ) : (
+                  <div className="account-menu-item account-menu-disabled" aria-disabled="true">
+                    <HelpCircle size={17} className="account-menu-icon" aria-hidden="true" />
+                    <div className="account-menu-content">
+                      <span className="account-menu-title">Bantuan CS</span>
+                      <span className="account-menu-subtitle">Kontak belum tersedia</span>
+                    </div>
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  className="account-menu-item account-menu-link"
+                  onClick={() => navigateToView('store')}
+                >
+                  <ArrowLeft size={17} className="account-menu-icon" aria-hidden="true" />
+                  <div className="account-menu-content">
+                    <span className="account-menu-title">Kembali Belanja ke Toko</span>
+                    <span className="account-menu-subtitle">Jelajahi produk dan koleksi</span>
+                  </div>
+                </button>
+              </div>
+
+              <div className="account-logout-wrap">
+                <button
+                  type="button"
+                  className="dashboard-logout-text-btn"
+                  onClick={handleSignOut}
+                >
+                  <LogOut size={16} aria-hidden="true" /> Keluar Akun
+                </button>
               </div>
             </div>
 
@@ -260,21 +293,6 @@ export const CustomerDashboard: React.FC = () => {
           </div>
         </div>
       </main>
-
-      <nav className="member-mobile-bottom-nav" aria-label="Navigasi toko dan akun">
-        <button type="button" onClick={() => goToStoreTab('beranda')}>
-          <Home size={19} aria-hidden="true" /><span>Beranda</span>
-        </button>
-        <button type="button" onClick={() => goToStoreTab('katalog')}>
-          <LayoutGrid size={19} aria-hidden="true" /><span>Katalog</span>
-        </button>
-        <button type="button" onClick={() => goToStoreTab('keranjang')}>
-          <ShoppingBag size={19} aria-hidden="true" /><span>Keranjang</span>
-        </button>
-        <button type="button" className="active" aria-current="page">
-          <UserIcon size={19} aria-hidden="true" /><span>Akun</span>
-        </button>
-      </nav>
     </div>
   );
 };

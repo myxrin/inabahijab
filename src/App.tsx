@@ -66,7 +66,12 @@ export const App: React.FC = () => {
   return (
     <>
       {currentView === 'admin' && isAdmin && <AdminDashboard />}
-      {currentView === 'customer' && user && <CustomerDashboard />}
+      {currentView === 'customer' && user && (
+        <>
+          <Header />
+          <CustomerDashboard />
+        </>
+      )}
       {(currentView === 'store' || (currentView === 'admin' && !isAdmin) || (currentView === 'customer' && !user)) && (
         <>
           <Header />
