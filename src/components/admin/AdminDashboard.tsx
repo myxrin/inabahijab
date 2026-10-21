@@ -34,7 +34,21 @@ import {
   Download
 } from 'lucide-react';
 
-type ProductEditorForm = { name: string; category: string; price: string; stock: string; is_active: boolean; description: string; image_url: string; gallery_urls: string[]; variants: string; is_preorder: boolean; school_institution: string; estimated_delivery: string };
+type ProductEditorForm = {
+  name: string;
+  category: string;
+  price: string;
+  stock: string;
+  is_active: boolean;
+  description: string;
+  image_url: string;
+  gallery_urls: string[];
+  colors: string;
+  sizes: string;
+  is_preorder: boolean;
+  school_institution: string;
+  estimated_delivery: string;
+};
 
 export const AdminDashboard: React.FC = () => {
   const {
@@ -136,7 +150,8 @@ export const AdminDashboard: React.FC = () => {
     description: '',
     image_url: '',
     gallery_urls: [],
-    variants: '',
+    colors: '',
+    sizes: '',
     is_preorder: false,
     school_institution: '',
     estimated_delivery: ''
@@ -265,7 +280,8 @@ export const AdminDashboard: React.FC = () => {
       description: '',
       image_url: '',
       gallery_urls: [],
-      variants: '',
+      colors: '',
+      sizes: '',
       is_preorder: false,
       school_institution: '',
       estimated_delivery: ''
@@ -279,6 +295,36 @@ export const AdminDashboard: React.FC = () => {
     setPendingImageFiles([]);
     setSelectedPreviewUrl(p.image_url || null);
     setCoverIsPending(false);
+
+    let initialColors = '';
+    let initialSizes = '';
+
+    if (p.specifications?.colors || p.specifications?.sizes) {
+      initialColors = p.specifications?.colors || '';
+      initialSizes = p.specifications?.sizes || '';
+    } else if (Array.isArray(p.variants) && p.variants.length > 0) {
+      const hasHyphen = p.variants.some(v => v.includes(' - '));
+      if (hasHyphen) {
+        const cSet = new Set<string>();
+        const sSet = new Set<string>();
+        p.variants.forEach(v => {
+          const parts = v.split(' - ');
+          if (parts[0]) cSet.add(parts[0].trim());
+          if (parts[1]) sSet.add(parts[1].trim());
+        });
+        initialColors = Array.from(cSet).join(', ');
+        initialSizes = Array.from(sSet).join(', ');
+      } else {
+        const standardSizes = new Set(['s', 'm', 'l', 'xl', 'xxl', 'xxxl', 'all size', 'allsize', 'standar', 'jumbo']);
+        const isSizeOnly = p.variants.every(v => standardSizes.has(v.trim().toLowerCase()) || /^\d+$/.test(v.trim()));
+        if (isSizeOnly) {
+          initialSizes = p.variants.join(', ');
+        } else {
+          initialColors = p.variants.join(', ');
+        }
+      }
+    }
+
     setProdForm({
       name: p.name,
       category: p.category || adminCategories.find(category => category.is_active !== false)?.name || '',
@@ -288,7 +334,8 @@ export const AdminDashboard: React.FC = () => {
       description: p.description || '',
       image_url: isProductStorageUrl(p.image_url) ? p.image_url : '',
       gallery_urls: Array.isArray(p.gallery_urls) ? p.gallery_urls.filter(isProductStorageUrl).slice(0, 5) : (isProductStorageUrl(p.image_url) ? [p.image_url] : []),
-      variants: Array.isArray(p.variants) ? p.variants.join(' | ') : '',
+      colors: initialColors,
+      sizes: initialSizes,
       is_preorder: Boolean(p.is_preorder),
       school_institution: p.school_institution || '',
       estimated_delivery: p.estimated_delivery || ''
@@ -343,6 +390,26 @@ export const AdminDashboard: React.FC = () => {
     }
   };
 
+  const previewVariants = useMemo(() => {
+    const parseList = (str: string) =>
+      str.split(/[,|\r\n]+/).map(s => s.trim()).filter(Boolean);
+    const colors = parseList(prodForm.colors);
+    const sizes = parseList(prodForm.sizes);
+
+    if (colors.length > 0 && sizes.length > 0) {
+      const list: string[] = [];
+      for (const c of colors) {
+        for (const s of sizes) {
+          list.push(`${c} - ${s}`);
+        }
+      }
+      return list.slice(0, 100);
+    }
+    if (colors.length > 0) return colors.slice(0, 100);
+    if (sizes.length > 0) return sizes.slice(0, 100);
+    return [];
+  }, [prodForm.colors, prodForm.sizes]);
+
   const handleSaveProductSubmit = async (e?: React.FormEvent) => {
     if (e && e.preventDefault) e.preventDefault();
     if (!supabase || !isAdmin || !user) {
@@ -360,8 +427,11 @@ export const AdminDashboard: React.FC = () => {
       showToast('Stok harus berupa angka bulat antara 0 dan 2.147.483.647.');
       return;
     }
-    const variantsArray = prodForm.variants.split(/[|\r\n]+/).map(v => v.trim()).filter(Boolean).slice(0, 100);
-    if (!variantsArray.length) { showToast('Tambahkan minimal satu ukuran atau varian produk.'); return; }
+    const variantsArray = previewVariants;
+    if (!variantsArray.length) {
+      showToast('Tambahkan minimal satu pilihan warna atau ukuran/size produk.');
+      return;
+    }
     if (prodForm.gallery_urls.length + pendingImageFiles.length < 1) { showToast('Tambahkan minimal satu foto produk.'); return; }
     if (prodForm.gallery_urls.length + pendingImageFiles.length > 5) { showToast('Maksimal lima foto untuk setiap produk.'); return; }
 
@@ -389,7 +459,13 @@ export const AdminDashboard: React.FC = () => {
         price: priceValue,
         stock: prodForm.is_preorder ? 0 : stockValue,
         is_active: prodForm.is_active, description: prodForm.description.trim(),
-        variants: variantsArray, image_url: gallery[0] || null, gallery_urls: gallery,
+        variants: variantsArray,
+        specifications: {
+          ...(editingProduct?.specifications || {}),
+          colors: prodForm.colors.trim(),
+          sizes: prodForm.sizes.trim()
+        },
+        image_url: gallery[0] || null, gallery_urls: gallery,
         is_preorder: prodForm.is_preorder, school_institution: prodForm.school_institution.trim(),
         estimated_delivery: prodForm.estimated_delivery.trim()
       };
@@ -412,15 +488,57 @@ export const AdminDashboard: React.FC = () => {
   };
 
   const handleDeleteProduct = async (p: Product) => {
-    if (!window.confirm(`Hapus produk "${p.name}" secara permanen?`)) return;
+    if (!window.confirm(`Hapus produk "${p.name}" secara permanen? Produk yang dihapus tidak dapat dipulihkan.`)) return;
     try {
       await deleteProductItem(p.id);
       setAdminProducts(prev => prev.filter(item => item.id !== p.id));
-      showToast(`Produk "${p.name}" dihapus dari Supabase.`);
+      showToast(`Produk "${p.name}" berhasil dihapus.`);
+      const allUrls = [p.image_url, ...(p.gallery_urls || [])].filter(Boolean) as string[];
+      const storagePaths: string[] = [];
+      for (const u of allUrls) {
+        if (isProductStorageUrl(u)) {
+          const match = u.split('/product-images/')[1];
+          if (match) storagePaths.push(decodeURIComponent(match.split('?')[0]));
+        }
+      }
+      if (storagePaths.length > 0 && supabase) {
+        try { await supabase.storage.from('product-images').remove(storagePaths); } catch { /* best effort */ }
+      }
+      await refreshProducts();
     } catch (error: any) {
       showToast(`Produk gagal dihapus: ${error?.message || 'akses ditolak'}`);
     }
     setActionMenuProductId(null);
+  };
+
+  const handleDeleteCurrentEditing = async () => {
+    if (!editingProduct) return;
+    const prod = editingProduct;
+    if (!window.confirm(`Hapus produk "${prod.name}" secara permanen? Produk yang dihapus tidak dapat dipulihkan.`)) return;
+    try {
+      setSavingProduct(true);
+      await deleteProductItem(prod.id);
+      setAdminProducts(prev => prev.filter(item => item.id !== prod.id));
+      showToast(`Produk "${prod.name}" berhasil dihapus.`);
+      const allUrls = [prod.image_url, ...(prod.gallery_urls || [])].filter(Boolean) as string[];
+      const storagePaths: string[] = [];
+      for (const u of allUrls) {
+        if (isProductStorageUrl(u)) {
+          const match = u.split('/product-images/')[1];
+          if (match) storagePaths.push(decodeURIComponent(match.split('?')[0]));
+        }
+      }
+      if (storagePaths.length > 0 && supabase) {
+        try { await supabase.storage.from('product-images').remove(storagePaths); } catch { /* best effort */ }
+      }
+      await refreshProducts();
+      setIsEditingProduct(false);
+      setActiveTab('products');
+    } catch (error: any) {
+      showToast(`Produk gagal dihapus: ${error?.message || 'akses ditolak'}`);
+    } finally {
+      setSavingProduct(false);
+    }
   };
 
   const handleToggleProductStatus = async (p: Product) => {
@@ -745,22 +863,18 @@ export const AdminDashboard: React.FC = () => {
                 </div>
 
                 <div className="ref-editor-actions">
-                  <button
-                    type="button"
-                    className="ref-btn-secondary"
-                    onClick={() => setIsEditingProduct(false)}
-                    disabled={savingProduct}
-                  >
-                    Batal
-                  </button>
-                  <button
-                    type="button"
-                    className="ref-btn-primary"
-                    onClick={handleSaveProductSubmit}
-                    disabled={savingProduct}
-                  >
-                    {savingProduct ? 'Menyimpan...' : 'Simpan'}
-                  </button>
+                  {editingProduct && (
+                    <button
+                      type="button"
+                      className="ref-btn-danger-outline"
+                      onClick={handleDeleteCurrentEditing}
+                      disabled={savingProduct}
+                      title="Hapus produk ini"
+                    >
+                      <Trash2 size={14} />
+                      <span>Hapus</span>
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -963,17 +1077,45 @@ export const AdminDashboard: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Varian Warna */}
-                      <div className="ref-form-group">
-                        <label className="ref-form-label">Pilihan Varian / Warna (Pisahkan dengan tanda | )</label>
-                        <input
-                          type="text"
-                          className="ref-form-input"
-                          value={prodForm.variants}
-                          onChange={e => setProdForm(prev => ({ ...prev, variants: e.target.value }))}
-                          placeholder="Contoh: M, L, XL atau Cream, Mocca, Sage"
-                        />
+                      {/* Varian: Warna dan Ukuran dibedakan dalam 2 kolom terpisah */}
+                      <div className="ref-form-row-2">
+                        <div className="ref-form-group">
+                          <label className="ref-form-label">Pilihan Warna</label>
+                          <input
+                            type="text"
+                            className="ref-form-input"
+                            value={prodForm.colors}
+                            onChange={e => setProdForm(prev => ({ ...prev, colors: e.target.value }))}
+                            placeholder="Contoh: Cream, Mocca, Sage, Hitam, Milo"
+                          />
+                          <p className="ref-field-help">Pisahkan dengan koma (,) atau garis (|). Kosongkan jika tanpa variasi warna.</p>
+                        </div>
+
+                        <div className="ref-form-group">
+                          <label className="ref-form-label">Pilihan Ukuran / Size</label>
+                          <input
+                            type="text"
+                            className="ref-form-input"
+                            value={prodForm.sizes}
+                            onChange={e => setProdForm(prev => ({ ...prev, sizes: e.target.value }))}
+                            placeholder="Contoh: S, M, L, XL atau All Size"
+                          />
+                          <p className="ref-field-help">Pisahkan dengan koma (,) atau garis (|). Kosongkan jika All Size tanpa pilihan ukuran.</p>
+                        </div>
                       </div>
+
+                      {previewVariants.length > 0 && (
+                        <div className="ref-variants-preview-box">
+                          <span className="ref-variants-preview-label">
+                            Pratinjau Varian yang Terbentuk ({previewVariants.length} varian):
+                          </span>
+                          <div className="ref-variants-chips-preview">
+                            {previewVariants.map((v, i) => (
+                              <span key={i} className="ref-variant-chip">{v}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
 
                       {/* Deskripsi */}
                       <div className="ref-form-group">
@@ -987,21 +1129,13 @@ export const AdminDashboard: React.FC = () => {
                         />
                       </div>
 
-                      {/* Bottom Form Actions for Easy Mobile & Desktop Submission */}
-                      <div className="ref-form-actions-bottom" style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #E8E5DE', display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-                        <button
-                          type="button"
-                          className="ref-btn-secondary"
-                          onClick={() => setIsEditingProduct(false)}
-                          disabled={savingProduct}
-                        >
-                          Batal
-                        </button>
+                      {/* Bottom Form Actions */}
+                      <div className="ref-form-actions-bottom" style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #E8E5DE', display: 'flex', justifyContent: 'flex-end' }}>
                         <button
                           type="submit"
                           className="ref-btn-primary"
                           disabled={savingProduct}
-                          style={{ minWidth: 140, justifyContent: 'center' }}
+                          style={{ minWidth: 160, justifyContent: 'center' }}
                         >
                           <Check size={16} />
                           <span>{savingProduct ? 'Menyimpan...' : (editingProduct ? 'Simpan Perubahan' : 'Simpan Produk')}</span>
@@ -1496,45 +1630,40 @@ export const AdminDashboard: React.FC = () => {
                             <td>{p.category || '—'}</td>
                             <td className="tabular-nums">{formatRupiah(p.price)}</td>
                             <td className="tabular-nums">{p.is_preorder ? 'PO' : p.stock ?? 0}</td>
-                            <td>{renderStatusBadge(isOutOfStock ? 'Stok Habis' : 'Aktif', true)}</td>
-                            <td style={{ textAlign: 'center', position: 'relative' }}>
+                            <td>
                               <button
                                 type="button"
-                                className="ref-action-dots-btn"
-                                onClick={() =>
-                                  setActionMenuProductId(prev => (prev === p.id ? null : p.id))
-                                }
-                                aria-label="Aksi Produk"
+                                className={`ref-corner-toggle-btn ${p.is_active ? 'active' : 'inactive'}`}
+                                onClick={() => handleToggleProductStatus(p)}
+                                title={p.is_active ? 'Klik untuk menonaktifkan produk ini' : 'Klik untuk mengaktifkan produk ini'}
                               >
-                                <MoreVertical size={16} />
+                                <span className="ref-toggle-indicator" />
+                                <span>{p.is_active ? 'Aktif' : 'Nonaktif'}</span>
                               </button>
-
-                              {actionMenuProductId === p.id && (
-                                <div className="ref-row-dropdown">
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      handleOpenEditProduct(p);
-                                      setActionMenuProductId(null);
-                                    }}
-                                  >
-                                    <Edit size={14} /> Edit Produk
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleToggleProductStatus(p)}
-                                  >
-                                    {p.is_active ? 'Set Nonaktif' : 'Set Aktif'}
-                                  </button>
-                                  <button
-                                    type="button"
-                                    className="ref-dropdown-delete"
-                                    onClick={() => handleDeleteProduct(p)}
-                                  >
-                                    <Trash2 size={14} /> Hapus Produk
-                                  </button>
-                                </div>
-                              )}
+                            </td>
+                            <td style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
+                              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', justifyContent: 'center' }}>
+                                <button
+                                  type="button"
+                                  className="ref-row-action-btn"
+                                  onClick={() => handleOpenEditProduct(p)}
+                                  title="Edit Produk"
+                                  aria-label={`Edit ${p.name}`}
+                                >
+                                  <Edit size={13} />
+                                  <span>Edit</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  className="ref-row-action-btn ref-row-action-delete"
+                                  onClick={() => handleDeleteProduct(p)}
+                                  title="Hapus Produk"
+                                  aria-label={`Hapus ${p.name}`}
+                                >
+                                  <Trash2 size={13} />
+                                  <span>Hapus</span>
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         );
@@ -1555,7 +1684,24 @@ export const AdminDashboard: React.FC = () => {
                     filteredProducts.map(p => {
                       const isOutOfStock = p.is_active === false || (!p.is_preorder && p.stock === 0);
                       return (
-                        <div key={p.id} className="ref-mobile-product-card-item">
+                        <div key={p.id} className="ref-mobile-product-card-item" style={{ position: 'relative' }}>
+                          {/* Tombol status Aktif/Nonaktif di pojok kanan atas kartu produk */}
+                          <div className="ref-mobile-corner-toggle" style={{ position: 'absolute', top: 12, right: 14, zIndex: 10 }}>
+                            <button
+                              type="button"
+                              className={`ref-corner-toggle-btn ${p.is_active ? 'active' : 'inactive'}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleToggleProductStatus(p);
+                              }}
+                              title={p.is_active ? 'Klik untuk nonaktifkan produk' : 'Klik untuk aktifkan produk'}
+                              aria-label={p.is_active ? `Nonaktifkan ${p.name}` : `Aktifkan ${p.name}`}
+                            >
+                              <span className="ref-toggle-indicator" />
+                              <span>{p.is_active ? 'Aktif' : 'Nonaktif'}</span>
+                            </button>
+                          </div>
+
                           <div
                             className="ref-mobile-product-main-clickable"
                             onClick={() => handleOpenEditProduct(p)}
@@ -1570,7 +1716,7 @@ export const AdminDashboard: React.FC = () => {
                               )}
                             </div>
                             <div className="ref-mobile-product-info">
-                              <strong className="ref-mobile-product-title">{p.name}</strong>
+                              <strong className="ref-mobile-product-title" style={{ paddingRight: 80 }}>{p.name}</strong>
                               <div className="ref-mobile-product-meta">
                                 <span className="ref-mobile-product-cat">{p.category || 'Tanpa Kategori'}</span>
                                 <span className="ref-mobile-meta-dot">•</span>
@@ -1586,7 +1732,9 @@ export const AdminDashboard: React.FC = () => {
 
                           <div className="ref-mobile-product-bottom-bar">
                             <div className="ref-mobile-product-status">
-                              {renderStatusBadge(isOutOfStock ? 'Stok Habis' : 'Aktif', true)}
+                              <span style={{ fontSize: '11.5px', color: 'var(--ref-text-muted, #777C76)' }}>
+                                {p.is_preorder ? 'Pre-Order' : (p.stock && p.stock > 0 ? `Tersedia (${p.stock})` : 'Stok Habis')}
+                              </span>
                             </div>
                             <div className="ref-mobile-product-actions">
                               <button
@@ -1595,37 +1743,18 @@ export const AdminDashboard: React.FC = () => {
                                 onClick={() => handleOpenEditProduct(p)}
                                 aria-label={`Edit ${p.name}`}
                               >
-                                <Edit size={14} />
+                                <Edit size={13} />
                                 <span>Edit</span>
                               </button>
                               <button
                                 type="button"
-                                className="ref-action-dots-btn"
-                                onClick={() =>
-                                  setActionMenuProductId(prev => (prev === p.id ? null : p.id))
-                                }
-                                aria-label="Aksi Lainnya"
+                                className="ref-mobile-btn-delete"
+                                onClick={() => handleDeleteProduct(p)}
+                                aria-label={`Hapus ${p.name}`}
                               >
-                                <MoreVertical size={16} />
+                                <Trash2 size={13} />
+                                <span>Hapus</span>
                               </button>
-
-                              {actionMenuProductId === p.id && (
-                                <div className="ref-row-dropdown">
-                                  <button
-                                    type="button"
-                                    onClick={() => handleToggleProductStatus(p)}
-                                  >
-                                    {p.is_active ? 'Set Nonaktif' : 'Set Aktif'}
-                                  </button>
-                                  <button
-                                    type="button"
-                                    className="ref-dropdown-delete"
-                                    onClick={() => handleDeleteProduct(p)}
-                                  >
-                                    <Trash2 size={14} /> Hapus Produk
-                                  </button>
-                                </div>
-                              )}
                             </div>
                           </div>
                         </div>

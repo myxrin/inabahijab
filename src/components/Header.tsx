@@ -13,9 +13,18 @@ export const Header: React.FC = () => {
     else openModal('auth');
   };
 
-  const handleHomeClick = () => navigateToStoreTab('beranda');
-  const handleCatalogClick = () => navigateToStoreTab('katalog');
-  const handleCartClick = () => navigateToStoreTab('keranjang');
+  const handleHomeClick = () => {
+    navigateToView('store');
+    navigateToStoreTab('beranda');
+  };
+  const handleCatalogClick = () => {
+    navigateToView('store');
+    navigateToStoreTab('katalog');
+  };
+  const handleCartClick = () => {
+    navigateToView('store');
+    navigateToStoreTab('keranjang');
+  };
 
   return (
     <>

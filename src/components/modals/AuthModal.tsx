@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { supabase } from '../../lib/supabase';
-import { X, Eye, EyeOff } from 'lucide-react';
+import { X, Eye, EyeOff, LogOut } from 'lucide-react';
 
 export const AuthModal: React.FC = () => {
   const { activeModal, closeModal, user, isAdmin, showToast, navigateToView } = useStore();
@@ -85,26 +85,36 @@ export const AuthModal: React.FC = () => {
 
   return (
     <div className="overlay overlay-centered open" role="dialog" aria-modal="true" onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}>
-      <section className="sheet sheet-centered auth-sheet">
-        <div className="sheet-handle" aria-hidden="true"></div>
-        <div className="sheet-head">
+      <section className={`sheet sheet-centered auth-sheet ${user ? 'auth-sheet-compact' : ''}`}>
+        {!user && <div className="sheet-handle" aria-hidden="true"></div>}
+        <div className={`sheet-head ${user ? 'auth-compact-head' : ''}`}>
           <div>
-            <div className="eyebrow"><span className="eyebrow-dot"></span> INABA HIJAB</div>
+            {!user && <div className="eyebrow"><span className="eyebrow-dot"></span> INABA HIJAB</div>}
             <h2 className="serif">{user ? 'Akun Saya' : 'Masuk atau daftar'}</h2>
           </div>
           <button className="close-btn" onClick={closeModal} aria-label="Tutup modal">
-            <X size={20} />
+            <X size={user ? 17 : 20} />
           </button>
         </div>
 
         {user ? (
-          <div>
-            <div className="notice success">
-              Kamu sudah masuk sebagai <strong>{user.email}</strong> ({isAdmin ? 'Admin Toko' : 'Pelanggan'}).
+          <div className="auth-logged-in-compact">
+            <div className="auth-user-info-card">
+              <div className="auth-avatar-circle" aria-hidden="true">
+                {(user.email || 'U').charAt(0).toUpperCase()}
+              </div>
+              <div className="auth-user-text">
+                <strong className="auth-user-email" title={user.email}>{user.email}</strong>
+                <span className="auth-user-role-badge">
+                  {isAdmin ? 'Admin Toko' : 'Pelanggan'}
+                </span>
+              </div>
             </div>
-            <div className="button-row auth-account-actions">
+
+            <div className="auth-compact-actions">
               <button
-                className="btn btn-clay"
+                type="button"
+                className="btn btn-clay auth-compact-btn"
                 onClick={() => {
                   closeModal({ restoreHistory: false });
                   navigateToView(isAdmin ? 'admin' : 'customer');
@@ -112,8 +122,13 @@ export const AuthModal: React.FC = () => {
               >
                 {isAdmin ? 'Buka Dashboard Admin' : 'Buka Akun Saya'}
               </button>
-              <button className="btn btn-ghost" onClick={handleSignOut}>
-                Keluar Akun
+              <button
+                type="button"
+                className="auth-compact-btn-logout"
+                onClick={handleSignOut}
+              >
+                <LogOut size={15} />
+                <span>Keluar Akun</span>
               </button>
             </div>
           </div>

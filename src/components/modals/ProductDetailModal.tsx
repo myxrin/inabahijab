@@ -21,6 +21,64 @@ export const ProductDetailModal: React.FC = () => {
     () => Array.isArray(detailProduct?.variants) ? detailProduct.variants.filter(Boolean) : [],
     [detailProduct?.variants]
   );
+
+  const isHyphenatedVariants = useMemo(() => {
+    return variants.length > 0 && variants.every(v => v.includes(' - '));
+  }, [variants]);
+
+  const distinctColors = useMemo(() => {
+    if (!isHyphenatedVariants) return [];
+    const colors: string[] = [];
+    variants.forEach(v => {
+      const c = v.split(' - ')[0]?.trim();
+      if (c && !colors.includes(c)) colors.push(c);
+    });
+    return colors;
+  }, [isHyphenatedVariants, variants]);
+
+  const distinctSizes = useMemo(() => {
+    if (!isHyphenatedVariants) return [];
+    const sizes: string[] = [];
+    variants.forEach(v => {
+      const s = v.split(' - ')[1]?.trim();
+      if (s && !sizes.includes(s)) sizes.push(s);
+    });
+    return sizes;
+  }, [isHyphenatedVariants, variants]);
+
+  const currentColor = useMemo(() => {
+    if (!isHyphenatedVariants || !selectedSize) return '';
+    return selectedSize.split(' - ')[0]?.trim() || distinctColors[0] || '';
+  }, [isHyphenatedVariants, selectedSize, distinctColors]);
+
+  const currentSize = useMemo(() => {
+    if (!isHyphenatedVariants || !selectedSize) return '';
+    return selectedSize.split(' - ')[1]?.trim() || distinctSizes[0] || '';
+  }, [isHyphenatedVariants, selectedSize, distinctSizes]);
+
+  const handleSelectColor = (colorName: string) => {
+    const candidate = `${colorName} - ${currentSize}`;
+    if (variants.includes(candidate)) {
+      setSelectedSize(candidate);
+      return;
+    }
+    const fallback = variants.find(v => v.startsWith(`${colorName} - `));
+    if (fallback) {
+      setSelectedSize(fallback);
+    }
+  };
+
+  const handleSelectSize = (sizeName: string) => {
+    const candidate = `${currentColor} - ${sizeName}`;
+    if (variants.includes(candidate)) {
+      setSelectedSize(candidate);
+      return;
+    }
+    const fallback = variants.find(v => v.endsWith(` - ${sizeName}`));
+    if (fallback) {
+      setSelectedSize(fallback);
+    }
+  };
   const gallery = useMemo(() => {
     if (!detailProduct) return [];
     const urls = [detailProduct.image_url, ...(Array.isArray(detailProduct.gallery_urls) ? detailProduct.gallery_urls : [])]
@@ -150,41 +208,101 @@ export const ProductDetailModal: React.FC = () => {
             </div>
 
             <div className="ref-customer-variants-section">
-              <div className="ref-variants-header">
-                <span className="ref-variants-label">Varian</span>
-                {selectedSize && <span className="ref-selected-variant-name">Pilihan: <strong>{selectedSize}</strong></span>}
-              </div>
-              {variants.length > 0 ? (
-                <div className="ref-swatches-row">
-                  {variants.map(variant => {
-                    const color = COLOR_SWATCHES[variant];
-                    const selected = selectedSize === variant;
-                    return color ? (
-                      <button
-                        key={variant}
-                        type="button"
-                        className={`ref-color-swatch-btn ${selected ? 'active' : ''}`}
-                        style={{ '--swatch-color': color } as React.CSSProperties}
-                        onClick={() => setSelectedSize(variant)}
-                        aria-label={variant}
-                        aria-pressed={selected}
-                        title={variant}
-                      />
-                    ) : (
-                      <button
-                        key={variant}
-                        type="button"
-                        className={`ref-size-chip-btn ${selected ? 'active' : ''}`}
-                        onClick={() => setSelectedSize(variant)}
-                        aria-pressed={selected}
-                      >
-                        {variant}
-                      </button>
-                    );
-                  })}
-                </div>
+              {isHyphenatedVariants && distinctColors.length > 0 && distinctSizes.length > 0 ? (
+                <>
+                  <div className="ref-variants-header">
+                    <span className="ref-variants-label">Pilihan Warna</span>
+                    {currentColor && <span className="ref-selected-variant-name">Warna: <strong>{currentColor}</strong></span>}
+                  </div>
+                  <div className="ref-swatches-row" style={{ marginBottom: 12 }}>
+                    {distinctColors.map(colorName => {
+                      const color = COLOR_SWATCHES[colorName];
+                      const selected = currentColor === colorName;
+                      return color ? (
+                        <button
+                          key={colorName}
+                          type="button"
+                          className={`ref-color-swatch-btn ${selected ? 'active' : ''}`}
+                          style={{ '--swatch-color': color } as React.CSSProperties}
+                          onClick={() => handleSelectColor(colorName)}
+                          aria-label={colorName}
+                          aria-pressed={selected}
+                          title={colorName}
+                        />
+                      ) : (
+                        <button
+                          key={colorName}
+                          type="button"
+                          className={`ref-size-chip-btn ${selected ? 'active' : ''}`}
+                          onClick={() => handleSelectColor(colorName)}
+                          aria-pressed={selected}
+                        >
+                          {colorName}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="ref-variants-header">
+                    <span className="ref-variants-label">Pilihan Ukuran / Size</span>
+                    {currentSize && <span className="ref-selected-variant-name">Ukuran: <strong>{currentSize}</strong></span>}
+                  </div>
+                  <div className="ref-swatches-row">
+                    {distinctSizes.map(sizeName => {
+                      const selected = currentSize === sizeName;
+                      return (
+                        <button
+                          key={sizeName}
+                          type="button"
+                          className={`ref-size-chip-btn ${selected ? 'active' : ''}`}
+                          onClick={() => handleSelectSize(sizeName)}
+                          aria-pressed={selected}
+                        >
+                          {sizeName}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
               ) : (
-                <p className="ref-variant-empty">Varian belum ditambahkan. Hubungi toko untuk konfirmasi.</p>
+                <>
+                  <div className="ref-variants-header">
+                    <span className="ref-variants-label">Varian</span>
+                    {selectedSize && <span className="ref-selected-variant-name">Pilihan: <strong>{selectedSize}</strong></span>}
+                  </div>
+                  {variants.length > 0 ? (
+                    <div className="ref-swatches-row">
+                      {variants.map(variant => {
+                        const color = COLOR_SWATCHES[variant];
+                        const selected = selectedSize === variant;
+                        return color ? (
+                          <button
+                            key={variant}
+                            type="button"
+                            className={`ref-color-swatch-btn ${selected ? 'active' : ''}`}
+                            style={{ '--swatch-color': color } as React.CSSProperties}
+                            onClick={() => setSelectedSize(variant)}
+                            aria-label={variant}
+                            aria-pressed={selected}
+                            title={variant}
+                          />
+                        ) : (
+                          <button
+                            key={variant}
+                            type="button"
+                            className={`ref-size-chip-btn ${selected ? 'active' : ''}`}
+                            onClick={() => setSelectedSize(variant)}
+                            aria-pressed={selected}
+                          >
+                            {variant}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="ref-variant-empty">Varian belum ditambahkan. Hubungi toko untuk konfirmasi.</p>
+                  )}
+                </>
               )}
             </div>
 

@@ -734,14 +734,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   stroke-width: 1.7;
 }
 .trust-item strong {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 750;
   display: block;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
+  color: #1e2821;
 }
 .trust-item span {
-  font-size: 13px;
-  color: var(--muted);
+  font-size: 13.5px;
+  color: #556257;
   line-height: 1.5;
   display: block;
 }
@@ -3409,6 +3410,107 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .auth-sheet .sheet-head { align-items: center; margin-bottom: 16px; padding-bottom: 13px; }
 .auth-sheet .sheet-head h2 { margin-top: 5px; font-size: 25px; }
 .auth-sheet .notice { padding: 10px 12px; margin-bottom: 14px; font-size: 12px; }
+
+/* Compact Logged-in Auth Modal Card */
+.sheet.sheet-centered.auth-sheet.auth-sheet-compact {
+  width: min(340px, calc(100% - 32px)) !important;
+  max-width: 340px !important;
+  padding: 16px 18px 18px !important;
+  border-radius: 14px !important;
+  box-shadow: 0 12px 36px rgba(18, 22, 16, 0.18) !important;
+  margin: auto !important;
+}
+.auth-compact-head {
+  margin-bottom: 12px !important;
+  padding-bottom: 10px !important;
+}
+.auth-compact-head h2 {
+  font-size: 16px !important;
+  line-height: 1.25 !important;
+  margin: 0 !important;
+  font-family: inherit !important;
+  font-weight: 700 !important;
+}
+.auth-user-info-card {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  background: var(--paper-warm, #f8f7f2);
+  border: 1px solid var(--line, #e6e8e2);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+}
+.auth-avatar-circle {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  background: var(--shop-accent, #3d4a3e);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  display: grid;
+  place-items: center;
+}
+.auth-user-text {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.auth-user-email {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--shop-ink, #252b27);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+.auth-user-role-badge {
+  font-size: 11px;
+  color: #637065;
+  font-weight: 500;
+}
+.auth-compact-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.auth-compact-btn {
+  width: 100%;
+  min-height: 38px !important;
+  padding: 8px 14px !important;
+  font-size: 13px !important;
+  font-weight: 650 !important;
+  border-radius: 8px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.auth-compact-btn-logout {
+  width: 100%;
+  min-height: 36px !important;
+  padding: 7px 14px !important;
+  font-size: 12.5px !important;
+  color: #b93838 !important;
+  border: 1px solid #fed7d7 !important;
+  background: #fffafa !important;
+  border-radius: 8px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.auth-compact-btn-logout:hover {
+  background: #fee2e2 !important;
+  color: #991b1b !important;
+  border-color: #fca5a5 !important;
+}
 .auth-mode-switch {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -3545,15 +3647,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  padding: 13px 16px;
+  gap: 4px;
+  padding: 16px 20px;
   background: transparent;
   border: 0;
   border-radius: 0;
 }
 .trust-item + .trust-item { border-left: 1px solid #eceee8; }
-.trust-item strong { font-size: 12px; line-height: 1.35; font-weight: 750; color: #344338; }
-.trust-item span { color: #747b73; font-size: 11px; line-height: 1.45; }
+.trust-item strong { font-size: 15px; line-height: 1.4; font-weight: 750; color: #1e2821; }
+.trust-item span { color: #586359; font-size: 13px; line-height: 1.5; }
 .po-summary { margin: 9px 0 15px; max-width: 680px; font-size: 13px; line-height: 1.6; color: inherit; }
 .preorder-highlight-box .button-row { gap: 8px; }
 .preorder-highlight-box .button-row .btn { min-height: 42px; padding: 0 13px; font-size: 12px; }
@@ -3585,10 +3687,10 @@ input, textarea, select { accent-color: var(--shop-accent); }
 @media (max-width: 639px) {
   .trust-strip-wrap { margin-bottom: 18px; }
   .trust-strip { grid-template-columns: 1fr; border-radius: 10px; }
-  .trust-item { padding: 10px 13px; }
+  .trust-item { padding: 13px 16px; gap: 3px; }
   .trust-item + .trust-item { border-left: 0; border-top: 1px solid #eceee8; }
-  .trust-item strong { font-size: 11px; }
-  .trust-item span { font-size: 10px; }
+  .trust-item strong { font-size: 14.5px; line-height: 1.4; font-weight: 750; color: #1e2821; }
+  .trust-item span { font-size: 12.5px; line-height: 1.45; color: #586359; }
   .preorder-highlight-box { padding: 16px 14px; }
   .preorder-highlight-box h3 { font-size: 21px; line-height: 1.25; }
   .preorder-highlight-box .button-row { display: grid; grid-template-columns: 1fr 1fr; }

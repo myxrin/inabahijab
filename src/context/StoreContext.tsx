@@ -160,6 +160,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const navigateToStoreTab = useCallback((tab: StorefrontTab) => {
     setActiveModal(null);
     if (typeof document !== 'undefined') document.body.classList.remove('lock');
+    setCurrentView('store');
     setActiveStoreTab(tab);
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -172,14 +173,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const currentTab = currentTabParam || 'beranda';
       if (currentTabParam === null && tab === 'beranda' && !window.location.hash) {
         // Normalize the initial home URL without creating a duplicate history entry.
-        window.history.replaceState({ ...state, __inabaStoreTab: tab }, '', nextUrl);
-      } else if (currentTab !== tab || window.location.hash) {
+        window.history.replaceState({ ...state, __inabaView: 'store', __inabaStoreTab: tab }, '', nextUrl);
+      } else if (currentTab !== tab || window.location.hash || currentView !== 'store') {
         // Each actual tab change creates a history entry, so Back returns to the previous tab.
-        window.history.pushState({ ...state, __inabaStoreTab: tab }, '', nextUrl);
+        window.history.pushState({ ...state, __inabaView: 'store', __inabaStoreTab: tab }, '', nextUrl);
       }
       window.scrollTo({ top: 0, behavior: 'auto' });
     }
-  }, []);
+  }, [currentView]);
 
   // A cart preference is not authoritative order data. Final pricing/inventory always comes from Supabase.
   // Load initial cart from localStorage
